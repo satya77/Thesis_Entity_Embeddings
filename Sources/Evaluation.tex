@@ -1,0 +1,198 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Experimental Evaluation}
+\label{chap:eval}
+In this chapter, we present different methods of evaluation and analysis of facetted embeddings. In Section~\ref{sec:eval_embeddings}, most common methods for evaluation of word embeddings are discussed and the ones chosen for this study are presented. Section ~\ref{sec:data} explains the dataset used for training the embeddings, followed by the requirements and evaluation setup in section~\ref{sec:setup}. Section ~\ref{sec:relatedness} shows the results of the facetted embeddings tested on relatedness datasets and in Section~\ref{sec:categorize} , embeddings are analysed using visualization techniques. Finally in Section~\ref{sec:alanlogies} the results of the third and final test (word analogies) are presented. 
+\section{Evaluation of Word Embeddings}\label{sec:eval_embeddings}
+In general, the evaluation of word embeddings falls into two major categories: the extrinsic and intrinsic evaluation. In an extrinsic evaluation trained embeddings are used as input of some downstream task and the performance is measured by a metric specific to that task, such as part-of-speech tagging, named-entity recognition and event summarization. Intrinsic evaluations directly test for syntactic or semantic relationships between words. These tasks analyze how well the embeddings capture certain syntactic or semantic relations between a set of query and target words, referred to as \textit{query inventory}~\cite{Schnabel2015EvaluationMF}. Intrinsic tasks are easier and faster to test and provide a quick understanding of the system. On the other hand, a high accuracy on these tasks does not necessarily mean that the model will perform well on real tasks unless some correlation between them is established. Thus, testing the model on an intrinsic task at first and an extrinsic task in final steps can provide a better overview of the model performance. In our study, we first focus on the intrinsic evaluation methods, in three ways: 
+ \begin{itemize}
+ \item \textbf{Relatedness:} Based on datasets containing relatedness scores for pairs of words annotated by humans; the cosine similarity or Euclidean distance between the embeddings for two words should have high correlation (Spearman or Pearson) with human relatedness scores.
+  \item \textbf{Categorization:} By projecting the word embedding in a two or three-dimensional space, it is expected that the similar objects form meaningful clusters. The embedding can be projected using \emph{t-SNE}~\cite{vanDerMaaten2008} or \emph{Principle Component Analysis (PCA)}. This task was done more as a visual study, hence, as further steps, vectors of all words can be clustered using a clustering algorithm of choice and the purity of the returned clusters can be computed as a metric for this task. 
+
+ \item \textbf{Analogy:} This task was popularized by Mikolov et al~\cite{DBLP:journals/corr/abs-1301-3781}. The goal is to find a term $x$ for a given term $y$, such that  $x : y$ best resembles a sample relationship $a : b$. Given $(a,b,x)$, the goal is to find $y$ correctly. To do so: 
+\begin{itemize}
+    \item Compute $V_a-V_b=V_{a+b}$.
+    \item  Compute $V_{mean}=V_{a+b}+V_x$.
+    \item  Find the nearest neighbour to $V_{mean}$ (the one with the highest cosine similarity) if it is $V_y$, the analogy was found correctly.
+  \end{itemize}
+   \end{itemize}
+In the following, the data and the results of the trained models are discussed. 
+\section{Evaluation Dataset}\label{sec:data}
+
+The models were trained on a subset of news articles from the English speaking outlet, the New York Times. The collection contains data for six months from June $1, 2016$ to November $30$, $2016$. There were total of $5,439$ article and $5,427,383$ sentences used.The news articles were used to create the LOAD network, which itself is a collection of nodes annotated by type and weighted edges that are used directly to generate the weighted adjacency matrices. The generated LOAD network contains $93,390$ nodes and $9,584,191$ edges. The number of nodes in each type is different, with the terms being the most frequent and dates the least frequent type. There exists $2,442$ date entities, $4,659$ location, $10,537$ actors, $3,789$ organisations and $71,963$ terms in total. For GloVe and word2vec a textual corpus was created by replacing the raw text form with the given LOAD node identifiers, to generate comparable results. Because the normal text contains stop-words and unwanted characters, terms were filtered to only necessary parts of speech tags for the model generation. The final corpus contains $4,468,993$ tokens, where each token is the node identifier of the respective entity or term in the LOAD network. 
+ 
+ \section{Evaluation Setup} \label{sec:setup}
+
+For the ease of use, the following naming convention is used to distinguish different models: Name of the Method\_\{additional parameters\}, where additional parameters show the different hyper-parameters or additional changes to the original model. 
+\begin{itemize}
+\item  \textbf{F:} Focal addition, which means rather than the pure context embedding for each type the respective focal embeddings were added back to the model with selective addition. 
+\item \textbf{W:} Short for weighted. In this case, the weighing function was used to cap the importance of highly frequent words with large weights. 
+\item \textbf{C$\{ number \}$:} Shows the value for $x_{max}$ or co-occurrence cap in the model, which is the maximum weight in the weighing function. 
+\item \textbf{S$\{ number \}$:} Shows the scaling factor of or $\alpha$ in the weighing function. This number is always between $0$ and $1$. For example $S5$ indicates $\alpha=0.5$ and $S75 $ shows $\alpha=0.75$. 
+\item \textbf{L:} Shorten for $log+1$.we tested the model with the addition of $1$ to the log of weights, to help distinguish between weights of $0$ and $1$. 
+
+\item \textbf{Uni:} Indicates that the model was trained using the unified cost function. If not present, the separate cost function was used. 
+\end{itemize}
+
+The weighing function was used in the model to boost the weak connections and stop the model from giving more weights to the edges with large weights. In case of the hyper-parameters, $\alpha$ and $x_{max}$ we did additional tuning. For $\alpha=[1,0.75,0.5,0.25,0]$ and for $x_{max}=[10,100,1000,10000]$ were experimented. Setting the $x_{max}$ to a number larger numbers, such as, $10000$ produced the best result. In case of a scaling factor, the suggested value by the author ($\frac{3}{4}$) led to the best result. 
+Unified cost and focal addition were treated as a binary parameter (either present during training or removed). Instead of a typical grid search, we chose a coarse-to-fine method, where instead of checking all the possible combinations, we randomly sampled some parameters and focused on the areas, where better models were trained. For example, focal addition proved to be beneficial in most cases, therefore, most of the models contain this attribute.\\
+
+\noindent
+All the models were trained for $200$ epochs with a learning rate of $0.05$ and a batch size of $256$. In addition, as a preprocessing step, all the edges for all the entities which occur less than five times in the corpus were removed from the input data. \\
+The facetted embedding, with or without unified cost, produced almost identical results, but when trained with separate costs, the training phase is faster. For that reason, only one instance of the facetted model with a unified cost is present in the results. \\
+\noindent
+All the created models were compared against two well-known models: GloVe and word2vec. Both of which were trained for $200$ epochs on a textual corpus of all the articles, with a learning rate of $\alpha=0.05$ and $\alpha=0.025$, respectively. Since the GloVe model also works on the whole corpus statistic, the words with the frequency less than five were removed from the model as a preprocessing step. For word2vec, on the other hand, such a property does not exist. 
+
+\begin{figure}
+\centering
+\subcaptionbox{\label{sfig:full_wordsim}}{
+\includegraphics[width=0.75\linewidth , height=0.65\linewidth]{images/Corr_plot_full_sim.pdf}}
+\subcaptionbox{\label{sfig:part_wordsim}}{
+\includegraphics[width=0.80\linewidth , height=0.65\linewidth]{images/wordsim_partial.pdf}}
+
+\caption{Correlation plot of the relatedness scores on wordsim353 using the~\subref{sfig:full_wordsim} full vectors and ~\subref{sfig:part_wordsim} using type-specific vectors. Red highlights show the correlation with the human annotations.}
+\label{fig:wordsim_cor}
+\end{figure}
+
+
+
+
+\section{Word Relatedness}\label{sec:relatedness}
+
+Two dataset were chosen for comparing the relatedness scores, namely: \emph{wordsim353}~\cite{Finkelstein:2001:PSC:371920.372094} and \emph{MEN}~\cite{Bruni:2014:MDS:2655713.2655714}. Wordsim353 contains $353$ sets of English word pairs along with human-assigned similarity judgments on a scale from $0$ (totally unrelated words) to $10$ (very much related or identical words). After filtering the set to match the entities available in our model $294$ word pairs were left. MEN dataset consists of
+$3,000$ word pairs, which instead of an absolute score is based on comparative judgments on two pair exemplars at a time. Each person was given a binary choice of ``right'' or ``wrong'' and in total each pair was compared $50$ times, thus obtaining a final score on a $50$-point scale. After filtering, $2,225$ pairs remained in the dataset.\\
+Since wordsim353 was the smaller set and could be evaluated quickly, this dataset was used as a semi-development set, where the models with different hyper-parameters were compared and only the most successful ones were later tested on the MEN dataset as well. \\
+Correlation plots for the partial and full similarities can be seen in Figures~\ref{sfig:full_wordsim} and~\ref{sfig:part_wordsim}. The most significant rows and columns are marked in red, which illustrates the correlation between the human annotators and the cosine similarity of the word vectors. Correlations were computed using \emph{Pearson} method and any cell with correlation with p-value bigger than $0.01$ is colored in blue.
+Some important observations from the correlation plot can be listed as follows:\\
+\begin{figure}[hb]
+\centering
+\subcaptionbox{\label{sfig:scaling_f}}{
+\resizebox{0.45\textwidth}{0.30\textwidth}{      
+\input{images/scaling_factor.tex}
+}}
+\subcaptionbox{\label{sfig:weight_cap}}{\resizebox{0.45\textwidth}{0.30\textwidth}{      
+\input{images/weight_cap.tex}
+}}
+
+\caption{\subref{sfig:scaling_f} Effect of scaling factor for facetted embeddings on the correlation on wordsim353. \subref{sfig:weight_cap} Effect of weight cap for facetted embeddings on the correlation on wordsim353.}
+\label{fig:correlation_change}
+\end{figure}
+\\
+\emph{Focal addition and weighing function:} In case of the full similarity using both, focal addition and weighing function, produces the best result. But it is still behind GloVe by a factor of $10$. Word2vec has the best performance on this dataset with the correlation coefficient of $0.52$ .
+ \\
+ \\
+\emph{Adding $1$ to the $log$:} Although adding a $1$ to the $log$ of the weights on its own improves the quality of the model from the basic facetted embedding, combining it with focal addition and a weighing function was proven to be destructive.\\
+\\
+\emph{Weight cap parameter:} Hyper-parameter of the weighing function to cap the weights ($x_{max}$) plays an important role in the overall performance. $x_{max}=10000$ achieves the best result for this dataset, whereas with the default GloVe model parameters ($100$) performance is reduced. The change of correlation with the weight cap can be seen in the Figure~\ref{sfig:weight_cap}.\\
+\\
+\emph{Scaling factor parameter:} Same as weight cap, the scaling factor also plays a role in the quality of the model. The same value suggested by the GloVe authors \big($\frac{3}{4}$\big), produced the most promising result. The effect of scaling factor on the correlation is plotted in Figure~\ref{sfig:scaling_f}.\\
+\\
+\emph{Separate and unified cost functions:} Facetted embedding with the separate and unified cost both achieve the same correlation with human judgment and are considered equal.\\
+\\
+\emph{Full and partial similarities:} Interestingly, the correlations between the human scores and the facetted method do not change significantly when the dimension is restricted to only the query words. The results can be seen in Figure~\ref{sfig:part_wordsim}, where the correlation between the methods tends to shrink, but the overall score with the humans is more or less stable. From this results, it could be presumed that the most important information about a specific type has been learned through the dimension related to it. 
+\\
+
+\begin{figure}
+\centering
+\subcaptionbox{\label{sfig:full_men}}{
+\includegraphics[width=0.7\linewidth , height=0.6\linewidth]{images/men_full.pdf}}
+\subcaptionbox{\label{sfig:part_men}}{
+\includegraphics[width=0.7\linewidth , height=0.6\linewidth]{images/men_part.pdf}}
+
+\caption{Correlation plot of the relatedness scores on MEN using the~\subref{sfig:full_men} full vectors and ~\subref{sfig:part_men} using type-specific vectors. Red highlights show the correlation with the human annotations.}
+\label{fig:men_cor}
+\end{figure}
+
+\noindent
+The MEN dataset contains more examples and consequently it is harder to achieve better results. To compare the facetted embedding with GloVe and Word2Vec we only chose the top three models from the previous test, namely:
+\begin{itemize}
+\item \emph{facetted\_FWC10000S75}, contains focal addition and weighing function with parameters $\alpha=0.75$ and $x_{max}=10000$.
+\item  \emph{facetted\_F}, contains only the focal additions.
+\item \emph{facetted\_FWC100S75}, contains focal addition and weighing function with parameters $\alpha=0.75$ and $x_{max}=100$.
+\end{itemize} 
+The results for both full and partial similarities can be seen in Figures~\ref{sfig:full_men} and~\ref{sfig:part_men}. \\
+GloVe and word2vec have maintained their performance on the larger dataset, but the correlation with facetted embeddings has decreased dramatically. It can be concluded that there is almost no correlation between annotations in the MEN dataset with facetted embeddings. Changing from full vectors to specific types increased the correlations slightly and even turned \emph{facetted\_FWC10000S75} from a negative to a positive correlation, but not enough to make any noticeable difference.
+
+\begin{figure}
+\centering
+\subcaptionbox{\label{sfig:word2vec_tsne}}{
+\includegraphics[width=0.48\linewidth , height=0.5\linewidth]{images/tsne_word2vec_cities.png}}
+\subcaptionbox{\label{sfig:glove_tsne}}{
+\includegraphics[width=0.48\linewidth , height=0.5\linewidth]{images/tsne_glove_cities.png}}
+\subcaptionbox{\label{sfig:complex_tsne}}{
+\includegraphics[width=0.5\linewidth , height=0.5\linewidth]{images/tsne_complex_cities.png}}
+
+\caption{t-SNE projections of the embeddings:\subref{sfig:word2vec_tsne} German, British and American cities using Word2Vec \subref{sfig:glove_tsne} GloVe and \subref{sfig:complex_tsne} facetted\_FWC10000S75.}
+\label{fig:clust}
+\end{figure}
+
+
+
+
+\section{Categorization}\label{sec:categorize}
+For clustering similar objects, three test sets were created using \emph{Wikidata Query Service} and were plotted using \emph{t-SNE}. Assuming the embedding dimension can capture the relation to other nearby words well, similar entities would cluster together. The dataset contains:
+  \begin{itemize}
+    \item ORGanisations of different domains: cars, software companies, websites. 
+    \item ACTors of different countries: German politicians, British and American politicians.
+    \item LOCations: German, British and American cities.
+    \end{itemize}
+In each case, up to $30$ entities form each category were chosen based on the highest edge count in LOAD. Some of the results for clustering of LOCations can be seen in Figure~\ref{fig:clust}. In general, no consistent pattern could be found in any of the projections. Although small clusters of objects tend to appear in case of GloVe and our best-selected model for facetted embeddings, most of the entities are scattered without a meaningful cluster. 
+\section{Word Analogies}\label{sec:alanlogies}
+Many datasets for testing linguistic regularities exist. The most popular one was developed by \cite{DBLP:journals/corr/abs-1301-3781}. The set contains $19,544$ question pairs ($8,869$ semantic and $10,675$ syntactic), with $14$ types of relations ($9$ morphological and $5$ semantic). The types and their meaning are shown in Table~\ref{table:analogy_types}.
+
+
+
+\begin{table}[h]
+\centering
+
+\begin{tabular}{ll}
+        \toprule
+{Morphological} & \\         \midrule
+
+gram1-adjective-to-adverb:& an adverb with its adjective.            \\ \hline
+gram2-opposite: &noun and its opposite.                          \\ \hline
+gram3-comparative: & an adjective with its comparative.                                           \\ \hline
+gram4-superlative:&an adjective with its superlative.                                                    \\ \hline
+gram5-present-participle:&participles and their verb in infinitive.                                           \\ \hline
+gram6-nationality-adjective:&country with its nationality.                                                                \\ \hline
+gram7-past-tense: &verbs in infinitive and past form.                                                             \\ \hline
+gram8-plural:& nouns in single and plural from.                                                         \\ \hline
+gram9-plural-verbs: &verbs in singular and plural.                                                          \\ 
+\midrule
+\midrule
+{Semantic}&\\   
+\midrule
+
+capital-common-countries:                 &           selection of countries and their capitals.\\ \hline
+capital-world:          &        all countries and their capitals.    \\ \hline
+family:     &             family relations such as brother and sister  \\ \hline
+city-in-state:   &      states and their cities name (US). \\ \hline
+currency:    &        name of a country with its currency.  \\
+\bottomrule
+\end{tabular}
+ \caption{Types of questions in the Mikolovs test, in total $9$
+  morphological and $5$ semantic questions.} 
+  \label{table:analogy_types}
+\end{table}
+
+\begin{table}[h]
+  \centering
+  {%
+    \raisebox{1.5cm}{%
+      \begin{tabular}{lSS}
+        \toprule
+        {Algorithm }                     & {Accuracy}   \\
+        \midrule
+        Facetted\_FWC10000S75   &0        \\
+        GloVe    & 0.008     \\
+        word2vec   & 0.015       \\
+        \bottomrule
+      \end{tabular}
+    }
+  }
+  \caption{The accuracy results on Mikolove's test set with $9,968$ word pairs.}
+  \label{table:analogy}
+\end{table}
+
+\noindent
+After filtering the dataset to match our data we were left with $13$ types (no instance form the  gram6-nationality-adjective set) and $9,968$ word pairs. This test is unbalanced as the number of semantic and morphological relations are not equal. Additionally, \emph{country:capital} relation accounts for over $50$ percent of all semantic questions. As a result, usually, the average accuracy for all semantic/syntactic questions is reported, which has a lot of variations between different parameters, because an embedding might work better in one subcategory, but averaging the mean scores would yield lower results.\\
+All the learned embeddings performed poorly on this task. Facetted embeddings were unable to retrieve any of the analogies correctly. GloVe achieved an accuracy of $0.008$ with only $81$ correct pairs and word2vec $0.015$ with $161$ correct pairs. The results can be seen in Table~\ref{table:analogy}. A reason for this behavior could be that our subset does not contain enough tokens to learn many of these relations. On the other hand, most well-known tested models on this dataset are trained on billions of tokens. 

@@ -1,0 +1,274 @@
+
+\chapter{Facetted Embedding Model}\label{chap:main}
+
+In the previous chapter, we indicated that the LOAD edge weight captures the corpus relations similar to the co-occurrence matrix and that meaning components can be extracted from them. In this chapter, we use this knowledge to create facetted embeddings from the weighted adjacency matrix of the LOAD network. In the first part, the goals and objectives are defined and in the second section, the construction of a weighted adjacency matrix is illustrated followed by the model definition. The proposed model contains two type of cost functions, that are discussed separately in Section~\ref{sec:normal_cost} and~\ref{sec:unified_cost}. Finally, it is explained how the model can be vectorized for better performance. 
+\section{Overview and Objectives}\label{sec:facetted_overview}
+Facetted embeddings are word embeddings, where each dimension reflect the relation of that word to a specific type of entities surrounding it. Which types are considered during training is arbitrary but for the purpose of this work, we choose to contain actors, locations, organisation, dates and terms, since these types are available by the LOAD model. An illustration of facetted embedding for a short paragraph is shown in Figure~\ref{fig:facetted_emb}. The center word is the entity \emph{``Donald Trump"} marked in red and each type is annotated with the different color in the text. Any word that is not an entity or a date is considered a term. The most common dimension for word embeddings are between $100$ to $300$, to maintain the same order of dimension in facetted embeddings all the different parts have the same dimension but in lower magnitude ($20$ to $50$). These small embeddings are concatenated as shown in Figure~\ref{fig:facetted_emb} to create the final embedding. Each part is independent of the rest and is trained with a separate neural network. As explained in Section~\ref{subsec:wordembeddings}, the aim of word embedding is to reduce the high dimensional space of text and embed word into meaningful space, where words with similar meaning are mapped to points close to each other. In case of facetted embedding, it is as if, we are dividing the textual space into all possible entity types, where each subspace contains only entities of a specific type. The goal is then to map each word into all the subspaces, where a word that co-occurs with the same entities of a specific type are mapped closer together. Since all the subspaces are independent of each other (e.g., space of all actors does not have any of the location entities inside it), each embedding learned on the different subspace is also independent. Hence, it is perfectly reasonable that two words be close in one subspace and far in another. \\
+\begin{figure}
+\centering 
+\resizebox{0.97\textwidth}{0.3\textwidth}{      
+\input{images/facetted_emb.tex}
+}
+\caption{Facetted embedding of  the entity \emph{``Donald Trump"} for a short paragraph. Each part of the embedding corresponds to the relation of the center word to that specific type. Each entity type is illustrated with matching color in text and embedding. }
+\label{fig:facetted_emb}
+\end{figure}
+\noindent 
+The distinguishable parts of the embedding can make the relations between two word or entities more interpretable. Any similarity measure to compare two word vectors can be applied either to each part separately or to the concatenated vector. Moreover, these embeddings, when applied to a corpus with a temporal aspect, like news articles, can illustrate how a word changes its meaning in relation to different types. For example, \emph{``Donald Trump"} is mentioned frequently in location context with \emph{``Iran"} during the discussion for the nuclear deal, but some time after the abandonment of the deal the topic fades away and \emph{``Donald Trump"}  is mentioned more often with relation to other countries. This information can be extracted from the location subspace of the word embedding. The values in for the location part of the embedding will bring the word vector closer to any other entity that is also frequently mentioned with Iran deal during the nuclear discussions like \emph{``Khamenei"} (Iran's supreme leader). Even if \emph{``Khamenei"} is not directly mentioned with \emph{``Donald Trump"}, they are mentioned in the same context location-wise, and will, therefore, be mapped to point close to each other in the location domain. If embeddings are reconstructed for a time span after the nuclear abandonment, the two mentioned entities will become less similar in location aspect. Although the same experiment can be done on normal embedding, where all the words are treated equally, the distinguishable parts give us additional insight as to what aspect has invoked the change. \\
+In a window-based model, only the direct word inside a fixed window is considered the as the context words. Although this approach works well for short sentences, for long distance relations and entity to entity relation often fails, as most of the connected entities may not occur in the same sentence. The LOAD network creates edges between entities based on sentence distance and therefore, captures more accurately the entity relations in a document rather than a simple window-based approach. With using LOAD network as an input to the model we hope to encode this structure to create embeddings that capture entity to entity relations better than normal ones. 
+\section{Weighted Adjacency Matrix}\label{sec:adj_matrix}
+To learn the embeddings, a weighted adjacency matrix for each type of entity and terms is needed (ACT, LOC, TER, ORG, DAT). The matrices are constructed based on the edge list of the LOAD graph, where the weights can be co-occurrence counts (identical to the GloVe model) or, in our case the usual weight of LOAD. 
+Based on the LOAD network, five different matrices (one for each type) have to be created in order to obtain facetted embeddings. For example, the weighted adjacency matrix for actors contains the edges that have a start node of type ACT and any other type as the end node. Since the network is undirected, the same edge exists in the opposite direction, e.g., an edge between an actor and a term is repeated twice and will be used once to create the actor matrix and once to create the term matrix. More formally the matrices can be constructed as shown in Figure~\ref{fig:co-matrix}, where the entries of the matrices are the LOAD edge weights between each two entities.  
+\begin{figure}
+\[ACT=
+\begin{blockarray}{cccccccc}
+ &TER1  & \color{myblue}{ ORG1 } &  TER2  & ACT1 & DAT1 & LOC1 & ... \\
+\begin{block}{c(ccccccc)}
+  ACT1 &m_{00} & \color{myblue}{ m_{01}}  &  m_{02} & m_{03} & m_{04} &m_{00}& ... \\
+  ACT2 & m_{10} & \color{myblue}{ m_{11} } &  m_{12} & m_{13} & m_{14} &m_{15}& ... \\
+  ACT3 & m_{20} &  \color{myblue}{m_{21} } &  m_{22} & m_{23} & m_{24} &m_{25}& ... \\
+  .. & ... &  \color{myblue}{...}  &  ... & ... & ... &...& ... \\
+\end{block}
+\end{blockarray}
+ \]
+\[ORG=
+\begin{blockarray}{cccccccc}
+ &TER1  & \color{myblue}{ ORG1 } &  TER2  & ACT1 & DAT1 & LOC1 & ... \\
+\begin{block}{c(ccccccc)}
+  ORG1 &m_{00} & \color{myblue}{ m_{01}}  &  m_{02} & m_{03} & m_{04} &m_{00}& ... \\
+  ORG2 & m_{10} & \color{myblue}{ m_{11} } &  m_{12} & m_{13} & m_{14} &m_{15}& ... \\
+  ORG3 & m_{20} &  \color{myblue}{m_{21} } &  m_{22} & m_{23} & m_{24} &m_{25}& ... \\
+  .. & ... &  \color{myblue}{...}  &  ... & ... & ... &...& ... \\
+\end{block}
+\end{blockarray}
+ \]
+ \[DAT=
+\begin{blockarray}{cccccccc}
+ &TER1  & \color{myblue}{ ORG1 } &  TER2  & ACT1 & DAT1 & LOC1 & ... \\
+\begin{block}{c(ccccccc)}
+  DAT1 &m_{00} & \color{myblue}{ m_{01}}  &  m_{02} & m_{03} & m_{04} &m_{00}& ... \\
+  DAT2 & m_{10} & \color{myblue}{ m_{11} } &  m_{12} & m_{13} & m_{14} &m_{15}& ... \\
+  DAT3 & m_{20} &  \color{myblue}{m_{21} } &  m_{22} & m_{23} & m_{24} &m_{25}& ... \\
+  .. & ... &  \color{myblue}{...}  &  ... & ... & ... &...& ... \\
+\end{block}
+\end{blockarray}
+ \]
+ \caption{Facetted weighted adjacency matrix. For each type of entity a weighted adjacency matrix is create that contains all the entities of that type on the rows and all the words in the vocabulary in the rows. }
+ \label{fig:co-matrix}
+\end{figure}
+The columns marked in blue in matrices $ACT\in R^{V_{ACT}\times V}$ , $ORG\in R^{V_{ORG}\times V}$  and $DAT\in R^{V_{DAT}\times V}$ will be used to learn the ACT, ORG and DAT part of the ORG1 embedding respectively. $V_{ACT}$, $V_{ORG}$ and $V_{DAT}$ are the number of actors, organization and dates in our graph and $V$ is the size of the vocabulary. The model will learn an embedding for all entities in the row and all entities in the column of the matrix. In case of a symmetric co-occurrence matrix the model learns the same embedding twice. Nevertheless, in our case the matrices are not symmetric and that leads to a definition of a new cost function, where this asymmetry is taken into account.  
+\section{Cost Function of Facetted Embeddings}
+\label{sec:facetted_embeddings}
+
+With five different adjacency matrices, five different embeddings need to be learned. To train all embeddings, two methods are proposed. First, training five different networks one for each type separately and concatenating the outputs to generate the facetted embeddings. Second, train all the embeddings at once in a single network with a unified cost function. In the following, both methods are described in detail. Yet, the second, method despite the compactness, is slower than optimizing the five separate cost functions. It is worth noting that the switching between the training method has no effect on the quality of the learned embeddings, only the training time.\\
+\subsection{Separate cost functions}
+\label{sec:normal_cost}
+
+The general cost function for a single network is the one used for the GloVe model with minor differences: 
+
+\begin{figure}
+{\small 
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+\input{images/focal_addtion.tex}
+}
+\caption{Selectional addition of focal and context embedding in case of the actor embeddings.} \label{fig:focal_addition}
+\end{figure}
+ As noted in the previous section, context and focal embeddings are no longer symmetric like the GloVe model, since the size of context vocabulary is different than the focal. 
+By limiting the focal words to a certain type we try to infer the impact of that type on all the words and generate type-specific embeddings. The context embedding in each case reflects these type-specific properties for all words. The biases can no longer be symmetric as well. Therefore, the GloVe cost function can be re-written, where $V_e$ is the size of the focal vocabulary: 
+\begin{equation}
+J_e=\sum _{ j=1 }^{ V }{}\sum _{ i=1 }^{ V_e }{ f({ X }_{ ij } } )(w_{ i }^{ T }\tilde{  w_{ j } } +b_{ i }+\tilde{  b_{ j } } -log{ X }_{ ij })^2
+\end{equation}
+The cost function has to be minimized separately for each entity type. As a result, the training will contain five phases, one for each type and a final concatenation. \\
+\noindent
+\emph{Asymmetry of context and focal embeddings:} Similar to GloVe the embeddings for both context and focal are learned, but the focal embedding can no longer be naively summed up with the context. Instead, the focal embeddings can either be disregarded completely or added in a new way. For this purpose, we propose selectional addition, where the focal embedding of a certain type is only added to the corresponding embedding in the context. As an example, take the adjacency matrices in Section~\ref{sec:adj_matrix} as our input, then for the matrix ACT,  focal embedding will learn to encode each row with an embedding, while the context will encode the columns. The rows of the matrix will represent the embedding of all the actors with respect to the whole vocabulary. We are interested in the column-wise embedding that encodes the actor part for all the words in our vocabulary, which is the purpose of this model. Focal embedding also contains information about the whole vocabulary, but only for the focal words, adding back this information in terms of selectional addition has proven to be beneficial to the model. The selectional addition, adds the focal embedding of a type, only to the respective entities of that type. The rest of embeddings remain intact, because a corresponding embedding column for them in the focal matrix does not exist. A visualization of the addition can be seen in Figure~\ref{fig:focal_addition}.
+\noindent
+\emph{Final concatenation:}  For each complete embedding, five different context embeddings of types ACT, ORG, DAT, TER, and LOC have to be generated. These vectors can later be combined to generate the complete facetted embedding. As the embeddings are independent, the combination can be arbitrary with only the desired dimensions kept. \\
+
+\begin{figure}
+\centering 
+\resizebox{0.6\textwidth}{0.6\textwidth}{      
+\input{images/weights.tex}
+}
+\caption{Weighted degree distribution of the LOAD network. }
+\label{fig:degree1}
+\end{figure}
+\noindent
+\emph{Weighing function:} The weighing function ($f(X_{ij}$) is same as GloVe, defined in Equation~\ref{eq:weighingfunction}. The model is valid with or without the use of weighing function, but since the weights of the LOAD network are highly unbalanced, a weighing function can help reduce the effect of very large weights and boost the effect of week connections. LOAD has many small weights between $0$ and $1$, but some large weights in the range of $10000$. A visualization of the weights of the network can be seen in Figure~\ref{fig:degree1}. Without a weighing function Very large weights will overpower the smaller weights and reduce performance. Therefore cutting off the weights at a certain threshold can to some extend balance out this effect. Because the weights of the LOAD network do not directly correspond to co-occurrence counts in the text, additional hyper-parameter tuning was done to find the best combination (explained in more detail in Section~\ref{sec:setup}. \\
+\begin{figure}
+\centering
+\resizebox{0.6\textwidth}{0.6\textwidth}{      
+\input{images/log2_hist.tex}
+}
+\caption{Distribution of the weights after normalization.}
+\label{fig:norm}
+\end{figure}
+
+\noindent
+\emph{Normalization:} Some variations to the model were experimented with but because of extremely poor results were disregard. One of such approaches was normalization. In an attempt to boost performance, weights of the  LOAD network were normalized using log normalization.  Because the weights of the network are highly unbalanced, we chose a \emph{$log$ normalization}, in order to reduce the range, in which the weights fluctuate. Moreover, the gradient descent algorithm can converge more smoothly to the functions minimum. Unfortunately, adding the normalization made the problem ill-conditioned and the algorithm could not converge to a solution and was dismissed early on. The reason for this could be that even though the $log$ of weights will normalize them between $-1$ and  $-14$ (illustrated in Figure~\ref{fig:norm}), in the cost function a second $log$ should be applied to the inputs. Since the $log$ of a negative number is undefined it results in undefined gradient updates and untrainable weights. Other than log normalization, linear transformation like \emph{min max normalization} were also experimented. Min max normalization will force all the weights to be between $0$ and $1$ and is calculated with Equation~\ref{eq:minmaxNom}, where $x=(x_1,...,x_n)$ is the set of input weights and $z_i$ is the $i$th normalized data. 
+\begin{equation}
+z_{ i }=\frac { x_{ i }-min(x) }{ max(x)-min(x) } 
+\label{eq:minmaxNom}
+\end{equation}
+Unfortunately, adding this form of normalization did not improve the results and was also removed from the model. \\
+\noindent
+\emph{Adding $1$ to the $log$:} The cost function contains the $log$ of the weights. Since many weights in the LOAD network contain the weight of $1$  and $log(1)=0$, we tested the model with the addition of $1$ to the log of weights, to help distinguish between weights of $0$ and $1$. With this change, the cost function will be defined as follows:\\
+$J_e=\sum _{ j=1 }^{ V }{}\sum _{ i=1 }^{ V_e }{ f({ X }_{ ij } } )(w_{ i }^{ T }\tilde{  w_{ j } } +b_{ i }+\tilde{  b_{ j } } -(log{ X }_{ ij }+1))^2$. Although in some cases this change improved the model performance, in other cases it generated poor results. More details about how this change effects the model is discussed in Section~\ref{sec:setup}. 
+
+
+\begin{figure}
+{\small 
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+\input{images/separate_cost.tex}
+}
+\caption{Facetted embedding with separate cost functions. Contains traning of $5$ different networks ($2$ are shown in the figure) for a single input. The target word is \emph{TER1}, which is being tranined against all actors, organisations, locations, dates and terms. The final embedding is created by concatinating the columns in the context embedding matricies that are acossiated with \emph{TER1}.   } \label{fig:separate_cost}
+\end{figure}
+\begin{figure}
+{\small 
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt   
+\input{images/unified_cost.tex}
+\caption{Facetted embedding with unified cost function. Training for a single input is shown using only one network. The target word is \emph{TER1}, which is being tranined against all actors, organisations, locations, dates and terms. While training the weights related to actors are only updated if the input edge weight has the start node type of an actor. Meanwhile,the rest of the weights related to other entity-types are freezed. The final embedding is created by concatinating the columns in the context embedding matricies that are acossiated with \emph{TER1}.} \label{fig:unified_cost}
+}
+\end{figure}
+\subsection{Unified cost function  }
+\label{sec:unified_cost}
+The unified cost function is simply the summation of all the separate cost functions in the previous section, where $E$ is the set of all possible types, shown in Equation~\ref{eq:unified_cost}.
+\begin{equation}
+J=\sum _{ e=1 }^{ E }{J_e}=\sum _{ e=1 }^{ E }{}\sum _{ j=1 }^{ V }{}\sum _{ i=1 }^{ V_e }{ f({ X }_{ ij } } )(w_{ i }^{ T }\tilde{  w_{ j } } +b_{ i }+\tilde{  b_{ j } } -log{ X }_{ ij })^2
+\label{eq:unified_cost}
+\end{equation}
+As a result, all five embeddings can be generated at once in a single network. For a better understanding of the differences between the methods a visual comparison is shown in Figures~\ref{fig:separate_cost} and~\ref{fig:unified_cost} for loss on a single input. Each input is an edge with its corresponding weight, if the input has the starting node of type actor, the rest of the layers related to other types of embeddings will be frozen during training and only the weights for the actor network will be updated through backpropagation. Hence, it is as if all the networks were trained separately, because the weights of a certain type can only be updated when the correct input is presented.  \\
+In Figure~\ref{fig:separate_cost}, two of the five networks are shown as an example. A single edge refers to two embeddings, one for the focal (start node) and one for the context (end node). Each network is trained separately and a final embedding for a single context word is the concatenation of all learned embeddings. \\
+In contrast, in Figure~\ref{fig:unified_cost}, one network with five times more parameters is trained, which a each input edge only affects the weight of the network associated with the focal word (start node). Therefore, an edge between an actor and term does not affect the location related embedding. Since the edges of LOAD are undirected, the edge in the opposite direction will be fed as an input to the term network and hence no information is lost. All other aspects discussed for facetted embeddings with separate cost function (focal addition, normalization and \dots) also applies to the unified cost function. 
+
+\subsection{Vectorized facetted embeddings}
+In order to speed up the model and use batch gradient descent we need to vectorize the cost function. In the following we go through the vectorization process for the embeddings with separate costs. The same idea can also be applied during the training of the unified cost function.\\
+If we consider $W$ as the matrix of all focal embeddings and $\tilde{ W } $ as the matrix of all context embeddings stacked row-wise, then we can vectorize the model according to Equation~\ref{eq:vectorized}. 
+\begin{equation}
+J=(W \hat{  W }^{ T } +B+\tilde{ B } -log{ X })^{ 2 }
+\label{eq:vectorized}
+\end{equation}
+The original GloVe model contains:
+\begin{itemize}
+\item $W \in R^{V \times M} $ for focal embeddings.
+ \item $\tilde{ W }  \in R^{V \times M} $ for context embeddings.
+\item $B,\tilde{B} \in R^{V \times 1}$ biases for focal and context embeddings. 
+\item $X \in R^{V\times V} $ co-occurrence matrix of the whole vocabulary. 
+\end{itemize}
+In case of the facetted embedding, the dimensions of  $W$ and $\tilde{ W } $ are no longer equal as our weighted adjacency matrix is no longer symmetric $X \in R^{V_e\times V} $.  $V_e$ is the size of the focal vocabulary, which is defined by the input. If actors are the focal words then $V_e$ is the number of actors in vocabulary. New parameters can be defined: 
+\begin{itemize}
+\item $W \in R^{V_e \times M} $ for focal embeddings.
+ \item $\tilde{ W }  \in R^{V \times M} $ for context embeddings.
+\item $B,\tilde{B} \in R^{V_e \times 1}$ biases for focal and context embeddings.
+\item $X \in R^{V_e\times V} $ co-occurrence matrix of the whole vocabulary. 
+\end{itemize}
+Biases have to be added row-wise to the matrices to preserve the original cost function~\ref{eq:glove_cost}. As a consequence, they are transformed to column vectors in the size of the focal vocabulary. A visual comparison can be seen in below:\\
+\[J_{GloVe}=\stackrel{\mbox{$W(V\times M)$ }}{%
+    \begin{bmatrix}
+    a_{11} & a_{12}  \cdots  a_{1M} \\
+    a_{21} & a_{22}  \cdots  a_{2M} \\
+    \vdots & \vdots  \ddots  \vdots \\
+    a_{V1} & a_{V2}  \cdots  a_{VM}
+    \end{bmatrix}%
+  } .
+  \stackrel{\mbox{$\tilde{W}^T(M \times V)$ }}{%
+    \begin{bmatrix}
+    a_{11} & a_{12}  \cdots  a_{1V} \\
+    a_{21} & a_{22}  \cdots  a_{2V} \\
+    \vdots & \vdots  \ddots  \vdots \\
+    a_{M1} & a_{M2}  \cdots  a_{MV}
+    \end{bmatrix}%
+  } +
+  \stackrel{B( V \times 1)}{%
+    \begin{bmatrix}
+    e_1 \\
+    e_2 \\
+    \vdots \\
+    e_V
+    \end{bmatrix}%
+   }
+   +
+  \stackrel{\tilde{B( V \times 1)}}{%
+    \begin{bmatrix}
+    e_1 \\
+    e_2 \\
+    \vdots \\
+    e_V
+    \end{bmatrix}%
+   }-
+   \stackrel{\mbox{$logX(V \times V)$ }}{%
+    \begin{bmatrix}
+    a_{11} & a_{12}  \cdots  a_{1V} \\
+    a_{21} & a_{22}  \cdots  a_{2V} \\
+    \vdots & \vdots  \ddots  \vdots \\
+    a_{V1} & a_{V2}  \cdots  a_{VV}
+    \end{bmatrix}%
+  }
+\]
+\\
+\[J_{New } =\stackrel{\mbox{$W( V_{e}\times M)$ }}{%
+    \begin{bmatrix}
+    a_{11} & a_{12}  \cdots  a_{1M} \\
+    a_{21} & a_{22}  \cdots  a_{2M} \\
+    \vdots & \vdots  \ddots  \vdots \\
+    a_{V1} & a_{V2}  \cdots  a_{V
+_{e}M}
+    \end{bmatrix}%
+  } .
+  \stackrel{\mbox{$\tilde{W}^T(M \times V)$ }}{%
+    \begin{bmatrix}
+    a_{11} & a_{12}  \cdots  a_{1V} \\
+    a_{21} & a_{22} \cdots  a_{2V} \\
+    \vdots & \vdots \ddots \vdots \\
+    a_{M1} & a_{M2}  \cdots  a_{MV}
+    \end{bmatrix}%
+  } +
+  \stackrel{B( V_{e}\times 1)}{%
+    \begin{bmatrix}
+    e_1 \\
+    e_2 \\
+    \vdots \\
+    e_{V_{e}}
+    \end{bmatrix}%
+   }
+   +
+  \stackrel{\tilde{B}(V_{e}\times 1)}{%
+    \begin{bmatrix}
+    e_1 \\
+    e_2 \\
+    \vdots \\
+    e_{V_{e}}
+    \end{bmatrix}%
+   }-
+   \stackrel{\mbox{$logX( V_{e}\ \times V)$ }}{%
+    \begin{bmatrix}
+    a_{11} & a_{12}  \cdots  a_{1V} \\
+    a_{21} & a_{22}  \cdots  a_{2V} \\
+    \vdots & \vdots  \ddots  \vdots \\
+    a_{V1} & a_{V2}  \cdots  a_{V_{e}V}
+    \end{bmatrix}%
+  }
+\]
+
+\section{Composing Facetted Embeddings }
+The complete training task can be formulated in three steps: 
+ \begin{enumerate}        
+ \item Extraction of co-occurrence matrices of type ACT, LOC, DAT, ORG and TER from the LOAD network, explained in Section~\ref{sec:adj_matrix}. 
+ \item For each type, a GloVe based embedding is learned using either a separate or unified cost function. 
+ \item The result of the second step are five different embeddings for the same word, which can be concatenated to generate the final facetted embedding. 
+ \end{enumerate}
+
+\section{Similarity Between Embeddings }
+The dense word vector is learned to capture the semantics of the words and hence similar words are close in the induced space. \emph{Cosine similarity} helps to capture this semantic closeness and is the most common similarity measure for the word vector. The cosine similarity is a measure that calculates the cosine of the angle between two vectors. This metric is a measurement of orientation and not magnitude and it is derived from the equation of a dot product between two vectors (Equation~\ref{eq:cosine}). The vectors are normalized by their length, which removes the influence of their magnitude on the similarity. The norm of the vector is somewhat related to the overall frequency of which words occur in the training corpus, but the direction is unaffected by this. So in order for a common word like \emph{``frog"} to still be similar to a less frequent word like \emph{``Anura"} (a type of frog), cosine distance which only looks at the direction works better than simple Euclidean distance.
+\begin{equation}
+\begin{split}
+\overrightarrow { a } .\overrightarrow { b } =\parallel \overrightarrow { a } \parallel \parallel \overrightarrow { b } \parallel cos\theta 
+\\
+cos\theta \quad =\frac { \overrightarrow { a } .\overrightarrow { b }  }{ \parallel \overrightarrow { a } \parallel \parallel \overrightarrow { b } \parallel  } \quad
+\end{split}
+\label{eq:cosine}
+\end{equation}
+\noindent
+To take advantage of the separation in dimensions for facetted embedding, two types of vector multiplication for cosine similarity were defined: 
+\begin{itemize}
+\item \emph{Full similarity:} Using the full dimensions of the vectors for computing the cosine similarity or dot product between them. This indicates that the full embedding vector, containing a concatenation of all types (ACT, LOC, ORG, TER, DAT) was used. 
+\item \emph{Partial similarity:} Using dimensions based on the query words. For example, if the similarity between an Actoor and a Term was requested, only dimensions related to ACT and TER in both embeddings were kept to compute the cosine similarity. This method was used to test whether the particular dimensions keep the most informative information about a type or not. Partial similarity can also be viewed as looking at similarity between two word vectors in a chosen dimension. For example, looking only at cosine similarity between the organisation part of two embeddings will show how close they are in organisation subspace. 
+\end{itemize}

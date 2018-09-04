@@ -1,0 +1,271 @@
+\documentclass
+     {mimosis}
+ 
+\usepackage{metalogo}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Some of my favourite personal adjustments
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% These are the adjustments that I consider necessary for typesetting
+% a nice thesis. However, they are *not* included in the template, as
+% I do not want to force you to use them.
+
+% This ensures that I am able to typeset bold font in table while still aligning the numbers
+% correctly.
+\usepackage{etoolbox}
+\usepackage{setspace}
+\usepackage{dirtytalk}
+\usepackage{blkarray}
+\definecolor{myblue}{HTML}{4277f4}
+\usepackage{tikz}
+\usepackage{subcaption}
+\usepackage{pgf,pgfplots}
+\pgfplotsset{compat=1.5}
+\usepackage{pgf,pgfplots}
+\usepackage{yhmath,mathdots}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+
+% Use a small font in the body of an algorithm. This removes the weight of algorithm environments
+% and makes them typographically more light.
+\makeatletter
+  \algrenewcommand\ALG@beginalgorithmic{\small}
+\makeatother
+
+%
+% Paragraph lists & compact enumerations
+%
+
+\usepackage[%
+    olditem,  % Do not modify itemize environments by default
+    oldenum   % Do not modify enumerate environments by default
+  ]{paralist}
+
+\usepackage[utf8]{inputenc}
+
+\usepackage[binary-units=true]{siunitx}
+\DeclareSIUnit\px{px}
+
+\sisetup{%
+  detect-all           = true,
+  detect-family        = true,
+  detect-mode          = true,
+  detect-shape         = true,
+  detect-weight        = true,
+  detect-inline-weight = math,
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Hyperlinks & bookmarks
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[%
+  colorlinks = true,
+  citecolor  = RoyalBlue,
+  linkcolor  = RoyalBlue,
+  urlcolor   = RoyalBlue,
+  ]{hyperref}
+
+\usepackage{bookmark}
+
+% Large number for chapter
+\renewcommand*{\chapterformat}{%
+  \fontsize{50}{55}\selectfont\color{cardinal}\thechapter\autodot\enskip
+}
+%
+% Make KOMA script happy?
+%
+\KOMAoptions{DIV=last}
+
+\definecolor{kelly_green}         {RGB}{ 76, 187, 23}
+\definecolor{international_orange}{RGB}{255,  79,  0}
+\definecolor{venetian_red}        {RGB}{200,   8, 21}
+
+\definecolor{amber}     {RGB}{255,191,  0}
+\definecolor{burgundy}  {RGB}{144,  0, 32}
+\definecolor{cardinal}  {RGB}{196, 30, 58}
+\definecolor{deep-azure}{RGB}{ 10, 50, 94}
+\definecolor{mahogany}  {RGB}{192, 64,  0}
+\definecolor{malory-red}{RGB}{192, 46, 16}
+\definecolor{sky}       {RGB}{ 62, 93,240}
+\definecolor{teal}      {RGB}{  0,128,128}
+\definecolor{tyrian}    {RGB}{102,  2, 60}
+\definecolor{yale}      {RGB}{ 70,130,180}
+
+\definecolor{quality-high}  {RGB}{ 70,130,180}
+\definecolor{quality-medium}{RGB}{255,191,  0}
+\definecolor{quality-low}   {RGB}{196, 30, 58}
+
+%
+% Colour for section numbers
+%
+\renewcommand*{\sectionformat}{%
+  \textcolor{cardinal}{\thesection}\autodot\enskip%
+}
+
+%
+% Colour for subsection numbers
+%
+\renewcommand*{\subsectionformat}{%
+  \textcolor{cardinal}{\thesubsection}\autodot\enskip%
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Bibliography
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% I like the bibliography to be extremely plain, showing only a numeric
+% identifier and citing everything in simple brackets. The first names,
+% if present, will be initialized. DOIs and URLs will be preserved.
+
+\usepackage[%
+  autocite     = inline,
+  backend      = bibtex,
+  doi          = true,
+  url          = true,
+  giveninits   = true,
+  hyperref     = true,
+  maxbibnames  = 99,
+  maxcitenames = 2,
+  sortcites    = true,
+  style        = authoryear-comp,
+  firstinits=true,      
+  uniquename=init,
+  parentracker=true,
+  ]{biblatex}
+
+\input{bibliography-mimosis}
+\bibliography{Thesis}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Fonts
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ifxetexorluatex
+  \setmainfont{Minion Pro}
+\else  \usepackage[lf]{ebgaramond}
+  \usepackage[oldstyle,scale=0.7]{sourcecodepro}
+  \singlespacing
+\fi
+
+\renewcommand{\th}{\textsuperscript{\textup{th}}\xspace}
+
+\newacronym[description={Natural language processing}]{NLP}{NLP}{Natural language processing}
+\newacronym[description={Continuous bag of words}]   {CBOW}{CBOW}{Continuous bag of words}
+\newacronym[description={Global Vector embeddings}]   {GloVe}{GloVe}{Global Vector embeddings}
+\newacronym[description={Part of speech}]   {POS}{POS}{Part of speech}
+\newacronym[description={Named entity recognition}]   {NER}{NER}{Named entity recognition}
+\newacronym[description={Named entity linking}]   {NEL}{NEL}{Named Entity Recognition}
+\newacronym[description={Named entity disambiguation}]   {NED}{NED}{Named entity disambiguation}
+\newacronym[description={Gradient Descent}]   {GD}{GD}{Gradient Descent}
+\newacronym[description={Locations,Organisations,Actors,Dates}]   {LOAD}{LOAD}{Locations,Organisations,Actors,Dates}
+\newacronym[description={Actor}]   {ACT}{ACT}{Actor}
+\newacronym[description={Location}]   {LOC}{LOC}{Location}
+\newacronym[description={Term}]   {TER}{TER}{Term}
+\newacronym[description={Date}]   {DAT}{DAT}{Date}
+\newacronym[description={Organisation}]   {ORG}{ORG}{Organisation}
+\newacronym[description={Singular value decomposition}]   {SVD}{SVD}{Singular value decomposition}
+\newacronym[description={Point-wise mutual information}]   {PMI}{PMI}{Point-wise mutual information}
+
+% Math left
+\makeatletter
+\newcommand{\mathleft}{\@fleqntrue\@mathmargin0pt}
+\newcommand{\mathcenter}{\@fleqnfalse}
+\makeatother
+
+
+\newglossaryentry{Real numbers}{%
+  name        = {$\real$},
+  description = {The set of real numbers},
+  sort        = {Real numbers},
+}
+\newglossaryentry{Real coordinate space}{%
+  name        = {$\real^{n \times m}$},
+  description = { Real coordinate space of $n \times m$ dimensions},
+  sort        = {Real coordinate space},
+}
+\newglossaryentry{Vocabulary size}{%
+  name        = {$V$},
+  description = {The size of the vocabulary},
+  sort        = {Vocabulary size},
+}
+\newglossaryentry{Focal vocabulary size}{%
+  name        = {$V_e$},
+  description = {The size of the focal vocabulary},
+  sort        = {focal vocabulary size},
+}
+\newglossaryentry{LOAD distance function}{%
+  name        = {$\delta$},
+  description = {LOAD distance function},
+  sort        = {LOAD distance function},
+}
+
+\newglossaryentry{Activation of a neuron}{%
+  name        = {$a_i^{[j]}$},
+  description = {Activation value of the neuron $i$ in layer $j$},
+  sort        = {Activation of a neuron},
+}
+\newglossaryentry{The weight between two layers}{%
+  name        = {$ w^{(j)}_{nl}$},
+  description = {The weight controlling the function mapping from layer $j$ to layer $j+1$ between unit $n$ in layer $j$ and $l$ in $j+1$},
+  sort        = {The weight between two layers},
+}
+
+ 
+%increase the line spacing 
+\renewcommand{\baselinestretch}{1.2}
+\makeindex
+\makeglossaries
+
+\newcommand*{\mybox}[1]{\framebox{\strut #1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Incipit
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%\title{\texttt{latex-mimosis}}
+%\subtitle{A minimal, modern \LaTeX{} package for typesetting your thesis}
+%\author{Bastian Rieck}
+
+\begin{document}
+
+%increase the space between words 
+%\newdimen\origiwspc%
+%  \newdimen\origiwstr%
+%  \origiwspc=\fontdimen6\font% original inter word space
+%   \origiwstr=\fontdimen7\font% original inter word stretch
+
+\frontmatter
+  \include{Sources/Title}
+ % \include{Sources/Abstract}
+
+  \tableofcontents
+
+\mainmatter
+
+  \include{Sources/Introduction}
+  \include{Sources/Background}
+  \include{Sources/Facetted}
+  \include{Sources/Evaluation}
+  \include{Sources/Conclusion}
+
+% This ensures that the subsequent sections are being included as root
+% items in the bookmark structure of your PDF reader.
+\bookmarksetup{startatroot}
+\backmatter
+
+  \begingroup
+    \let\clearpage\relax
+    \glsaddall
+    \printglossary[type=\acronymtype]
+    \newpage
+    \printglossary
+  \endgroup
+
+  \printindex
+
+  \printbibliography
+
+\end{document}
