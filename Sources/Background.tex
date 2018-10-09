@@ -150,7 +150,7 @@ Window-based models such as word2vec learn the embeddings in terms of a supervis
 In contrast, matrix factorization methods operate directly on the co-occurrence matrix and capture the full statistics. Before word2vec, similar embeddings were generated using \emph{Singular Value Decomposition} (SVD) on co-occurrence matrices and keeping the top \emph{k} dimensions. These methods were also able to capture many semantic and syntactic analogies~\brackettext{\cite{Rohde06animproved}}. \brackettext{\cite{NIPS2014_5477}} showed that implicitly factorizing
 a word-context matrix, whose cells are the \emph{Point-wise Mutual Information} (PMI) of
 the respective word and context pairs, can generate embeddings close to word2vec. The main disadvantage of count based methods is that they are computationally slow on large matrices. In addition, adding new words to the model is difficult, since it requires training a new model from the start.\\
-The \emph{GloVe}~\brackettext{\cite{DBLP:conf/emnlp/PenningtonSM14}} model combines the matrix factorization for generating embeddings with window-based methods and uses the global statistics of the corpus or in another word the co-occurrence matrix to generate embeddings. In addition, unlike the word2vec model that scales with the size of the corpus, general statistics of the data has to be generated only once in terms of the co-occurrence matrix and then additional computations can be performed on matrix alone.
+The GloVe~\brackettext{\cite{DBLP:conf/emnlp/PenningtonSM14}} model combines the matrix factorization for generating embeddings with window-based methods and uses the global statistics of the corpus or in another word the co-occurrence matrix to generate embeddings. In addition, unlike the word2vec model that scales with the size of the corpus, general statistics of the data has to be generated only once in terms of the co-occurrence matrix and then additional computations can be performed on matrix alone.
 \subsection{Word2vec: Distributed Representations of Words }
 \label{subsec:word2vec}
 Word2vec package contains two models, \emph{continuous bag-of-words} (CBOW) and the \emph{skip-gram} architecture. Both are shown in Figure~\ref{fig:w2v}. The CBOW architecture predicts the current word based on the context and the skip-gram predicts surrounding words given the current word. While the two model is quite similar, but they have different attributes. CBOW smoothes over a lot of the distributional information (by treating an entire context as one observation), which makes it useful for smaller datasets.  However, skip-gram treats each context-target pair as a new observation, which tends to do better on the larger datasets~\brackettext{\cite{DBLP:journals/corr/MandelbaumS16}}. We will focus on the skip-gram model. \\
@@ -262,29 +262,29 @@ Since the nodes of the co-occurrence graph correspond to words in the vocabulary
 \subsection{DeepWalk, a Random Walk-based Embedding}
 \label{subsec:DeepWalk}
 The \emph{DeepWalk}~\brackettext{\cite{DBLP:conf/kdd/PerozziAS14}} model  learns latent representations of nodes of a network, using  local information obtained from fixed length
-random walks. The model treats the nodes visited in the random walk as words and walk itself as  a sentence from the corpus. Then skip-gram is applied on the generated corpus to maximize the probability of visiting the neighbourhood of the node conditioned on its embedding. A visualization of workflow of \emph{DeepWalk} is shown in Figure~\ref{deepwalk}.  In other words, the model tries to learn the embedding $w\in R^{ d} $, where $d$ is a small number of latent dimensions in comparison to the number of nodes. The model maximizes the probability of observing the last $k$
+random walks. The model treats the nodes visited in the random walk as words and walk itself as  a sentence from the corpus. Then skip-gram is applied on the generated corpus to maximize the probability of visiting the neighbourhood of the node conditioned on its embedding. A visualization of workflow of DeepWalk is shown in Figure~\ref{deepwalk}.  In other words, the model tries to learn the embedding $w\in R^{ d} $, where $d$ is a small number of latent dimensions in comparison to the number of nodes. The model maximizes the probability of observing the last $k$
 nodes and the next $k$ nodes in the random walk entered at node
 $t_{i}$, by minimizing negative log the probablity as shown in the Equation~\ref{eq:dw}, to learn the node embedding $w$~\brackettext{\cite{DBLP:journals/kbs/GoyalF18}}.: 
 \begin{equation}
 J=-\log { P( } t_{ { i−k } },...,t_{ i−1 },t_{ i+1 },...,t_{ i+k }|w )
 \label{eq:dw}
 \end{equation}
-Based on this approach, nodes that share similar neighbours in random walk sequences should be represented closely in the embedding space. Since the random walk in \emph{DeepWalk} correspond to the \emph{Depth-first Sampling (DFS)}, it can preserve the second-order proximity. As a result, \emph{DeepWalk} is good at keeping community structures. 
+Based on this approach, nodes that share similar neighbours in random walk sequences should be represented closely in the embedding space. Since the random walk in DeepWalk correspond to the \emph{Depth-first Sampling (DFS)}, it can preserve the second-order proximity. As a result, DeepWalk is good at keeping community structures. 
 \begin{figure}
 \centering 
 \resizebox{0.8\textwidth}{0.35\textwidth}{      
 \input{images/DeepWalk.tex}
 }
-\caption{The workflow of \emph{DeepWalk}. It first generates random walk sequences
+\caption{The workflow of DeepWalk. It first generates random walk sequences
 from a graph, and then applies the skip-gram model to learn the embeddings. Figure adapted from~\brackettext{\cite{DBLP:journals/corr/abs-1801-05852} }}
 \label{fig:deepwalk}
 \end{figure}
 
 \subsection{Node2vec}
 \label{subsec:node2vec}
-\emph{Node2vec}~\brackettext{\cite{DBLP:conf/kdd/GroverL16}} extends the random walk procedure of \emph{DeepWalk} by defining a more flexible notion of a node’s neighborhood. There are mainly two node sampling strategies in random walk : \emph{Breadth-first Sampling (BFS)} and \emph{Depth-first Sampling (DFS)}, where the BFS focuses on the immediate neighbors of the node and DFS consists of sampled nodes sequentially sampled at increasing distances from the
-source node ~\brackettext{\cite{DBLP:conf/kdd/GroverL16}}. Therefore, BFS represents the first-order proximity and DFS the second and higher-order proximity. A demonstration of different sampling methods is provided in Figure~\ref{fig:dfs_bfs}. \emph{Node2vec} provides a trade-off between BFS and DFS. \emph{Node2vec} uses two hyperparameters to regulate the balance between the two methods. By choosing a right balance between the two sampling methods, we preserve community structure as well as structural equivalence
-between nodes~\brackettext{\cite{DBLP:journals/kbs/GoyalF18}}. However, the \emph{node2vec} method tends to be quite inefficient for large graphs and incurs significant space and time overhead. It runs out of memory even for mid-sized graphs. Although there exist complex graph strutures to speed up the proccess, the original model on large graphs is very slow~\brackettext{\cite{DBLP:journals/corr/abs-1805-00280}}. 
+\emph{Node2Vec}~\brackettext{\cite{DBLP:conf/kdd/GroverL16}} extends the random walk procedure of DeepWalk by defining a more flexible notion of a node’s neighborhood. There are mainly two node sampling strategies in random walk : \emph{Breadth-first Sampling (BFS)} and \emph{Depth-first Sampling (DFS)}, where the BFS focuses on the immediate neighbors of the node and DFS consists of sampled nodes sequentially sampled at increasing distances from the
+source node ~\brackettext{\cite{DBLP:conf/kdd/GroverL16}}. Therefore, BFS represents the first-order proximity and DFS the second and higher-order proximity. A demonstration of different sampling methods is provided in Figure~\ref{fig:dfs_bfs}. Node2vec provides a trade-off between BFS and DFS. Node2vec uses two hyperparameters to regulate the balance between the two methods. By choosing a right balance between the two sampling methods, we preserve community structure as well as structural equivalence
+between nodes~\brackettext{\cite{DBLP:journals/kbs/GoyalF18}}. However, the node2vec method tends to be quite inefficient for large graphs and incurs significant space and time overhead. It runs out of memory even for mid-sized graphs. Although there exist complex graph strutures to speed up the proccess, the original model on large graphs is very slow~\brackettext{\cite{DBLP:journals/corr/abs-1805-00280}}. 
 \begin{figure}
 \centering 
 \resizebox{0.35\textwidth}{0.20\textwidth}{      
@@ -298,7 +298,7 @@ between nodes~\brackettext{\cite{DBLP:journals/kbs/GoyalF18}}. However, the \emp
 \label{subsec:LINE}
 The \emph{LINE} model~\brackettext{\cite{DBLP:conf/www/TangQWZYM15}}, does not use random walks, instead optimizes two objective functions, one each for
 first- and second-order proximities, and minimizes the combination
-of the two to achieve two embeddings. The first objective function aims to keep the adjacency matrix and dot product of embeddings close. The \emph{LINE} model defines
+of the two to achieve two embeddings. The first objective function aims to keep the adjacency matrix and dot product of embeddings close. The LINE model defines
 two joint probability distributions for each pair of nodes, one
 using adjancency matrix and the other using the embedding and minimizes the \emph{Kullback-Leibler (KL) divergence}~\footnote{A measure of how one probability distribution is different from another.} of the distributions. The first objective results into the first half of the embedding. The authors define probability distributions and
 objective function for the second half based on the the second-order proximity~\brackettext{\cite{DBLP:journals/kbs/GoyalF18}}. Nevertheless, the model fails to learn meaningful representation of graphs with unbalanced edge weights. The objective function for the second-order proximity is ill-defined for when the weight
@@ -306,7 +306,7 @@ of edges have a high variance~\brackettext{\cite{DBLP:conf/www/TangQWZYM15}}.
 \subsection{VERSE: Versatile Graph Embeddings from Similarity Measures}
 \label{subsec:VERSE}
 The \emph{VERSE}~\brackettext{\cite{Tsitsulin:2018:VVG:3178876.3186120}} model learns embeddings by training a single-layer neural network, which can be instantiated with
-diverse similarity measures.  Given a graph $G=(T,E)$, where $T$ is the set of nodes and $E$ the set of all edges, the aim is to learn  the node embedding $w \in R^{d}$ , where $d$ is the number of latent dimensions that usually chosen to be small, by optimizing the objective function in Equation~\ref{eq:VERSE}. In optimization objective, the KL-divergence from the given similarity distribution $sim_G$ to that of $sim_E$ in the embedded space is minimized, for any node $t$. 
+diverse similarity measures.  Given a graph $G=(T,E)$, where $T$ is the set of nodes and $E$ the set of all edges, the aim is to learn  the node embedding $w \in R^{d}$ , where $d$ is small number of latent dimensions, by optimizing the objective function in Equation~\ref{eq:VERSE}. In optimization objective, the KL-divergence from the given similarity distribution $sim_G$ to that of $sim_E$ in the embedded space is minimized, for any node $t$. 
 \begin{equation}
 \sum _{ t\in T }^{  }{ KL(sim_{ G }(t,.),sim_{ E } } (t,.))
 \label{eq:VERSE}
@@ -315,11 +315,11 @@ The similarity of two nodes in the embedding space is related to their dot produ
 \begin{equation}
 sim_{ E }(t,.)=\frac{ w_{ t }.W^{ T } }{ \sum _{ i=1 }^{ n }{ exp(w_{ t }.w_{ i }) }  }\label{eq:VERSE_simE}
 \end{equation}
-Although \emph{VERSE} is designed to accept any similarity measure, three measures are contained in the original implementation: \emph{Personalized PageRank (PPR)},  \emph{Adjacency Similarity}, and  \emph{SimRank}. PPR is based on the stationary distribution of a random walk with restart. Thus, this measure is closely related to \emph{DeepWalk} and \emph{node2vec}. \emph{SimRank} is a measure of structural relatedness. If two nodes are connected to similar nodes they are themselves considered similar. \emph{Adjacency Similarity} is based on the normalized adjacency matrix. More formally, given the out degree $Out(t_{i})$ of node $t_{i}$, $sim_{ G }$ for the \emph{Adjacency Similarity} is shown in Equation~\ref{eq:VERSE_simG}~\brackettext{\cite{Tsitsulin:2018:VVG:3178876.3186120}}. 
+Although VERSE is designed to accept any similarity measure, three measures are contained in the original implementation: \emph{Personalized PageRank (PPR)},  \emph{Adjacency Similarity}, and  \emph{SimRank}. PPR is based on the stationary distribution of a random walk with restart. Thus, this measure is closely related to DeepWalk and node2vec. SimRank is a measure of structural relatedness. If two nodes are connected to similar nodes they are themselves considered similar. Adjacency Similarity is based on the normalized adjacency matrix. More formally, given the out degree $Out(t_{i})$ of node $t_{i}$, $sim_{ G }$ for the Adjacency Similarity is shown in Equation~\ref{eq:VERSE_simG}~\brackettext{\cite{Tsitsulin:2018:VVG:3178876.3186120}}. 
 \begin{equation}
 sim^{ ADJ }_{ G }(t_{ i },t_{ j })=\left\{ \begin{matrix} \frac { 1 }{ Out(t_{ i }) } \quad if\quad (t_{ i },t_{ j })\in E\quad  \\ 0\quad \qquad \qquad otherwise \end{matrix} \right.\label{eq:VERSE_simG}
 \end{equation}
-Since the optimization objective is expensive, the  \emph{VERSE} samples positive and negative samples with \emph{Noise Contrastive Estimation (NCE)}~\footnote{This is same as Negative Sampling used in word2vec. The difference is that in word2vec words for the negative samples are drawn from a specially designed distribution, which favors less frequent words. }~\brackettext{\cite{DBLP:journals/jmlr/GutmannH10}} to converge to a solution. \\
+Since the optimization objective is expensive, the \emph{VERSE} samples positive and negative samples with \emph{Noise Contrastive Estimation (NCE)}~\footnote{This is same as Negative Sampling used in word2vec. The difference is that in word2vec words for the negative samples are drawn from a specially designed distribution, which favors less frequent words. }~\brackettext{\cite{DBLP:journals/jmlr/GutmannH10}} to converge to a solution. \\
 \\
 \noindent
 In the next section, we use these background information for the  word embedding and graph embedding techniques to define our entity embedding and facetted embedding models. 
