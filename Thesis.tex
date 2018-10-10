@@ -75,6 +75,8 @@
 \renewcommand*{\chapterformat}{%
   \fontsize{50}{55}\selectfont\color{cardinal}\thechapter\autodot\enskip
 }
+%subsubsection
+\setcounter{secnumdepth}{3}
 %
 % Make KOMA script happy?
 %
@@ -111,6 +113,13 @@
 %
 \renewcommand*{\subsectionformat}{%
   \textcolor{cardinal}{\thesubsection}\autodot\enskip%
+}
+
+%
+% Colour for subsubsection numbers
+%
+\renewcommand*{\subsubsectionformat}{%
+  \textcolor{cardinal}{\thesubsubsection}\autodot\enskip%
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Bibliography
