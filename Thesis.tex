@@ -28,7 +28,9 @@
 \usepackage{algorithm}
 \usepackage{algorithmicx}
 \usepackage{algpseudocode}
-
+\usepackage[]{changes}
+\definechangesauthor[name={Bastian Rieck},color=red]{br}
+\definechangesauthor[name={Satya Almasian},color=purple]{sa}
 % Use a small font in the body of an algorithm. This removes the weight of algorithm environments
 % and makes them typographically more light.
 \makeatletter
@@ -57,13 +59,6 @@
   detect-weight        = true,
   detect-inline-weight = math,
 }
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Changes
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\usepackage{changes}
-\definechangesauthor[name={Bastian}, color=blue]{br}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Hyperlinks & bookmarks
