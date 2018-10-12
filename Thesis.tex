@@ -29,6 +29,7 @@
 \usepackage{algorithmicx}
 \usepackage{algpseudocode}
 \usepackage[]{changes}
+\usepackage{pifont}
 \definechangesauthor[name={Bastian Rieck},color=red]{br}
 \definechangesauthor[name={Satya Almasian},color=purple]{sa}
 % Use a small font in the body of an algorithm. This removes the weight of algorithm environments
@@ -123,6 +124,13 @@
 \renewcommand*{\subsubsectionformat}{%
   \textcolor{cardinal}{\thesubsubsection}\autodot\enskip%
 }
+
+%ornamet
+\newcommand{\ornament}{%
+  \begin{center}
+    \large\textcolor{cardinal}{\ding{70}}
+  \end{center}
+}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Bibliography
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -160,6 +168,8 @@
   \usepackage[oldstyle,scale=0.7]{sourcecodepro}
   \singlespacing
 \fi
+
+
 
 \renewcommand{\th}{\textsuperscript{\textup{th}}\xspace}
 

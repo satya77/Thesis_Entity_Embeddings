@@ -1,11 +1,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Background and Related Work}\label{chap:background}
-To obtain entity embeddings we use two approaches: (a) training GloVe and word2vec on an annotated corpus. (b) extracting a co-occurrence graph of named entities and embed the graph nodes to generate the embeddings. The facetted models also extend the GloVe and word2vec and apply graph-based embeddings. To provide a general background for all the methods used in this work the related work is organized as follows: first, a brief overview of the text preprocessing steps for NLP tasks is given, in which methods used to extract information from text and generate a co-occurrence graph are explained. In Section~\ref{sec:nn} neural network based approaches for learning embeddings is explained. The co-occurrence graphs are explained in Section~\ref{sec:graph} along with the LOAD~\brackettext{\cite{DBLP:conf/sigir/SpitzG16}} model, which is specific co-occurrence graph used in this study.  Since word2vec and GloVe are the building blocks of other models they are described in Section~\ref{sec:wordembeddig}. In this section, we also explain how the edge weights of the co-occurrence graph can be used to generate a weighted adjacency matrix, which is comparable to a co-occurrence matrix in the GloVe model.  Finally, an overview of the some of the important graph embedding methods is given in Section~\ref{sec:graph}. These models are used on the co-occurrence graphs in Chapter~\ref{chap:entity} and~\ref{chap:facetted} to create the entity and facetted embeddings respectively. 
+To generate a vector representation of named entities and terms in an annotated document, we use either a corpus of text with entity annotations or an co-occurrence graph extracted from it. Unlike traditional methods, where all tokens are treated as terms, entity embeddings take the type information into account.To provide a general background for all the methods used in this work the related work is organized as follows:\\
+First, a brief overview of the text preprocessing steps for NLP tasks is given, in which methods used to extract information from text and generate a co-occurrence graph are explained. In Section~\ref{sec:nn} neural network based approaches for learning embeddings is explained. The co-occurrence graphs are explained in Section~\ref{sec:graph} along with the LOAD~\brackettext{\cite{DBLP:conf/sigir/SpitzG16}} model, which is specific co-occurrence graph used in this study.  Since word2vec and GloVe are the building blocks of other models they are described in Section~\ref{sec:wordembeddig}. In this section, we also explain how the edge weights of the co-occurrence graph can be used to generate a weighted adjacency matrix, which is comparable to a co-occurrence matrix in the GloVe model.  Finally, an overview of the some of the important graph embedding methods is given in Section~\ref{sec:graph}. These models are used on the co-occurrence graphs in Chapter~\ref{chap:entity} and~\ref{chap:faceted} to create the entity and faceted embeddings respectively. 
 
 \section{Basics of Natural Language Processing}
-The goal of NLP systems is to understand and derive meaning from human language. Textual data is a valuable source of information in NLP. Most of the World Wide Web is made of text, with websites like Twitter generating vast amounts every day. Analyzing this content is, however, not a simple task. For example, text might contain ambiguity, as in the sentence \emph{``I put my \textbf{wallet} in the  \textbf{car}.  \textbf{It} is green.''} In this sentence, it is not obvious if \emph{``it''} refers to the \emph{``car''} or the  \emph{``wallet''}. Moreover, humans often use homographs (words having the same spelling but different meanings), metaphors and sarcasm, which makes text analysis even more challenging. 
-\noindent
+The goal of NLP systems is to understand and derive meaning from human language. Textual data is a valuable source of information in NLP. Most of the World Wide Web is made of text, with websites like Twitter generating vast amounts every day. Analyzing this content is, however, not a simple task. For example, text might contain ambiguity, as in the sentence \emph{``I put my \textbf{wallet} in the  \textbf{car}.  \textbf{It} is green.''} In this sentence, it is not obvious if \emph{``it''} refers to the \emph{``car''} or the  \emph{``wallet''}. Moreover, humans often use homographs (words having the same spelling but different meanings), metaphors and sarcasm, which makes text analysis even more challenging. \\
 As machine learning systems rely on features, the most important step is to derive features from the text. Multiple models have been proposed for feature extraction, while none of them achieve the goal of fully characterizing a text, some are more useful than others. However, all features require cleaning and preprocessing of the text. 
 
 \subsection{Text cleaning }
@@ -21,7 +21,7 @@ Additionally, words such as \emph{``are"} and \emph{``to"} are frequent in all d
 
 \subsection{Stemming and  lemmatization}
 Another important preprocessing step is \emph{stemming} or \emph{lemmatization}. This step is motivated by the desire to represent words with different endings as the same word. In many cases, there is no need for a distinction between \emph{argue}, \emph{argued}, \emph{argues}, and \emph{arguing}. They could all be represented by a common stem: \emph{argu}. This is called stemming as it chops off the ends of words and often includes the removal of derivational affixes. Another approach is the use of lemmatization, which uses the vocabulary and morphological analysis of words, normally aiming to remove inflectional endings only and to return the base or dictionary form of a word, which is known as the lemma. lemmatization is a more complex task as it is necessary to have detailed dictionaries which the algorithm can look through to link the form back to its lemma. For instance:
-Lemmatization of drank is drink~\brackettext{\cite{lSCHOL:book/larson2010}}.
+Lemmatization of drank is drink~\brackettext{\cite{SCHOL:book/larson2010}}.
 \subsection{Part-Of-Speech tagging (POStagging)}
 \emph{POS tagging} is the process of marking up a word in a text corresponding to a particular part of speech. Parts of speech are also known as \emph{word classes} or \emph{lexical categories} (e.g., noun, verb, adjective,~\dots). POS tags are useful because of a large amount of information they give about a word and its neighbors and also about the syntactic context around the word. Parts of speech are useful features for finding named entities like people or organizations in text~\brackettext{\cite{SCHOL:book/jurafsky2016}}. \emph{POS taggers} are the software used to assign tags to tokens using a finite predefined tagset. For English, the most commonly used tagset is the \textbf{Penn Treebank POS tagset} \footcite{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}. 
 \subsection{Named entity recognition and  entity linking}
@@ -133,7 +133,7 @@ Co-occurrence analysis, in terms of graphs, is not limited to text mining but is
 the connection between two words or entities, which related to the number of their co-occurrences or some kind of distance measure, e.g., number of tokens between them.~\brackettext{\cite{SCHOL:book/mihalcea2011}}. Since these graphs encode all important words in the vocabulary, they can form a graph-based representation of the corpus, which we use instead of a textual corpus to generate embeddings, where relations between nearby words can be extracted based on edges and nearby nodes.
 
 \subsection{LOAD: Implicit Graph of Entities}
-The LOAD~\brackettext{\cite{DBLP:conf/sigir/SpitzG16}} model is an entity co-occurrence graph representation of large document collections. For each document, named entities from sentences are extracted and connected based on their distance in a graph structure. The original LOAD model contains node types of pages and Sentences as well, which we disregard for the creation of facetted embeddings. \\
+The LOAD~\brackettext{\cite{DBLP:conf/sigir/SpitzG16}} model is an entity co-occurrence graph representation of large document collections. For each document, named entities from sentences are extracted and connected based on their distance in a graph structure. The original LOAD model contains node types of pages and Sentences as well, which we disregard for the creation of faceted embeddings. \\
 Equation~\ref{eq:load_dist} shows the weighing of a single edge in the LOAD model between two entities $v$ and $s$, where $\delta $ is a distance function. $\delta $ equals the number of sentences between the
 instances, or $0$ if they occur in the same sentence. If $i$ and$ j$
 do not occur on the same page: $ \delta(i, j) := \inf$. $ I_{ v }$ and $I_{ s } $ are the set of all instances of $v$ and $s$ in the corpus. $exp$ forces the weight to diminish exponentially with the distance. Eventually, the sum of all these exponential distances creates the final weight. 
@@ -154,9 +154,6 @@ the respective word and context pairs, can generate embeddings close to word2vec
 The GloVe~\brackettext{\cite{DBLP:conf/emnlp/PenningtonSM14}} model combines the matrix factorization for generating embeddings with window-based methods and uses the global statistics of the corpus or in another word the co-occurrence matrix to generate embeddings. In addition, unlike the word2vec model that scales with the size of the corpus, general statistics of the data has to be generated only once in terms of the co-occurrence matrix and then additional computations can be performed on matrix alone.
 \subsection{Word2vec: Distributed Representations of Words }
 \label{subsec:word2vec}
-The goal of word2vec is, given a center word, to predict the words that occur in its surroundings. If sufficient data is used for training, word2vec can predict with high accuracy the word's meaning based on its surrounding words in the corpus and also successfully capture semantic relations, such as country and capital relations, as well as syntactic relations. For example, the vector representation of  \emph{``man''} \replaced[id=br]{has}{have} approximately the same distance to  \emph{``brother''} as \emph{``women''} to \emph{``sister''}. \\
-Word2vec package contains two models, \emph{continuous bag-of-words} (CBOW) and the \emph{skip-gram} architecture. Both are shown in Figure~\ref{fig:w2v}. The CBOW architecture predicts the current word based on the context and the skip-gram predicts surrounding words given the current word. While the two model is quite similar, but they have different attributes. CBOW smoothes over a lot of the distributional information (by treating an entire context as one observation), which makes it useful for smaller datasets.  However, skip-gram treats each context-target pair as a new observation, which tends to do better on the larger datasets~\brackettext{\cite{DBLP:journals/corr/MandelbaumS16}}. We will focus on the skip-gram model. \\
-
 \begin{figure}
 \centering 
 \resizebox{0.63\textwidth}{0.5\textwidth}{      
@@ -165,8 +162,8 @@ Word2vec package contains two models, \emph{continuous bag-of-words} (CBOW) and 
 \caption{Predict a word, given the preceding and following words (Continuous Bag of Words, CBOW) and predict the preceding and following words, given a word (Skip-Gram). Image inspired from~\brackettext{\cite{DBLP:journals/corr/abs-1301-3781},\cite{SCHOL:Uni/schubert/ATITM}}.}
 \label{fig:w2v}
 \end{figure}
-\noindent
-\textbf{The skip-gram} objective is to train word vector representations that are good at predicting the nearby words. A visual representation of the skip-gram model can be seen in Figure~\ref{fig:skip_w2v} for the sentence \emph{``The quick brown fox jumps over the lazy dog"}, where the meaning of the word \emph{``fox"} is defined by the words in the window around it. The input is the one-hot vector for the the target word and the output is the context words.\\
+The goal of word2vec is, given a center word, to predict the words that occur in its surroundings. If sufficient data is used for training, word2vec can predict with high accuracy the word's meaning based on its surrounding words in the corpus and also successfully capture semantic relations, such as country and capital relations, as well as syntactic relations. For example, the vector representation of  \emph{``man''} has approximately the same distance to  \emph{``brother''} as \emph{``women''} to \emph{``sister''}. \\
+Word2vec package contains two models, \emph{continuous bag-of-words} (CBOW) and the \emph{skip-gram} architecture. Both are shown in Figure~\ref{fig:w2v}. The CBOW architecture predicts the current word based on the context and the skip-gram predicts surrounding words given the current word. While the two model is quite similar, but they have different attributes. CBOW smoothes over a lot of the distributional information (by treating an entire context as one observation), which makes it useful for smaller datasets.  However, skip-gram treats each context-target pair as a new observation, which tends to do better on the larger datasets~\brackettext{\cite{DBLP:journals/corr/MandelbaumS16}}. We will focus on the skip-gram model. \\
 \begin{figure}
 \centering 
 \resizebox{0.8\textwidth}{0.5\textwidth}{      
@@ -175,6 +172,8 @@ Word2vec package contains two models, \emph{continuous bag-of-words} (CBOW) and 
 \caption{Skip-gram architecure for the example sentence \emph{``The quick brown fox jumps over the lazy dog"}. }
 \label{fig:skip_w2v}
 \end{figure}
+\noindent
+\textbf{The skip-gram} objective is to train word vector representations that are good at predicting the nearby words. A visual representation of the skip-gram model can be seen in Figure~\ref{fig:skip_w2v} for the sentence \emph{``The quick brown fox jumps over the lazy dog"}, where the meaning of the word \emph{``fox"} is defined by the words in the window around it. The input is the one-hot vector for the the target word and the output is the context words.\\
 More formally, given a corpus of words $a$ and their contexts $c$, to set the parameters $w$ of $p(c|a; w)$ so as to maximize the corpus probability, where $D$ is the set of all words and context pairs extracted from the text. Equation~\ref{eq:w2v_p} shows the probability formulation.
 \begin{equation}
 \label{eq:w2v_p}
@@ -187,6 +186,7 @@ $C$ is the set of all available contexts. The goal is to find the parameters $w$
 p(c|a;w)=\frac { { e }^{ w_{ c }.w_{ a } } }{ \sum _{ \acute { a } \in C }^{  }{ { e }^{ w_{ c }.w_{ \acute { a }  } } }  } 
 \end{equation}
 Maximizing the log-likelihood of Equation~\ref{eq:w2v_softmax} on the training set is very expensive. Because we need to compute and normalize each probability using the score for all other words  $\acute { a }$ in the context of $c$. Therefore, the authors reformulate the problem using \emph{Negative Sampling}~\brackettext{\cite{DBLP:journals/jmlr/GutmannH12}}~\footnote{ In order to deal with the expensive computation of the softmax, the multinomial classification problem (predicting the next word) is converted into a binary classification problem. To estimate a true probability distribution of the output word, a binary logistic regression is used, where the classifier learns to distinguish between  a true pair (true context words) and randomly selected words from the vocabulary (corrupted pairs). The classifier simply predicts whether a pair of words is a true or a random sample. } to Equation~\ref{eq:w2v_negative}. $ \sigma$ shows the sigmoid function and $\acute{D}$ is the set of random $(a, c)$ pairs, assuming they are all incorrect. By maximizing this objective, the model assigns high probabilities to the real word pairs, and low probabilities to noise word pairs and it is more computationally appealing than the softmax function.
+
 \begin{equation}
 \label{eq:w2v_negative}
 \underset { w }{ { argmax } } \quad \sum _{ (c,a)\in D }^{  }{ \log { \quad \sigma ( } w_{ c }.w_{ a }) } +\sum _{ (c,a)\in \acute { D }  }^{  }{ \log { \quad \sigma ( } -w_{ c }.w_{ a })\quad  } 
@@ -263,15 +263,6 @@ Graph embeddings convert a graph into a low dimensional space in which the graph
 Since the nodes of the co-occurrence graph correspond to words in the vocabulary, in this study we only look at node embedding techniques. Embedding the edges or whole graph does not provide any information about the words of the corpus. In the following we give a brief introduction into popular node embedding methods. 
 \subsection{DeepWalk, a Random Walk-based Embedding}
 \label{subsec:DeepWalk}
-The \emph{DeepWalk}~\brackettext{\cite{DBLP:conf/kdd/PerozziAS14}} model  learns latent representations of nodes of a network, using  local information obtained from fixed length
-random walks. The model treats the nodes visited in the random walk as words and walk itself as  a sentence from the corpus. Then skip-gram is applied on the generated corpus to maximize the probability of visiting the neighbourhood of the node conditioned on its embedding. A visualization of workflow of DeepWalk is shown in Figure~\ref{deepwalk}.  In other words, the model tries to learn the embedding $w\in R^{ d} $, where $d$ is a small number of latent dimensions in comparison to the number of nodes. The model maximizes the probability of observing the last $k$
-nodes and the next $k$ nodes in the random walk entered at node
-$t_{i}$, by minimizing negative log the probablity as shown in the Equation~\ref{eq:dw}, to learn the node embedding $w$~\brackettext{\cite{DBLP:journals/kbs/GoyalF18}}.: 
-\begin{equation}
-J=-\log { P( } t_{ { i−k } },...,t_{ i−1 },t_{ i+1 },...,t_{ i+k }|w )
-\label{eq:dw}
-\end{equation}
-Based on this approach, nodes that share similar neighbours in random walk sequences should be represented closely in the embedding space. Since the random walk in DeepWalk correspond to the \emph{Depth-first Sampling (DFS)}, it can preserve the second-order proximity. As a result, DeepWalk is good at keeping community structures. 
 \begin{figure}
 \centering 
 \resizebox{0.8\textwidth}{0.35\textwidth}{      
@@ -282,6 +273,15 @@ from a graph, and then applies the skip-gram model to learn the embeddings. Figu
 \label{fig:deepwalk}
 \end{figure}
 
+The \emph{DeepWalk}~\brackettext{\cite{DBLP:conf/kdd/PerozziAS14}} model  learns latent representations of nodes of a network, using  local information obtained from fixed length
+random walks. The model treats the nodes visited in the random walk as words and walk itself as  a sentence from the corpus. Then skip-gram is applied on the generated corpus to maximize the probability of visiting the neighbourhood of the node conditioned on its embedding. A visualization of workflow of DeepWalk is shown in Figure~\ref{deepwalk}.  In other words, the model tries to learn the embedding $w\in R^{ d} $, where $d$ is a small number of latent dimensions in comparison to the number of nodes. The model maximizes the probability of observing the last $k$
+nodes and the next $k$ nodes in the random walk entered at node
+$t_{i}$, by minimizing negative log the probablity as shown in the Equation~\ref{eq:dw}, to learn the node embedding $w$~\brackettext{\cite{DBLP:journals/kbs/GoyalF18}}.: 
+\begin{equation}
+J=-\log { P( } t_{ { i−k } },...,t_{ i−1 },t_{ i+1 },...,t_{ i+k }|w )
+\label{eq:dw}
+\end{equation}
+Based on this approach, nodes that share similar neighbours in random walk sequences should be represented closely in the embedding space. Since the random walk in DeepWalk correspond to the \emph{Depth-first Sampling (DFS)}, it can preserve the second-order proximity. As a result, DeepWalk is good at keeping community structures. 
 \subsection{Node2vec}
 \label{subsec:node2vec}
 \emph{Node2Vec}~\brackettext{\cite{DBLP:conf/kdd/GroverL16}} extends the random walk procedure of DeepWalk by defining a more flexible notion of a node’s neighborhood. There are mainly two node sampling strategies in random walk : \emph{Breadth-first Sampling (BFS)} and \emph{Depth-first Sampling (DFS)}, where the BFS focuses on the immediate neighbors of the node and DFS consists of sampled nodes sequentially sampled at increasing distances from the
@@ -289,7 +289,7 @@ source node ~\brackettext{\cite{DBLP:conf/kdd/GroverL16}}. Therefore, BFS repres
 between nodes~\brackettext{\cite{DBLP:journals/kbs/GoyalF18}}. However, the node2vec method tends to be quite inefficient for large graphs and incurs significant space and time overhead. It runs out of memory even for mid-sized graphs. Although there exist complex graph strutures to speed up the proccess, the original model on large graphs is very slow~\brackettext{\cite{DBLP:journals/corr/abs-1805-00280}}. 
 \begin{figure}
 \centering 
-\resizebox{0.35\textwidth}{0.20\textwidth}{      
+\resizebox{0.45\textwidth}{0.25\textwidth}{      
 \input{images/dfs_bfs.tex}
 }
 \caption{DFS and BFS sampling for a random walk with lenght $3$ from the start node \emph{``s"}. The figure is adapted from ~\brackettext{\cite{DBLP:conf/kdd/GroverL16} }}
@@ -323,5 +323,5 @@ sim^{ ADJ }_{ G }(t_{ i },t_{ j })=\left\{ \begin{matrix} \frac { 1 }{ Out(t_{ i
 \end{equation}
 Since the optimization objective is expensive, the \emph{VERSE} samples positive and negative samples with \emph{Noise Contrastive Estimation (NCE)}~\footnote{This is same as Negative Sampling used in word2vec. The difference is that in word2vec words for the negative samples are drawn from a specially designed distribution, which favors less frequent words. }~\brackettext{\cite{DBLP:journals/jmlr/GutmannH12}} to converge to a solution. \\
 \\
-\noindent
-In the next section, we use these background information for the  word embedding and graph embedding techniques to define our entity embedding and facetted embedding models. 
+\ornament
+In the next section, we use these background information for the  word embedding and graph embedding techniques to define our entity embedding and faceted embedding models. 
