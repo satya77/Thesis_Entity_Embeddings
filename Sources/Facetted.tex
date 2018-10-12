@@ -280,3 +280,26 @@ To take advantage of the separation in dimensions for facetted embedding, two ty
 \item \emph{Full similarity:} Using the full dimensions of the vectors for computing the cosine similarity or dot product between them. This indicates that the full embedding vector, containing a concatenation of all types (ACT, LOC, ORG, TER, DAT) was used. 
 \item \emph{Partial similarity:} Using dimensions based on the query words. For example, if the similarity between an Actoor and a Term was requested, only dimensions related to ACT and TER in both embeddings were kept to compute the cosine similarity. This method was used to test whether the particular dimensions keep the most informative information about a type or not. Partial similarity can also be viewed as looking at similarity between two word vectors in a chosen dimension. For example, looking only at cosine similarity between the organisation part of two embeddings will show how close they are in organisation subspace. 
 \end{itemize}
+
+
+%--------------------------------------------------
+
+%In the remainder of this thesis, we aim to introduce entity embeddings and the faceted model as a general framework for learning embeddings with known types and separable dimensions. For entity embedding we propose two approaches. (a) by training the well-established word embedding models on annotated data. (b) by taking advantage of co-occurrence graphs extracted from the annotated text. We modify the well-established models for word embeddings to generate the separation of the types and achieve the faceted model. The faceted models are also analysed in two categories of (a) modified word embedding models on annotated data. (b) use of co-occurrence graphs extracted from the annotated text. We analyze how the annotation can affect the quality of embeddings in popular evaluation tasks and compare their weaknesses and strength against the normal word embeddings techniques. 
+
+
+
+%In the work of~\brackettext{\cite{DBLP:journals/corr/FaruquiTYDS15}} transformation of word vectors into sparse (and optionally binary) vectors was proposed. Each vector is projected into an over-complete binary vector, where each dimension represents a feature similar to ones used in traditional NLP systems but found automatically during training. However, since their dimensions are binary valued, there is no notion of the extent to which a word participates in a particular dimension. Rotating the word vectors was introduced by~\brackettext{\cite{DBLP:conf/emnlp/ParkBO17}} in order to improve the interpretability.  \brackettext{\cite{DBLP:conf/aaai/SubramanianPJBH18}} proposes a neural network-based approach to the problem by using sparse auto-encoders.%
+
+
+%-------------------------------------------------
+ %faceted embedding is a vector space model, in which each part of the vector represents different properties of the word, namely locations, actors or organizations associated with it, dates of its mention and terms that define its meaning. One visual example of such an embedding ($w$) for a corpus containing types of actor (ACT), location (LOC), organisation (ORG), date (DAT) and term (TER) is shown below : \\
+%\mathleft
+% BR: You should use \mathrm{} for ACT, LOC, and so on, in the formula.
+% Otherwise, it is typeset in the wrong font.
+%\begin{equation}
+%w=\left[ \underbrace { \begin{matrix}{ a }_{ 1,1 } ... { a }_{ 1,M } \end{matrix} } |\underbrace { \begin{matrix}{ a }_{ 1,M+1 } ... { a }_{ 1,2M } \end{matrix} } |\underbrace { \begin{matrix}{ a }_{ 1,2M+1 } ... { a }_{ 1,3M } \end{matrix} } |\underbrace { \begin{matrix}{ a }_{ 1,3M+1 } ... { a }_{ 1,4M } \end{matrix} } |\underbrace { \begin{matrix}{ a }_{ 14M+1 } ... { a }_{ 1,5M } \end{matrix} }  \right] 
+%\label{eq:concat_vec}
+%\end{equation}
+%$$ \quad  ACT \quad  \qquad  LOC\qquad \qquad ORG\qquad \quad \qquad DAT\qquad \quad  \qquad  TER\qquad \qquad$$
+%\mathcenter
+
