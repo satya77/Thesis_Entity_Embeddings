@@ -44,8 +44,15 @@ Additionally, words such as \emph{``are"} and \emph{``to"} are frequent in all d
 % becomes a 'best practice'?
 
 \subsection{Stemming and  lemmatization}
-Another important preprocessing step is \emph{stemming} or \emph{lemmatization}. This step is motivated by the desire to represent words with different endings as the same word. In many cases, there is no need for a distinction between \emph{argue}, \emph{argued}, \emph{argues}, and \emph{arguing}. They could all be represented by a common stem: \emph{argu}. This is called stemming as it chops off the ends of words and often includes the removal of derivational affixes. Another approach is the use of lemmatization, which uses the vocabulary and morphological analysis of words, normally aiming to remove inflectional endings only and to return the base or dictionary form of a word, which is known as the lemma. lemmatization is a more complex task as it is necessary to have detailed dictionaries which the algorithm can look through to link the form back to its lemma. For instance:
+Another important preprocessing step is \emph{stemming} or \emph{lemmatization}. This step is motivated by the desire to represent words with different endings as the same word.
+% BR: I would be more precise about the different endings here. Can you
+% specify that this pertains to 'grammatical endings' here?
+In many cases, there is no need for a distinction between \emph{argue}, \emph{argued}, \emph{argues}, and \emph{arguing}. They could all be represented by a common stem: \emph{argu}. This is called stemming as it chops off the ends of words and often includes the removal of derivational affixes. Another approach is the use of lemmatization, which uses the vocabulary and morphological analysis of words, normally aiming to remove inflectional endings only\added{,} \delete{and} to return the base or dictionary form of a word, which is known as the lemma. Lemmatization is a more complex task as it is necessary to have detailed dictionaries which the algorithm \replaced{has to }{can} look through to link \replaced{a specific}{the} form back to its lemma. For instance:
 Lemmatization of drank is drink~\brackettext{\cite{SCHOL:book/larson2010}}.
+% BR: The last sentence should be rewritten: 
+% > This is particularly problematic for irregular verbs. For instance,
+% > the lemmatization of ``drank'' is ``drink''.
+
 \subsection{Part-Of-Speech tagging (POStagging)}
 \emph{POS tagging} is the process of marking up a word in a text corresponding to a particular part of speech. Parts of speech are also known as \emph{word classes} or \emph{lexical categories} (e.g., noun, verb, adjective,~\dots). POS tags are useful because of a large amount of information they give about a word and its neighbors and also about the syntactic context around the word. Parts of speech are useful features for finding named entities like people or organizations in text~\brackettext{\cite{SCHOL:book/jurafsky2016}}. \emph{POS taggers} are the software used to assign tags to tokens using a finite predefined tagset. For English, the most commonly used tagset is the \textbf{Penn Treebank POS tagset} \footcite{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}. 
 \subsection{Named entity recognition and  entity linking}
