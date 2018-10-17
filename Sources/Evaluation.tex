@@ -1,26 +1,40 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Experimental Evaluation}
 \label{chap:eval}
-In this chapter, we present different methods of evaluation and analysis of facetted embeddings. In Section~\ref{sec:eval_embeddings}, most common methods for evaluation of word embeddings are discussed and the ones chosen for this study are presented. Section ~\ref{sec:data} explains the dataset used for training the embeddings, followed by the requirements and evaluation setup in section~\ref{sec:setup}. Section ~\ref{sec:relatedness} shows the results of the facetted embeddings tested on relatedness datasets and in Section~\ref{sec:categorize} , embeddings are analysed using visualization techniques. Finally in Section~\ref{sec:alanlogies} the results of the third and final test (word analogies) are presented. 
+In this chapter, we present different methods of evaluation and analysis for entity embeddings and the faceted models. In Section~\ref{sec:eval_embeddings}, most common methods for evaluation of word embeddings are discussed and the ones chosen for this study are presented. Section ~\ref{sec:data} explains the dataset used for training the embeddings, the preprocessing and graph extraction.Evaluation setup and parameter tuning for the models is discussed in in Section~\ref{sec:setup}. Evaluation results for the common tasks are shown in Section~\ref{sec:eval_results}, where the results for the entity embeddings and faceted models are discussed separately in Subsections~\ref{subsec:eval_entity} and \ref{subsec:eval_faceted} respectively. Finally, in Section~\ref{sec:eval_experimental} contains the experimental exploration and visualization of the embeddings neighbourhood. 
 \section{Evaluation of Word Embeddings}\label{sec:eval_embeddings}
-In general, the evaluation of word embeddings falls into two major categories: the extrinsic and intrinsic evaluation. In an extrinsic evaluation trained embeddings are used as input of some downstream task and the performance is measured by a metric specific to that task, such as part-of-speech tagging, named-entity recognition and event summarization. Intrinsic evaluations directly test for syntactic or semantic relationships between words. These tasks analyze how well the embeddings capture certain syntactic or semantic relations between a set of query and target words, referred to as \textit{query inventory}~\cite{DBLP:conf/emnlp/SchnabelLMJ15}. Intrinsic tasks are easier and faster to test and provide a quick understanding of the system. On the other hand, a high accuracy on these tasks does not necessarily mean that the model will perform well on real tasks unless some correlation between them is established. Thus, testing the model on an intrinsic task at first and an extrinsic task in final steps can provide a better overview of the model performance. In our study, we first focus on the intrinsic evaluation methods, in three ways: 
- \begin{itemize}
- \item \textbf{Relatedness:} Based on datasets containing relatedness scores for pairs of words annotated by humans; the cosine similarity or Euclidean distance between the embeddings for two words should have high correlation (Spearman or Pearson) with human relatedness scores.
-  \item \textbf{Categorization:} By projecting the word embedding in a two or three-dimensional space, it is expected that the similar objects form meaningful clusters. The embedding can be projected using \emph{t-SNE}~\cite{SCHOL:journals/jmlr/Maaten} or \emph{Principle Component Analysis (PCA)}. This task was done more as a visual study, hence, as further steps, vectors of all words can be clustered using a clustering algorithm of choice and the purity of the returned clusters can be computed as a metric for this task. 
+In general, the evaluation of word embeddings falls into two major categories: the extrinsic and intrinsic evaluation. In an extrinsic evaluation trained embeddings are used as input of some downstream task and the performance is measured by a metric specific to that task, such as part-of-speech tagging, named-entity recognition and event summarization. However, since evaluations are task-specific, an embedding that works well for one task may fail for another. Intrinsic evaluations directly test for syntactic or semantic relationships between words. These tasks analyze how well the embeddings capture certain syntactic or semantic relations between a set of query and target words, referred to as \textit{query inventory}~\brackettext{\cite{DBLP:conf/emnlp/SchnabelLMJ15}}. Intrinsic tasks are easier and faster to test and provide a quick understanding of the system. The problem with such tests is that the notion of semantics is not universal~\brackettext{\cite{DBLP:journals/corr/abs-1801-09536}}. Some datasets reflect semantic relatedness and some semantic similarity, while very similar they measure quite different attributes. Two words are considered semantically similar, that are synonymy and can be substituted for each other in context. For instance, \emph{``rose"} and \emph{``flower"}. Semantic relatedness, however, is a broader concept. Words with any functional associations, like belongin to the same semantic field, are considered semantically related, e.g., \emph{``rose"} and \emph{``thorn"} ~\brackettext{\cite{DBLP:conf/nodalida/Kolb09}}. It is not obvious, if the word embedding should favour relatedness over similarity or visa versa. Furthermore, a high accuracy on these tasks does not necessarily mean that the model will perform well on real tasks unless some correlation between them is established. Thus, testing the model on an intrinsic task at first and an extrinsic task in final steps can provide a better overview of the model performance. Since there are no entity-centric extrinsic evaluation tasks in the literature and few intrinsic data sets include entities, we focus on the performance in term-based intrinsic tasks. We create some of our own datasets to incorporate the entities, but it is important to emphasize that the true potential of these entity-based models can only be truely investigated in the presence of suitable evaluation datasets.Following the approach by~\brackettext{\cite{DBLP:conf/emnlp/SchnabelLMJ15}}, we use three kinds of intrinsic evaluations.
+ \subsubsection{Relatedness}
+This task is based on datasets containing relatedness or similarity scores for pairs of words annotated by humans; the cosine similarity or Euclidean distance between the embeddings for two words should have high correlation (Spearman or Pearson) with human similarity or relatedness scores. We choose seven datasets containing both relatedness and similarity scores. 
+\begin{enumerate}
+ \item \emph{Similarity353:} $203$ instances of similar word pairs from WordSim353~\brackettext{\cite{DBLP:conf/naacl/AgirreAHKPS09}} classified as synonyms, antonyms, or identical, and unrelated pairs (pairs with average similarity less than or equal to $5$). Scores scale from 0 (totally unrelated words) to 10 (very much related or identical words).~\brackettext{\cite{DBLP:conf/naacl/AgirreAHKPS09}}.
+ \item \emph{Relatedness353:} $252$ instances of word pairs from WordSim353~\brackettext{\cite{DBLP:conf/naacl/AgirreAHKPS09}} that are not similar but still considered related by humans, with an average similarity greater than $5$, and unrelated pairs~\brackettext{\cite{DBLP:conf/naacl/AgirreAHKPS09}}.
+ \item \emph{MEN:} $3,000$ word pairs with human-assigned similarity judgements, which instead of an absolute score is based on comparative judgments on two pair exemplars at a time. Each person was given a binary choice of \emph{``right''} or \emph{``wrong''} and in total each pair was compared $50$ times, thus obtaining a final score on a $50$-point scale~\brackettext{\cite{DBLP:journals/jair/BruniTB14}}.
+ \item \emph{RG65:} $65$ pairs with annotated similarity scaling from $0$ to $4$, where the similarity between two words is measured by the similarity of meaning and the
+amount of overlap for each definition of context. ~\brackettext{\cite{DBLP:journals/cacm/RubensteinG65}}.
+ \item \emph{RareWord:} $2,034$ rare word pairs with human similarity scores~\brackettext{\cite{DBLP:conf/conll/LuongSM13}}.
+ \item \emph{SimLex-999:} $999$ pairs of human-labeled examples of semantic relatedness~\brackettext{\cite{DBLP:journals/corr/HillRK14}}.
+ \item \emph{MTurk:} $7,714$ words pairs with semantic relatedness scores from
+$0$ to $5$~\brackettext{\cite{Radinsky:2011:WTC:1963405.1963455}}.
+\end{enumerate}
 
- \item \textbf{Analogy:} This task was popularized by Mikolov et al~\cite{DBLP:journals/corr/abs-1301-3781}. The goal is to find a term $x$ for a given term $y$, such that  $x : y$ best resembles a sample relationship $a : b$. Given $(a,b,x)$, the goal is to find $y$ correctly. To do so: 
+\subsubsection{Analogy}
+This task was popularized by the word2vec paper~\cite{DBLP:journals/corr/abs-1301-3781}, where the goal is to find a term $x$ for a given term $y$, such that  $x : y$ best resembles a sample relationship $a : b$. In other words, given the triple $(a,b,x)$, the aim is to find the target word $y$ correctly. To find the target word we do the following:  
 \begin{itemize}
-    \item Compute $V_a-V_b=V_{a+b}$.
-    \item  Compute $V_{mean}=V_{a+b}+V_x$.
-    \item  Find the nearest neighbour to $V_{mean}$ (the one with the highest cosine similarity) if it is $V_y$, the analogy was found correctly.
+    \item Compute $w_a-w_b=w_{a-b}$, where $w_a$ and $w_b$ are the embeddings for word $a$ and $b$. 
+    \item  Compute the mean vector $w_{mean}=w_{a-b}+w_x$.
+    \item  Find the nearest neighbour to $w_{mean}$ (the one with the highest cosine similarity) if it is $w_y$, the analogy was found correctly.
   \end{itemize}
-   \end{itemize}
-In the following, the data and the results of the trained models are discussed. 
-\section{Evaluation Dataset}\label{sec:data}
+  \noindent
+For entity embeddings, where the type of the embedding is known, we can also consider an easier, type-specific variation of this task, which only considers neighbours that match a given entity class. In the type-specific variation we only consider candidates that have the same entity type as the words in the triple $(a,b,x)$, thus making the task easier. 
+\subsubsection{Categorization}
+When projecting the word embedding in a 2 or 3-dimensional space, iwe expected that the similar words form meaningful clusters. The embedding can be projected using \emph{t-SNE}~\cite{SCHOL:journals/jmlr/Maaten} or \emph{Principle Component Analysis (PCA)}. Vectors of all words are either viualized for exploratory analysis or clustered using a clustering algorithm of choice and the purity of the returned clusters is computed as a metric for this task~\brackettext{\cite{DBLP:books/daglib/0021593}}. 
+
+\section{Training Data}\label{sec:data}
 
 The models were trained on a subset of news articles from the English speaking outlet, the New York Times. The collection contains data for six months from June $1, 2016$ to November $30$, $2016$. There were total of $5,439$ article and $5,427,383$ sentences used.The news articles were used to create the LOAD network, which itself is a collection of nodes annotated by type and weighted edges that are used directly to generate the weighted adjacency matrices. The generated LOAD network contains $93,390$ nodes and $9,584,191$ edges. The number of nodes in each type is different, with the terms being the most frequent and dates the least frequent type. There exists $2,442$ date entities, $4,659$ location, $10,537$ actors, $3,789$ organisations and $71,963$ terms in total. For GloVe and word2vec a textual corpus was created by replacing the raw text form with the given LOAD node identifiers, to generate comparable results. Because the normal text contains stop-words and unwanted characters, terms were filtered to only necessary parts of speech tags for the model generation. The final corpus contains $4,468,993$ tokens, where each token is the node identifier of the respective entity or term in the LOAD network. 
  
- \section{Evaluation Setup} \label{sec:setup}
+ \section{Parameter Tuning } \label{sec:setup}
 
 For the ease of use, the following naming convention is used to distinguish different models: Name of the Method\_\{additional parameters\}, where additional parameters show the different hyper-parameters or additional changes to the original model. 
 \begin{itemize}
@@ -54,7 +68,13 @@ All the created models were compared against two well-known models: GloVe and wo
 \end{figure}
 
 
+\section{Evaluation Results}\label{sec:eval_results}
+\subsection{Evaluation of entity embeddings}\label{subsec:eval_entity}
+\subsection{Evaluation of faceted embeddings}\label{subsec:eval_faceted}
 
+\section{Experimental Exploration}\label{sec:eval_experimental}
+\subsection{Analysis of entity embeddings}\label{subsec:exp_entity}
+\subsection{Analysis of faceted embeddings}\label{subsec:exp_faceted}
 
 \section{Word Relatedness}\label{sec:relatedness}
 

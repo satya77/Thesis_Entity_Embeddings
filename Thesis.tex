@@ -197,6 +197,21 @@
 \newacronym[description={Versatile Graph Embeddings from Similarity Measures}]  {VERSE}{VERSE}{Versatile Graph Embeddings from Similarity Measures}
 \newacronym[description={Noise Contrastive Estimation}]  {NCE}{NCE}{Noise Contrastive Estimation}
 \newacronym[description={Personalized PageRank}]  {PPR}{PPR}{Personalized PageRank}
+\newacronym[description={Kullback-Leibler divergence}]  {KL}{KL}{Kullback-Leibler divergence}
+\newacronym[description={Word2vec model on raw data }]  {$r$W2V}{$r$W2V}{Word2vec model on raw data}
+\newacronym[description={Word2vec model on annotated data }]  {$a$W2V}{$a$W2V}{Word2vec model on annotated data}
+
+\newacronym[description={GloVe model on raw data }]  {$r$GLV}{$r$GLV}{GloVe model on raw data}
+\newacronym[description={GloVe model on annotated data }]  {$a$GLV}{$a$GLV}{GloVe model on annotated data}
+\newacronym[description={DeepWalk on word co-occurrence graph }]  {DW}{DW}{DeepWalk on word co-occurrence graph}
+\newacronym[description={DeepWalk with identity mapping  }]  {DW$_{id}$}{DW$_{id}$}{DeepWalk with identity mapping }
+\newacronym[description={DeepWalk with logarithmic mapping  }]  {DW$_{log}$}{DW$_{log}$}{DeepWalk with logarithmic mapping }
+\newacronym[description={Facetted DeepWalk on word co-occurrence graph }]  {$f$DW}{$f$DW}{Facetted DeepWalk on word co-occurrence graph }
+\newacronym[description={VERSE on word co-occurrence graph }]  {VRS}{VRS}{VERSE on word co-occurrence graph}
+\newacronym[description={Facetted word2vec }]  {$f$W2V}{$f$W2V}{Facetted word2vec }
+\newacronym[description={Facetted GloVe }]  {$f$GLV}{$f$GLV}{Facetted GloVe }
+\newacronym[description={Facetted GloVe with separate cost functions}]  {$f$GLV$_{sep}$}{$f$GLV$_{sep}$}{Facetted GloVe with separate cost functions }
+\newacronym[description={Facetted GloVe with unified cost functions}]  {$f$GLV$_{uni}$}{$f$GLV$_{uni}$}{Facetted GloVe with unified cost functions }
 
 % Math left
 \makeatletter
@@ -237,11 +252,94 @@
   sort        = {Activation of a neuron},
 }
 \newglossaryentry{The weight between two layers}{%
-  name        = {$ w^{(j)}_{nl}$},
+  name        = {$ \theta^{(j)}_{nl}$},
   description = {The weight controlling the function mapping from layer $j$ to layer $j+1$ between unit $n$ in layer $j$ and $l$ in $j+1$},
   sort        = {The weight between two layers},
 }
+\newglossaryentry{set of focal (center) and context pairs}{%
+  name        = {$ Q$},
+  description = { The set of all focal and context pairs extracted from the text},
+  sort        = {set of focal (center) and context pairs},
+}
 
+\newglossaryentry{graph}{%
+  name        = {$G$},
+  description = {The word co-occurrence graph},
+  sort        = {graph},
+}
+\newglossaryentry{word embedding}{%
+  name        = {$w$},
+  description = {A word embedding},
+  sort        = {word embedding},
+}
+\newglossaryentry{center word}{%
+  name        = {$f$},
+  description = {Center (focal) word },
+  sort        = {center word},
+}
+
+\newglossaryentry{terms}{%
+  name        = {$T$},
+  description = {Set of all terms (nodes of the word co-occurrence graph)},
+  sort        = {terms},
+}
+
+\newglossaryentry{edges}{%
+  name        = {$E$},
+  description = {Set of all weighted edges of the word co-occurrence graph },
+  sort        = {edges},
+}
+\newglossaryentry{actors}{%
+  name        = {$A$},
+  description = {Set of all actors },
+  sort        = {actors},
+}
+\newglossaryentry{locations}{%
+  name        = {$L$},
+  description = {Set of all locations },
+  sort        = {locations},
+}
+\newglossaryentry{organisations}{%
+  name        = {$O$},
+  description = {Set of all organisations },
+  sort        = {organisations},
+}
+\newglossaryentry{dates}{%
+  name        = {$D$},
+  description = {Set of all dates },
+  sort        = {dates},
+}
+
+\newglossaryentry{named entities }{%
+  name        = {$N$},
+  description = {Set of all named entities  },
+  sort        = {named entities},
+}
+
+\newglossaryentry{not named entities }{%
+  name        = {$\acute{N}$},
+  description = {Set of all terms, which are not named entities  },
+  sort        = {not named entities},
+}
+
+
+\newglossaryentry{contexts}{%
+  name        = {$C$},
+  description = {Set of all context words  },
+  sort        = {contexts},
+}
+
+\newglossaryentry{similarity graph}{%
+  name        = {$Sim_G$},
+  description = {Similarity measure between nodes of the graph },
+  sort        = {similarity graph},
+}
+
+\newglossaryentry{similarity embeddings}{%
+  name        = {$Sim_E$},
+  description = {Similarity measure between embeddings of the graph nodes },
+  sort        = {similarity embeddings},
+}
  
 %increase the line spacing 
 \renewcommand{\baselinestretch}{1.2}

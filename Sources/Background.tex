@@ -41,7 +41,7 @@ Despite neural networks being the new trend in machine learning, they are rather
 \end{figure}
 A single artificial neuron is shown in Figure~\ref{fig:preceptron}. The computational unit illustrated in red takes in the different features $x$ and multiplies each input with a given weight $w$. The weights indicate the importance of each feature for the computation. The neuron then performs a non-linear transformation to the input and generates the output ($\hat { y } $). $b$ is called the \emph{bias unit} which always has an input value of $1$. $g(x)$ is called the \emph{activation
 function} and represents the non-linear transformation that is applied on the input data. Essentially, each neuron consists of two steps of computation. First, $z$ is computed by the multiplication of weights and inputs. Second, an activation function of choice is applied to $z$ to produce the final output. The output or activation ($a$) of the last unit is the predicted output. A neural network is a group of multiple neurons connected together, as shown in Figure~\ref{fig:nn}. In a
-neural network, the first layer is called the input layer and the last layer is called the output layer. Any layer in between is considered as a hidden layer. Typically, the values of the input and the output layer are given in the training set. Activation of each computational unit is the output of that unit after applying a certain function on the inputs, we denote activation of the unit (neuron) $i$ in layer $j$ by $a_{i}^{[j]}$. The $w^{(j)}_{nl}$ is the weight controlling the function mapping from layer $j$ to layer $j+1$ between unit $n$ in layer $j$ and $l$ in $j+1$. Learning this weight matrix is the final goal of any deep learning system. The weights indicate how different features of inputs should be combined and how much should each of them influence the final output. The values of intermediate activations can be interpreted as latent features discovered during training. Features are combined with new weights to either generate an intermediate or a final
+neural network, the first layer is called the input layer and the last layer is called the output layer. Any layer in between is considered as a hidden layer. Typically, the values of the input and the output layer are given in the training set. Activation of each computational unit is the output of that unit after applying a certain function on the inputs, we denote activation of the unit (neuron) $i$ in layer $j$ by $a_{i}^{[j]}$. The $\theta^{(j)}_{nl}$ is the weight controlling the function mapping from layer $j$ to layer $j+1$ between unit $n$ in layer $j$ and $l$ in $j+1$. Learning this weight matrix is the final goal of any deep learning system. The weights indicate how different features of inputs should be combined and how much should each of them influence the final output. The values of intermediate activations can be interpreted as latent features discovered during training. Features are combined with new weights to either generate an intermediate or a final
 result~\brackettext{\cite{SCHOL:online/AndrewNg/CS229,SCHOL:book/haykin2009}}. \\
 \begin{figure}
 \centering 
@@ -55,10 +55,10 @@ result~\brackettext{\cite{SCHOL:online/AndrewNg/CS229,SCHOL:book/haykin2009}}. \
 There are different classes of activation functions available but the most commonly used ones are \emph{Sigmoid} and \emph{Relu}, illustrated in Figure~\ref{fig:activation}. An example of forward computation of the network in Figure~\ref{fig:nn} is given in Equation~\ref{eq:nn_eq}. Although a single output is shown in both figures, the output layer can have different sizes. It can vary from one output for a single class classification to $10$ for a multi-class classification with $10$ classes and even in some cases $10,000$ pixels of a image. How different neurons connect, the choice of activation function, the shape of the output layer and the number of layers is what defines different architectures. In the following, we only consider the architecture needed to generate word embeddings. 
 \begin{equation}
 \begin{split}
-a_{ 1 }^{ [2] }=g(w _{ 10 }^{ [1] }x_{ 0 }+w _{ 11 }^{ [1]}x_{ 1 }+w _{ 12 }^{ [1] }x_{ 2 }+w _{ 13 }^{ [1] }x_{ 3 })\\ 
-a_{ 2 }^{ [2] }=g(w _{ 20 }^{ 1] }x_{ 0 }+w _{ 21 }^{ 1] }x_{ 1 }+w _{ 22 }^{ [1] }x_{ 2 }+w _{ 23 }^{ (1) }x_{ 3 })\\
- a_{ 3 }^{ [2] }=g(w _{ 30 }^{ [1] }x_{ 0 }+w _{ 31 }^{ 1] }x_{ 1 }+w _{ 32 }^{ [1] }x_{ 2 }+w _{ 33 }^{ 1] }x_{ 3 })\\
-  \hat { y } =a_{ 1 }^{ [3] }=g(w _{ 10 }^{ [2] }x_{ 0 }+w _{ 11 }^{ [2] }x_{ 1 }+w _{ 12 }^{ [2] }x_{ 2 }+w _{ 13 }^{ [2] }x_{ 3 })
+a_{ 1 }^{ [2] }=g(\theta _{ 10 }^{ [1] }x_{ 0 }+\theta _{ 11 }^{ [1]}x_{ 1 }+\theta _{ 12 }^{ [1] }x_{ 2 }+\theta _{ 13 }^{ [1] }x_{ 3 })\\ 
+a_{ 2 }^{ [2] }=g(\theta _{ 20 }^{ 1] }x_{ 0 }+\theta _{ 21 }^{ 1] }x_{ 1 }+\theta _{ 22 }^{ [1] }x_{ 2 }+\theta _{ 23 }^{ (1) }x_{ 3 })\\
+ a_{ 3 }^{ [2] }=g(\theta _{ 30 }^{ [1] }x_{ 0 }+\theta _{ 31 }^{ 1] }x_{ 1 }+\theta _{ 32 }^{ [1] }x_{ 2 }+\theta _{ 33 }^{ 1] }x_{ 3 })\\
+  \hat { y } =a_{ 1 }^{ [3] }=g(\theta _{ 10 }^{ [2] }x_{ 0 }+\theta _{ 11 }^{ [2] }x_{ 1 }+\theta _{ 12 }^{ [2] }x_{ 2 }+\theta _{ 13 }^{ [2] }x_{ 3 })
 \end{split}
 \label{eq:nn_eq}
 \end{equation}
@@ -74,13 +74,13 @@ a_{ 2 }^{ [2] }=g(w _{ 20 }^{ 1] }x_{ 0 }+w _{ 21 }^{ 1] }x_{ 1 }+w _{ 22 }^{ [1
 \subsection{Training  Neural networks}
 Consider the output $\hat { y } $ as the prediction of our network for some task. In a supervised learning problem the aim is to reduce the error between the prediction ($\hat { y } $) and the true label $y$. As a result the cost function can be defined as $J$ in Equation~\ref{eq:cost_nn}, where $L$ denotes the loss function on a single training example and $m$ is the size of the training set. The cost function is simply the sum of all losses on the training set.
 \begin{equation}
-J(w,b)=\sum _{ j=1 }^{ m }{ L( } \hat { y }^{ (i) } ,y^{ (i) })
+J(\theta,b)=\sum _{ j=1 }^{ m }{ L( } \hat { y }^{ (i) } ,y^{ (i) })
 \label{eq:cost_nn}
 \end{equation}
-The goal of the training phase is to learn $w$ and $b$ such that the overall cost is minimized. \\
+The goal of the training phase is to learn $\theta$ and $b$ such that the overall cost is minimized. \\
 \noindent 
-One method to solve this optimization problem is called \emph{Gradient Descent} (GD)~\brackettext{\cite{DBLP:journals/corr/Ruder16}}. Considering the most simple case (a function with only one parameter) the gradient descent is illustrated in Figure~\ref{fig:gradientD}. Gradient descent is a way to minimize an objective function parameterized by a model’s parameters by updating the parameters in the opposite direction of the gradient w.r.t. to the parameters. The algorithm for one parameter $w$ can be
-seen in Algorithm~\ref{algo:gd}, $\alpha$ is the \emph{learning rate} or the step size and shows how big a step we take in each iteration. As shown in Figure~\ref{fig:gradientD} the derivative or the slope of the function is positive on the right side of the minimum (the update rule will decrease $w$) and negative on the left size (the update rule will increase $w$). \\
+One method to solve this optimization problem is called \emph{Gradient Descent} (GD)~\brackettext{\cite{DBLP:journals/corr/Ruder16}}. Considering the most simple case (a function with only one parameter) the gradient descent is illustrated in Figure~\ref{fig:gradientD}. Gradient descent is a way to minimize an objective function parameterized by a model’s parameters by updating the parameters in the opposite direction of the gradient w.r.t. to the parameters. The algorithm for one parameter $\theta$ can be
+seen in Algorithm~\ref{algo:gd}, $\alpha$ is the \emph{learning rate} or the step size and shows how big a step we take in each iteration. As shown in Figure~\ref{fig:gradientD} the derivative or the slope of the function is positive on the right side of the minimum (the update rule will decrease $\theta$) and negative on the left size (the update rule will increase $\theta$). \\
 
 
 \begin{algorithm}[htbp]
@@ -88,7 +88,7 @@ seen in Algorithm~\ref{algo:gd}, $\alpha$ is the \emph{learning rate} or the ste
   \begin{algorithmic}[1]
     \newcommand{\UF}{\mathrm{U}}
    \While{(not converged)}
- \State $w=: w- \alpha\frac { \partial J(w) }{ \partial w } $
+ \State $\theta=: \theta- \alpha\frac { \partial J(\theta) }{ \partial \theta } $
   \EndWhile
   \end{algorithmic}
   %
@@ -132,13 +132,12 @@ Graph embedding tries to convert a high dimensional graph with edges and nodes, 
 Co-occurrence analysis, in terms of graphs, is not limited to text mining but is a tool to find potential relationships between people, organizations, concepts, and biological organisms.~\brackettext{\cite{SCHOL:journal/NAR/shiri}}. A word co-occurrence graph shows the word interactions in a corpus. A co-occurrence graph $G=(T,E)$ is defined by a set of terms $T$ as nodes and edges $E$ between them, where there is an edge based on their paired presence in a unit of text. If the entities in the text are annotated, the graph shows the relationship between entities and terms that occur in the text. There is an edge between two words, if they occur in the same sentence or paragraph~\brackettext{\cite{DBLP:conf/interspeech/YinBB18}}. If the graph is weighted, the edges indicate the strength of
 the connection between two words or entities, which related to the number of their co-occurrences or some kind of distance measure, e.g., number of tokens between them.~\brackettext{\cite{SCHOL:book/mihalcea2011}}. Since these graphs encode all important words in the vocabulary, they can form a graph-based representation of the corpus, which we use instead of a textual corpus to generate embeddings, where relations between nearby words can be extracted based on edges and nearby nodes.
 
-\subsection{LOAD: Implicit Graph of Entities}
-The LOAD~\brackettext{\cite{DBLP:conf/sigir/SpitzG16}} model is an entity co-occurrence graph representation of large document collections. For each document, named entities from sentences are extracted and connected based on their distance in a graph structure. The original LOAD model contains node types of pages and Sentences as well, which we disregard for the creation of faceted embeddings. \\
+\emph{LOAD: Implicit Graph of Entities:} The LOAD~\brackettext{\cite{DBLP:conf/sigir/SpitzG16}} model is an entity co-occurrence graph representation of large document collections. For each document, named entities from sentences are extracted and connected based on their distance in a graph structure. The original LOAD model contains node types of pages and Sentences as well, which we disregard for the creation of faceted embeddings. \\
 Equation~\ref{eq:load_dist} shows the weighing of a single edge in the LOAD model between two entities $v$ and $s$, where $\delta $ is a distance function. $\delta $ equals the number of sentences between the
 instances, or $0$ if they occur in the same sentence. If $i$ and$ j$
 do not occur on the same page: $ \delta(i, j) := \inf$. $ I_{ v }$ and $I_{ s } $ are the set of all instances of $v$ and $s$ in the corpus. $exp$ forces the weight to diminish exponentially with the distance. Eventually, the sum of all these exponential distances creates the final weight. 
 \begin{equation}
-\omega (v,s)\quad =\quad \sum _{ i\in I_{ v } \\ j\in I_{ s } }^{  }{ exp } (-\delta (i,j))
+e (v,s)\quad =\quad \sum _{ i\in I_{ v } \\ j\in I_{ s } }^{  }{ exp } (-\delta (i,j))
 \label{eq:load_dist}
 \end{equation}
 The weights generated in this way encode the importance of one entity to another. The distance decays as the number of sentences between two entities grows.  In addition, long-distance connections are considered very weak and are cut-off.  However, terms are less likely to be related to entities outside of their own sentence, so the edges between terms and entities are limited to those that appear in the same sentence~\brackettext{\cite{DBLP:conf/sigir/SpitzG16}}. 
@@ -174,10 +173,10 @@ Word2vec package contains two models, \emph{continuous bag-of-words} (CBOW) and 
 \end{figure}
 \noindent
 \textbf{The skip-gram} objective is to train word vector representations that are good at predicting the nearby words. A visual representation of the skip-gram model can be seen in Figure~\ref{fig:skip_w2v} for the sentence \emph{``The quick brown fox jumps over the lazy dog"}, where the meaning of the word \emph{``fox"} is defined by the words in the window around it. The input is the one-hot vector for the the target word and the output is the context words.\\
-More formally, given a corpus of words $a$ and their contexts $c$, to set the parameters $w$ of $p(c|a; w)$ so as to maximize the corpus probability, where $D$ is the set of all words and context pairs extracted from the text. Equation~\ref{eq:w2v_p} shows the probability formulation.
+More formally, given a corpus of words $f$ and their contexts $c$, to set the parameters $w$ of $p(c|a; w)$ so as to maximize the corpus probability, where $Q$ is the set of all focal (center) and context pairs extracted from the text. Equation~\ref{eq:w2v_p} shows the probability formulation.
 \begin{equation}
 \label{eq:w2v_p}
-w^*=\underset { w  }{ { argmax } } \prod _{ (w,c)\in \quad D }^{  }{ p(c|a; } w )
+w^*=\underset { w  }{ { argmax } } \prod _{ (w,c)\in \quad Q }^{  }{ p(c|f; } w )
 \end{equation}
 The literature on neural-network language models, models this probablity using softmax shown in Equation~\ref{eq:w2v_softmax}, where $w_c$ and $ w_a\in R^d$ are vector representations for $c$ and $a$ respectively, and
 $C$ is the set of all available contexts. The goal is to find the parameters $w$ such that Equation~\ref{eq:w2v_p} is maximized~\brackettext{\cite{DBLP:journals/corr/GoldbergL14}}. 
@@ -185,11 +184,11 @@ $C$ is the set of all available contexts. The goal is to find the parameters $w$
 \label{eq:w2v_softmax}
 p(c|a;w)=\frac { { e }^{ w_{ c }.w_{ a } } }{ \sum _{ \acute { a } \in C }^{  }{ { e }^{ w_{ c }.w_{ \acute { a }  } } }  } 
 \end{equation}
-Maximizing the log-likelihood of Equation~\ref{eq:w2v_softmax} on the training set is very expensive. Because we need to compute and normalize each probability using the score for all other words  $\acute { a }$ in the context of $c$. Therefore, the authors reformulate the problem using \emph{Negative Sampling}~\brackettext{\cite{DBLP:journals/jmlr/GutmannH12}}~\footnote{ In order to deal with the expensive computation of the softmax, the multinomial classification problem (predicting the next word) is converted into a binary classification problem. To estimate a true probability distribution of the output word, a binary logistic regression is used, where the classifier learns to distinguish between  a true pair (true context words) and randomly selected words from the vocabulary (corrupted pairs). The classifier simply predicts whether a pair of words is a true or a random sample. } to Equation~\ref{eq:w2v_negative}. $ \sigma$ shows the sigmoid function and $\acute{D}$ is the set of random $(a, c)$ pairs, assuming they are all incorrect. By maximizing this objective, the model assigns high probabilities to the real word pairs, and low probabilities to noise word pairs and it is more computationally appealing than the softmax function.
+Maximizing the log-likelihood of Equation~\ref{eq:w2v_softmax} on the training set is very expensive. Because we need to compute and normalize each probability using the score for all other words  $\acute { f }$ in the context of $c$. Therefore, the authors reformulate the problem using \emph{Negative Sampling}~\brackettext{\cite{DBLP:journals/jmlr/GutmannH12}}~\footnote{ In order to deal with the expensive computation of the softmax, the multinomial classification problem (predicting the next word) is converted into a binary classification problem. To estimate a true probability distribution of the output word, a binary logistic regression is used, where the classifier learns to distinguish between  a true pair (true context words) and randomly selected words from the vocabulary (corrupted pairs). The classifier simply predicts whether a pair of words is a true or a random sample. } to Equation~\ref{eq:w2v_negative}. $ \sigma$ shows the sigmoid function and $\acute{Q}$ is the set of random $(f, c)$ pairs, assuming they are all incorrect. By maximizing this objective, the model assigns high probabilities to the real word pairs, and low probabilities to noise word pairs and it is more computationally appealing than the softmax function.
 
 \begin{equation}
 \label{eq:w2v_negative}
-\underset { w }{ { argmax } } \quad \sum _{ (c,a)\in D }^{  }{ \log { \quad \sigma ( } w_{ c }.w_{ a }) } +\sum _{ (c,a)\in \acute { D }  }^{  }{ \log { \quad \sigma ( } -w_{ c }.w_{ a })\quad  } 
+\underset { w }{ { argmax } } \quad \sum _{ (c,f)\in Q }^{  }{ \log { \quad \sigma ( } w_{ c }.w_{ a }) } +\sum _{ (c,f)\in \acute { Q }  }^{  }{ \log { \quad \sigma ( } -w_{ c }.w_{ f })\quad  } 
 \end{equation}
 If the model is trained on enough data, word2vec groups the vectors of similar words together in vector space, finds word’s associations and detects similarities mathematically with cosine similarity. 
 \subsection{GloVe: Global Vector Embeddings}
