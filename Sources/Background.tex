@@ -158,16 +158,30 @@ a_{ 2 }^{ [2] }=g(w _{ 20 }^{ 1] }x_{ 0 }+w _{ 21 }^{ 1] }x_{ 1 }+w _{ 22 }^{ [1
 \label{fig:activation}
 \end{figure}
 \subsection{Training  Neural networks}
-Consider the output $\hat { y } $ as the prediction of our network for some task. In a supervised learning problem the aim is to reduce the error between the prediction ($\hat { y } $) and the true label $y$. As a result the cost function can be defined as $J$ in Equation~\ref{eq:cost_nn}, where $L$ denotes the loss function on a single training example and $m$ is the size of the training set. The cost function is simply the sum of all losses on the training set.
+Consider the output $\hat { y } $ as the prediction of our network for some task. In a supervised learning problem\added{,} the aim is to reduce the error between the prediction ($\hat { y } $) and the true label $y$. As a result \replaced{a}{the} cost function can be defined as $J$ in Equation~\ref{eq:cost_nn}, where $L$ denotes the loss function on a single training example and $m$ is the size of the training set. The cost function is simply the sum of all losses on the training set.
+% BR: you should briefly mention what types of loss functions exist, or
+% use a simple one (MSE or something?)
 \begin{equation}
 J(w,b)=\sum _{ j=1 }^{ m }{ L( } \hat { y }^{ (i) } ,y^{ (i) })
 \label{eq:cost_nn}
 \end{equation}
-The goal of the training phase is to learn $w$ and $b$ such that the overall cost is minimized. \\
+The goal of the training phase is to learn \replaced{a weight matrix $W$}{$w$} and \added{a bias term} $b$ such that the overall cost is minimized. \\
 \noindent 
-One method to solve this optimization problem is called \emph{Gradient Descent} (GD)~\brackettext{\cite{DBLP:journals/corr/Ruder16}}. Considering the most simple case (a function with only one parameter) the gradient descent is illustrated in Figure~\ref{fig:gradientD}. Gradient descent is a way to minimize an objective function parameterized by a model’s parameters by updating the parameters in the opposite direction of the gradient w.r.t. to the parameters. The algorithm for one parameter $w$ can be
-seen in Algorithm~\ref{algo:gd}, $\alpha$ is the \emph{learning rate} or the step size and shows how big a step we take in each iteration. As shown in Figure~\ref{fig:gradientD} the derivative or the slope of the function is positive on the right side of the minimum (the update rule will decrease $w$) and negative on the left size (the update rule will increase $w$). \\
-
+% BR: ...this naturally leads to an optimization problem, which is
+% typically solved using gradient descent.
+One method to solve this optimization problem is called \emph{Gradient Descent} (GD)~\brackettext{\cite{DBLP:journals/corr/Ruder16}}. Considering the most simple case (a function with only one parameter) \deleted{the} gradient descent is illustrated in Figure~\ref{fig:gradientD}. Gradient descent is a way to minimize an objective function parameterized by a model’s parameters by updating the parameters in the opposite direction of the gradient w.r.t. to the parameters.
+% BR: I slightly object to that description. I would drop the
+% 'parameterized ...' part and just leave it as 'a way to minimize an
+% objective function by finding local minima based on local gradients'
+% or something like that.
+The algorithm for one parameter $w$ can be
+seen in Algorithm~\ref{algo:gd}\replaced{.}{,} \added{Here,} $\alpha$ is the \emph{learning rate} or the step size and \replaced{controls the magnitude of the update}{shows how big a step we take} in each iteration.
+% BR: I am not entirely happy with the replaced text, but the previous
+% formulation was slightly informal.
+As shown in Figure~\ref{fig:gradientD} the derivative or the slope of the function is positive on the right side of the minimum (the update rule will decrease $w$) and negative on the left size (the update rule will increase $w$). \\
+% BR: This is very nice. To be mathematically airtight, you could write
+% that this holds in higher dimensions as well. However, one may require
+% approximations of the gradient there, of course.
 
 \begin{algorithm}[htbp]
   %
@@ -187,29 +201,62 @@ seen in Algorithm~\ref{algo:gd}, $\alpha$ is the \emph{learning rate} or the ste
 \resizebox{0.65\textwidth}{0.4\textwidth}{      
 \input{images/gd.tex}
 }
-\caption{Gradient decent on a function with only one parameter. In each iteration, we take a step in the direction of the gradient. The gradient will guide the algorithm to the functions minimum. }
+\caption{Gradient decent on a function with only one parameter.
+% BR: alt.: one-dimensional function?
+%
+In each iteration, we take a step in the direction of the gradient. The gradient will guide the algorithm to the functions minimum.
+% BR: do you want to mention getting stuck in local optima?
+}
 \label{fig:gradientD}
 \end{figure}
 \noindent
-In a dataset with $m$ training examples, for each training example, the partial derivative of the cost function with respect to every weight and bias has to be calculated and accumulated. After iterating through all the training examples the weights and bias term will be updated according to Algorithm~\ref{algo:gd}. This process is repeated from start to finish for some number of iterations. There exist three main variations of~GD: 
+In a dataset with $m$ training examples, for each training example, the partial derivative of the cost function with respect to every weight and bias has to be calculated and accumulated.
+%
+% BR: I would talk more about the gradient here; of course, you can
+% always do individual updates by using partial derivatives, but it
+% is more appropriate to speak of 'gradients' when you consider dim
+% one. This is nitpicky, though.
+After iterating through all the training examples the weights and bias term will be updated according to Algorithm~\ref{algo:gd}. This process is repeated \deleted{from start to finish} for some number of iterations. There exist three main variations of~GD: 
 \begin{itemize}
-\item \textbf{Mini-batch GD: } Instead of iterating over all training examples, a subset of a batch is considered, before making an update. This is a good choice for very large datasets.
+\item \textbf{Mini-batch GD: } Instead of iterating over all training examples, a subset of a batch\added{, i.e.\ a subset of the input data,} is considered, before making an update. This is a good choice for very large datasets.
 \item \textbf{Stochastic-GD: } In this case, only one example is looked at, before making an update. 
 \item \textbf{Batch-GD: } The original algorithm with iteration over all examples. 
+% BR: It's inconsistent to refer to it as a variation of the algorithm,
+% though, right?
 \end{itemize}
 
 \subsection{Embeddings}\label{subsec:embeddings}
-One of the challenges of machine learning is to come up with valuable features for algorithms. These features often have to be task specific and reflect the needs of the downstream tasks(a task that uses embeddings as input featues). \emph{Representation learning} attempts to learn good features and representations automatically~\brackettext{\cite{SCHOL:journals/FDS/ZhongWD16}}. PCA is one example of traditional methods for learning low-dimensional representation from high dimensional data. In a deep learning architecture, the output of each intermediate layer can be viewed as a representation of the original input data. As illustrated in Figure~\ref{fig:preceptron} each unit of the network computes a non-linear combination of the inputs which is used by the next layer. If the dimension of the hidden layer is much smaller than the input layer, a low dimensional representation of the data is learned in the hidden layer. Based on this principle almost any data can be transformed into an embedding with lower dimensions. In this work we focus on only two types, namely, \emph{word embeddings} and  \emph{graph embeddings} \\
+One of the challenges of machine learning is to come up with \replaced{suitable}{valuable} features for algorithms. These features often have to be task\added{-}specific and reflect the needs of the downstream tasks(a task that uses embeddings as input features). \emph{Representation learning} attempts to learn good features and representations automatically~\brackettext{\cite{SCHOL:journals/FDS/ZhongWD16}}. PCA is one example of \added{a} traditional method\deleted{s} for learning low-dimensional representation from high dimensional data. In a deep learning architecture, the output of each intermediate layer can be viewed as a representation of the original input data. As illustrated in Figure~\ref{fig:preceptron} each unit of the network computes a non-linear combination of the inputs which is used by the next layer. If the dimension of the hidden layer is much smaller than the input layer, a low\added{-}dimensional representation of the data is learned in the hidden layer. Based on this principle almost any data\added{set} can be transformed into an embedding with lower dimensions. In this work we focus on only two types, namely, \emph{word embeddings} and  \emph{graph embeddings}\added{.} \\
 \noindent
-Word embeddings try to learn dense vector representation for each word in the text. The text is inherently high dimensional. In most traditional NLP systems, each word is represented as a one-hot vector~\footnote{binary vector in the size of the vocabulary that has the value of one on the index of the word it refers to and zeroes in all other indexes.} of size equal to the size of the vocabulary, which is not only sparse but high dimensional. By feeding these high dimensional representations to a neural network with a smaller hidden layer, a new representation (usually in the order of $100$ dimensions) of each word can be learned. Although neural networks can be used in supervised and unsupervised learning, generally, the embedding is learned to form a supervised learning problem. For this purpose, different models have been proposed, the most famous being word2vec. All the models follow the same principle illustrated in Figure~\ref{fig:emb}. The size of the output layer depends on the particular architecture and the cost function. In addition, the network can composed of multiple layers, but for our purposes, we focus on shallow networks with only one hidden layer. In Section~\ref{sec:wordembeddig}, we will discuss GloVe and word2vec in more details. \\
+Word embeddings try to learn \added{a} dense vector representation for each word in the text.
+% BR: Do you mean 'dense' in the sense of 'not having many zeroes?
+The text is inherently high\added{-}dimensional.
+% BR: The sentence is a little bit too short and disrupts the flow.
+% Maybe: 'However, text is inherently high-dimensional, requiring
+% a specific form of embedding'.
+In most traditional NLP systems, each word is represented as a one-hot vector~\footnote{\added{A} binary vector in the size of the vocabulary that has the value of \replaced{$1$}{one} on the index of the word it refers to and zeroes in all other indexes.} of size equal to the size of the vocabulary, which is not only sparse but high dimensional.
+% BR: I don't like the dichotomy here. Maybe 'which is
+% a high-dimensional, highly sparse vector'?
+By feeding these high\added{-}dimensional representations to a neural network with a smaller hidden layer, a new representation (usually in the order of $100$ dimensions) of each word can be learned. Although neural networks can be used in supervised and unsupervised learning, generally, the embedding is learned \replaced{as}{to form} a supervised learning problem. For this purpose, different models have been proposed, the most famous being word2vec. All the models follow the same principle\added{, which is} illustrated in Figure~\ref{fig:emb}. The size of the output layer depends on the particular architecture and the cost function. In addition, the network can \added{be} composed of multiple layers, but for our purposes, we focus on shallow networks with only one hidden layer. In Section~\ref{sec:wordembeddig}, we will discuss GloVe and word2vec in more detail\deleted{s}. \\
 \noindent
-Graph embedding tries to convert a high dimensional graph with edges and nodes, into a low dimensional space while preserving the graph information. Graphs are complex and contain many attributes. Therefore, transforming them into low dimensional spaces is not a trivial task. There are various methods to embed nodes, edges or whole-graph. For the purpose of this study, we focus on \emph{node embeddings}, which represents each node as a vector in a low dimensional space. Nodes that are \emph{``close"} in the graph should be closer in the new space. The difference between various techniques lies in how they define the  \emph{``closeness"}~\brackettext{\cite{DBLP:journals/tkde/CaiZC18}}. In the next section, we will give a brief introduction into co-occurrence graphs and in Section~\ref{sec:graph} the well-known graph embedding methods are explained.  
+% BR: The change between these two sections is very abrupt.
+Graph embedding\added{s} \replaced{aims}{tries} to convert a high\added{-}dimensional graph with edges and nodes, into a low dimensional space while preserving the graph information.
+% BR: I do not agree with this. Why are graphs necessarily
+% high-dimensional? Technically, they only contain edges and nodes. You
+% should probably refer to their latent space here?
+Graphs are complex and contain many attributes. Therefore, transforming them into low\added{-}dimensional spaces is not a trivial task. There are various methods to embed nodes, edges or whole\deleted{-}graph\added{s}. For the purpose of this \replaced{thesis}{study}, we focus on \emph{node embeddings}, which represent\deleted{s} each node as a vector in a low\added{-}dimensional space. Nodes that are \emph{``close"} in the graph should be closer in the new space.
+% BR: I would rather say that 'proximity should be preserved in both
+% spaces'
+The difference between various techniques lies in how they define the  \emph{``closeness"}~\brackettext{\cite{DBLP:journals/tkde/CaiZC18}}. In the next section, we will give a brief introduction \deleted{in}to co-occurrence graphs and in Section~\ref{sec:graph} the well-known graph embedding methods are explained.  
 \begin{figure}
 \centering 
 \resizebox{0.8\textwidth}{0.48\textwidth}{      
 \input{images/emb.tex}
 }
-\caption{Underlying principle of word embeddings. The high dimensional one-hot vectors are the input of the network, through the hidden layer a dense representation is learned to either predict the surrounding words or optimize a different cost function in the output layer.}
+% BR: Nice graphic! There are some typos in the dictionary, though.
+% I will not correct them for now because figures will probably use
+% another pass.
+\caption{Underlying principle of word embeddings. The high\added{-}dimensional one-hot vectors are the input of the network\replaced{.}{,} \deleted{through} The hidden layer \replaced{learns a dense representation}{a dense representation is learned} to either predict the surrounding words or \added{to} optimize a different cost function in the output layer.}
 \label{fig:emb}
 \end{figure}
 
