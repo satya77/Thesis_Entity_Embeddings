@@ -60,30 +60,72 @@ Lemmatization of drank is drink~\brackettext{\cite{SCHOL:book/larson2010}}.
 % also referred to as POS taggers'.
 
 \subsection{Named entity recognition and  entity linking}
-\emph{Named entity recognition} (NER) or \emph{entity extraction} is an information extraction method that locates and classifies the named entities in text. Entities are classified into a set of pre-defined classes, such as the names of persons, organizations, locations, quantities and monetary values. In some case, temporal expressions are classified separately as well. Generally, anything that is not an entity per se is considered to be a term.~\brackettext{\cite{SCHOL:journal/LI/nadeau}}. More formally, if we consider all the words as terms and define $T$ as the set of all terms in the vocabulary, $N\subseteq T$ is the set of all entities that fall into a pre-defined category. Recognition of entities is difficult, partly because of ambiguity and mostly because of multiple surface forms. It is not always clear what is or is not an entity or what type it has. For example, the entity \emph{``Washington"} can be a name of a city, a person or even an organization. NER identifies the occurrence or mention of a named entity in the text, but it does not identify which specific entity it is. \emph{Named entity linking (NEL)}  or \emph{named entity disambiguation (NED)}  is the task of mapping the found entities to a repository of entities. For this purpose, \emph{knowledge bases} are used, which contain rich information about the entities and their mutual relationships. NEL maps the found entities to their corresponding pair in the knowledge base~\brackettext{\cite{DBLP:journals/tkde/ShenWH15}}. To generate the LOAD network, both of these methods were used to identify and disambiguate entities in the given corpus. These entities form the graph nodes in later steps. 
+\emph{Named entity recognition} (NER) or \emph{entity extraction} is an information extraction method that locates and classifies the named entities in text. Entities are classified into a set of pre-defined classes, such as the names of persons, organizations, locations, quantities and monetary values. In some case\added{s}, temporal expressions are classified separately as well. Generally, anything that is not an entity per se is considered to be a term.~\brackettext{\cite{SCHOL:journal/LI/nadeau}}. More formally, if we consider all the words as terms and define $T$ as the set of all terms in the vocabulary, $N\subseteq T$ is the set of all entities that fall into a pre-defined category.
+% BR: this seems mathematically inconsistent: if the entities are
+% a subset of the terms, you cannot say that anything else is a term,
+% because that would make it _not_ a subset again.
+Recognition of entities is difficult, partly because of \replaced{ambiguities}{ambiguity} and mostly because of multiple surface forms.
+% BR: what kind of ambiguities are we talking about?
+% BR: what is a surface form?
+It is not always clear what is or is not an entity or what type it has. For example, the entity \emph{``Washington"} can be a name of a city, a person or even an organization. NER identifies the occurrence or mention of a named entity in the text, but it does not identify which specific entity it is. \emph{Named entity linking (NEL)}  or \emph{named entity disambiguation (NED)}  is the task of mapping the found entities to a repository of entities. For this purpose, \emph{knowledge bases} are used, which contain rich information about the entities and their mutual relationships. NEL maps the found entities to their corresponding pair in the knowledge base~\brackettext{\cite{DBLP:journals/tkde/ShenWH15}}. To generate the LOAD network, both of these methods were used to identify and disambiguate entities in the given corpus.
+% BR: can you give a link to a section with more information about this?
+These entities form the graph nodes in later steps. 
+% BR: very nice; maybe you could add a brief description of 'entity' in
+% parenthesis after first mentioning it.
 
 \section{Neural Networks  in Natural Language Processing }\label{sec:nn}
-Before the advancements in deep learning and neural networks, most NLP techniques were based on machine-learning approaches with linear models such as support vector machines or logistic regression, trained on very high dimensional and sparse feature vectors. Recently, the field has changed to use non-linear neural-network models over dense inputs. The most important advantage of such methods is that they can often be trained with a single end-to-end model and do not require traditional task-specific feature engineering~\brackettext{\cite{DBLP:journals/jair/Goldberg16}}. Methods for different NLP tasks differ in architectures of neural networks and feature representations. Since the focus of this thesis is on word embeddings, we will focus on the explanation of a simple neural network and basic ideas needed to generate word embeddings in the following. 
+Before the advancements in deep learning and neural networks, most NLP techniques were based on machine\deleted{-}learning approaches with linear models such as support vector machines or logistic regression, trained on very high\added{-}dimensional and sparse feature vectors. Recently, the field has changed to use non-linear neural-network models over dense inputs. The most important advantage of such methods is that they can often be trained with a single end-to-end model and do not require traditional task-specific feature engineering~\brackettext{\cite{DBLP:journals/jair/Goldberg16}}. Methods for different NLP tasks differ in architectures of neural networks and feature representations. Since the focus of this thesis is on word embeddings, we will focus on the explanation of a simple neural network and basic ideas needed to generate word embeddings in the following. 
+
 \subsection{Neural networks}
-Despite neural networks being the new trend in machine learning, they are rather old algorithms, which were motivated by the goal of having a machine that mimic the brain. The sudden resurgence of neural networks is due to the fact that they are computationally expensive algorithms and require a huge amounts of data, which was not available and processable in the 80s and 90s. \\
+Despite neural networks being the new trend in machine learning, they are rather old algorithms, which were motivated by the goal of having a machine that mimic\added{s} \replaced{a}{the} brain. The sudden resurgence of neural networks is due to the fact that they are computationally expensive algorithms and require a huge amounts of data, which was \replaced{neither}{not} available \replaced{nor}{and} processable in the 80s and 90s.
+% BR: the biggest reason is that 'backpropagation' became suddenly
+% trainable and the advent of GPUs helped a lot there as well. Moreover,
+% different activation functions (ReLU) were numerically 'well-behaved'
+% in contrast to the older tanh.
+\\
 \begin{figure}
 \centering 
 \resizebox{0.55\textwidth}{0.3\textwidth}{      
 \input{images/preceptron.tex}
 }
-\caption{Single layer neural network. The input $x$ is multiplied by the weights $w$ to be passed to the neuron and generate the output $\hat { y }$~\brackettext{\cite{SCHOL:coursera/AndrewNg/DL}}.}
+\caption{Single layer neural network. The input $x$ is multiplied by the \added{matrix of} weights \replaced{$W$}{$w$} to be passed to the neuron and generate the output $\hat { y }$~\brackettext{\cite{SCHOL:coursera/AndrewNg/DL}}.
+% BR: you should also mention the activation function here and give an
+% example.
+}
 \label{fig:preceptron}
 \end{figure}
-A single artificial neuron is shown in Figure~\ref{fig:preceptron}. The computational unit illustrated in red takes in the different features $x$ and multiplies each input with a given weight $w$. The weights indicate the importance of each feature for the computation. The neuron then performs a non-linear transformation to the input and generates the output ($\hat { y } $). $b$ is called the \emph{bias unit} which always has an input value of $1$. $g(x)$ is called the \emph{activation
-function} and represents the non-linear transformation that is applied on the input data. Essentially, each neuron consists of two steps of computation. First, $z$ is computed by the multiplication of weights and inputs. Second, an activation function of choice is applied to $z$ to produce the final output. The output or activation ($a$) of the last unit is the predicted output. A neural network is a group of multiple neurons connected together, as shown in Figure~\ref{fig:nn}. In a
-neural network, the first layer is called the input layer and the last layer is called the output layer. Any layer in between is considered as a hidden layer. Typically, the values of the input and the output layer are given in the training set. Activation of each computational unit is the output of that unit after applying a certain function on the inputs, we denote activation of the unit (neuron) $i$ in layer $j$ by $a_{i}^{[j]}$. The $w^{(j)}_{nl}$ is the weight controlling the function mapping from layer $j$ to layer $j+1$ between unit $n$ in layer $j$ and $l$ in $j+1$. Learning this weight matrix is the final goal of any deep learning system. The weights indicate how different features of inputs should be combined and how much should each of them influence the final output. The values of intermediate activations can be interpreted as latent features discovered during training. Features are combined with new weights to either generate an intermediate or a final
+A single artificial neuron is shown in Figure~\ref{fig:preceptron}. The computational unit illustrated in red takes in the different features $x$ and multiplies each input with a given weight $w$.
+% BR: I would use weight indices here if you really want to talk about
+% a single weight. This is consistent with the notation above.
+The weights indicate the importance of each feature for the computation. The neuron then performs a non-linear transformation to the input and generates the output ($\hat { y } $).
+% BR: the non-linearity arises from the activation function; you should
+% mention this. Moreover, you can select a linear activation function if
+% you want.  I would thus rather say that they are 'typically selected
+% to be non-linear' or something similar.
+$b$ is called the \emph{bias unit} which always has an input value of $1$. $g(x)$ is called the \emph{activation
+function} and represents the non-linear transformation that is applied on the input data. Essentially, each neuron consists of two steps of computation. First, $z$ is computed by the multiplication of weights and inputs.
+% BR: ...this is a linear operation that boils down to a matrix--vector
+% product
+Second, an activation function of choice is applied to $z$ to produce the final output. The output or activation ($a$) of the last unit is the predicted output. A neural network is a group of multiple neurons connected together, as shown in Figure~\ref{fig:nn}. In a
+neural network, the first layer is called the input layer and the last layer is called the output layer. Any layer in between is considered as a hidden layer.
+% BR: alt.: all other layers are referred to as hidden layers
+Typically, the values of the input and the output layer are given in the training set. Activation of each computational unit is the output of that unit after applying a certain function on the inputs, we denote activation of the unit (neuron) $i$ in layer $j$ by $a_{i}^{[j]}$.
+% BR: split this sentence into two parts
+The $w^{(j)}_{nl}$ is the weight controlling the function mapping from layer $j$ to layer $j+1$ between unit $n$ in layer $j$ and $l$ in $j+1$. Learning this weight matrix is the final goal of any deep learning system.
+% BR: alt.: Learning the matrix of weights
+% You are technically only mentioning a single weight here, so the usage
+% of 'This matrix' might not be appropriate.
+%
+% BR: Slip a brief explanation of 'deep learning' in there: everything
+% that has more than a single layer :-)
+The weights indicate how different features of inputs should be combined and how much should each of them influence the final output. The values of intermediate activations can be interpreted as latent features discovered during training. Features are combined with new weights to either generate an intermediate or a final
 result~\brackettext{\cite{SCHOL:online/AndrewNg/CS229,SCHOL:book/haykin2009}}. \\
 \begin{figure}
 \centering 
 \resizebox{0.65\textwidth}{0.4\textwidth}{      
 \input{images/NN.tex}
 }
-    \caption{Two layer neural network with one hidden layer (input layer is layer-$0$). Input $x$ is multiplied by the weights $w$ to generate intermediate activation $a$. The output $\hat { y } $ is the combination of activations with their weights~\brackettext{\cite{SCHOL:coursera/AndrewNg/ML}}.}
+    \caption{Two layer neural network with one hidden layer\deleted{(input layer is layer-$0$)}. \replaced{An input}{Input} $x$ is multiplied by the \replaced{weight matrix}{weights} \replaced{$W$}{$w$} to generate \added{an} intermediate activation \added{value} $a$. The output $\hat { y } $ is the combination of activations with their weights~\brackettext{\cite{SCHOL:coursera/AndrewNg/ML}}.}
 \label{fig:nn}
 \end{figure}
 \noindent
@@ -98,6 +140,15 @@ a_{ 2 }^{ [2] }=g(w _{ 20 }^{ 1] }x_{ 0 }+w _{ 21 }^{ 1] }x_{ 1 }+w _{ 22 }^{ [1
 \label{eq:nn_eq}
 \end{equation}
 
+% BR: This is a good introduction to DL. At times, the 'flow' of the
+% section is not optimal, though. This is partially caused by terms,
+% i.e. concepts, that are mentioned but not explained. It is perfect
+% to just briefly explain a term once before using it.
+%
+% Example: 'Calculating the output of a neural network based on
+% a certain input vector $x$ is commonly referred to as \emph{forward
+% computation}. Equation X shows an example of a forward computation
+% of the network shown in Figure Y.
 
 \begin{figure}
 \centering
