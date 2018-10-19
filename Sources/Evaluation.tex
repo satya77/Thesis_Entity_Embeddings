@@ -3,8 +3,8 @@
 \label{chap:eval}
 In this chapter, we present different methods of evaluation and analysis for entity embeddings and the faceted models. In Section~\ref{sec:eval_embeddings}, most common methods for evaluation of word embeddings are discussed and the ones chosen for this study are presented. Section ~\ref{sec:data} explains the dataset used for training the embeddings, the preprocessing and graph extraction.Evaluation setup and parameter tuning for the models is discussed in in Section~\ref{sec:setup}. Evaluation results for the common tasks are shown in Section~\ref{sec:eval_results}, where the results for the entity embeddings and faceted models are discussed separately in Subsections~\ref{subsec:eval_entity} and \ref{subsec:eval_faceted} respectively. Finally, in Section~\ref{sec:eval_experimental} contains the experimental exploration and visualization of the embeddings neighbourhood. 
 \section{Evaluation of Word Embeddings}\label{sec:eval_embeddings}
-In general, the evaluation of word embeddings falls into two major categories: the extrinsic and intrinsic evaluation. In an extrinsic evaluation trained embeddings are used as input of some downstream task and the performance is measured by a metric specific to that task, such as part-of-speech tagging, named-entity recognition and event summarization. However, since evaluations are task-specific, an embedding that works well for one task may fail for another. Intrinsic evaluations directly test for syntactic or semantic relationships between words. These tasks analyze how well the embeddings capture certain syntactic or semantic relations between a set of query and target words, referred to as \textit{query inventory}~\brackettext{\cite{DBLP:conf/emnlp/SchnabelLMJ15}}. Intrinsic tasks are easier and faster to test and provide a quick understanding of the system. The problem with such tests is that the notion of semantics is not universal~\brackettext{\cite{DBLP:journals/corr/abs-1801-09536}}. Some datasets reflect semantic relatedness and some semantic similarity, while very similar they measure quite different attributes. Two words are considered semantically similar, that are synonymy and can be substituted for each other in context. For instance, \emph{``rose"} and \emph{``flower"}. Semantic relatedness, however, is a broader concept. Words with any functional associations, like belongin to the same semantic field, are considered semantically related, e.g., \emph{``rose"} and \emph{``thorn"} ~\brackettext{\cite{DBLP:conf/nodalida/Kolb09}}. It is not obvious, if the word embedding should favour relatedness over similarity or visa versa. Furthermore, a high accuracy on these tasks does not necessarily mean that the model will perform well on real tasks unless some correlation between them is established. Thus, testing the model on an intrinsic task at first and an extrinsic task in final steps can provide a better overview of the model performance. Since there are no entity-centric extrinsic evaluation tasks in the literature and few intrinsic data sets include entities, we focus on the performance in term-based intrinsic tasks. We create some of our own datasets to incorporate the entities, but it is important to emphasize that the true potential of these entity-based models can only be truely investigated in the presence of suitable evaluation datasets.Following the approach by~\brackettext{\cite{DBLP:conf/emnlp/SchnabelLMJ15}}, we use three kinds of intrinsic evaluations.
- \subsubsection{Relatedness}
+In general, the evaluation of word embeddings falls into two major categories: the extrinsic and intrinsic evaluation. In an extrinsic evaluation trained embeddings are used as input of some downstream task and the performance is measured by a metric specific to that task, such as part-of-speech tagging, named-entity recognition and event summarization. However, since evaluations are task-specific, an embedding that works well for one task may fail for another. Intrinsic evaluations directly test for syntactic or semantic relationships between words. These tasks analyze how well the embeddings capture certain syntactic or semantic relations between a set of query and target words, referred to as \textit{query inventory}~\brackettext{\cite{DBLP:conf/emnlp/SchnabelLMJ15}}. Intrinsic tasks are easier and faster to test and provide a quick understanding of the system. The problem with such tests is that the notion of semantics is not universal~\brackettext{\cite{DBLP:journals/corr/abs-1801-09536}}. Some datasets reflect semantic relatedness and some semantic similarity, while very similar they measure quite different attributes. Two words are considered semantically similar, that are synonymy and can be substituted for each other in context. For instance, \emph{``rose"} and \emph{``flower"}. Semantic relatedness, however, is a broader concept. Words with any functional associations, like belongin to the same semantic field, are considered semantically related, e.g., \emph{``rose"} and \emph{``thorn"} ~\brackettext{\cite{DBLP:conf/nodalida/Kolb09}}. It is not obvious, if the word embedding should favour relatedness over similarity or visa versa. Furthermore, a high accuracy on these tasks does not necessarily mean that the model will perform well on real tasks unless some correlation between them is established. Thus, testing the model on an intrinsic task at first and an extrinsic task in final steps can provide a better overview of the model performance. Since there are no entity-centric extrinsic evaluation tasks in the literature and few intrinsic data sets include entities, we focus on the performance in term-based intrinsic tasks. We create some of our own datasets to incorporate the entities, but it is important to emphasize that the true potential of these entity-based models can only be truely investigated in the presence of suitable evaluation datasets. Following the approach by~\brackettext{\cite{DBLP:conf/emnlp/SchnabelLMJ15}}, we use three kinds of intrinsic evaluations. In the following we describe each tasks and give a brief description of the datasets we use for evaluating each of them. 
+ \subsection{Relatedness}
 This task is based on datasets containing relatedness or similarity scores for pairs of words annotated by humans; the cosine similarity or Euclidean distance between the embeddings for two words should have high correlation (Spearman or Pearson) with human similarity or relatedness scores. We choose seven datasets containing both relatedness and similarity scores. 
 \begin{enumerate}
  \item \emph{Similarity353:} $203$ instances of similar word pairs from WordSim353~\brackettext{\cite{DBLP:conf/naacl/AgirreAHKPS09}} classified as synonyms, antonyms, or identical, and unrelated pairs (pairs with average similarity less than or equal to $5$). Scores scale from 0 (totally unrelated words) to 10 (very much related or identical words).~\brackettext{\cite{DBLP:conf/naacl/AgirreAHKPS09}}.
@@ -12,153 +12,25 @@ This task is based on datasets containing relatedness or similarity scores for p
  \item \emph{MEN:} $3,000$ word pairs with human-assigned similarity judgements, which instead of an absolute score is based on comparative judgments on two pair exemplars at a time. Each person was given a binary choice of \emph{``right''} or \emph{``wrong''} and in total each pair was compared $50$ times, thus obtaining a final score on a $50$-point scale~\brackettext{\cite{DBLP:journals/jair/BruniTB14}}.
  \item \emph{RG65:} $65$ pairs with annotated similarity scaling from $0$ to $4$, where the similarity between two words is measured by the similarity of meaning and the
 amount of overlap for each definition of context. ~\brackettext{\cite{DBLP:journals/cacm/RubensteinG65}}.
- \item \emph{RareWord:} $2,034$ rare word pairs with human similarity scores~\brackettext{\cite{DBLP:conf/conll/LuongSM13}}.
- \item \emph{SimLex-999:} $999$ pairs of human-labeled examples of semantic relatedness~\brackettext{\cite{DBLP:journals/corr/HillRK14}}.
- \item \emph{MTurk:} $7,714$ words pairs with semantic relatedness scores from
-$0$ to $5$~\brackettext{\cite{Radinsky:2011:WTC:1963405.1963455}}.
+ \item \emph{RareWord:} $2,034$ rare word pairs with human similarity scores. For creating the dataset they select a list of rare words and for each find another word (not necessarily rare) to form a pair and assess human judgments on how similar each pair is on scale of $0$ to $10$. ~\brackettext{\cite{DBLP:conf/conll/LuongSM13}}.
+ \item \emph{SimLex-999:} $999$ pairs of human-labeled examples of semantic relatedness, containing a selection of adjective, verb, and noun concept pairs. The scores range from $0$ to $10$. ~\brackettext{\cite{DBLP:journals/coling/HillRK15}}.
+ \item \emph{MTurk:} $771$ words pairs with semantic relatedness scores from
+$0$ to $5$, where scores were collected on Amazon Mechanical Turk~\brackettext{\cite{DBLP:conf/www/RadinskyAGM11}}.
 \end{enumerate}
 
-\subsubsection{Analogy}
-This task was popularized by the word2vec paper~\cite{DBLP:journals/corr/abs-1301-3781}, where the goal is to find a term $x$ for a given term $y$, such that  $x : y$ best resembles a sample relationship $a : b$. In other words, given the triple $(a,b,x)$, the aim is to find the target word $y$ correctly. To find the target word we do the following:  
+\subsection{Analogy}
+This task was popularized by the word2vec paper~\brackettext{\cite{DBLP:journals/corr/abs-1301-3781}}, where the goal is to find a term $x$ for a given term $y$, such that  $x : y$ best resembles a sample relationship $a : b$. In other words, given the triple $(a,b,x)$, the aim is to find the target word $y$ correctly. To find the target word we do the following:  
 \begin{itemize}
     \item Compute $w_a-w_b=w_{a-b}$, where $w_a$ and $w_b$ are the embeddings for word $a$ and $b$. 
     \item  Compute the mean vector $w_{mean}=w_{a-b}+w_x$.
     \item  Find the nearest neighbour to $w_{mean}$ (the one with the highest cosine similarity) if it is $w_y$, the analogy was found correctly.
   \end{itemize}
   \noindent
-For entity embeddings, where the type of the embedding is known, we can also consider an easier, type-specific variation of this task, which only considers neighbours that match a given entity class. In the type-specific variation we only consider candidates that have the same entity type as the words in the triple $(a,b,x)$, thus making the task easier. 
-\subsubsection{Categorization}
-When projecting the word embedding in a 2 or 3-dimensional space, iwe expected that the similar words form meaningful clusters. The embedding can be projected using \emph{t-SNE}~\cite{SCHOL:journals/jmlr/Maaten} or \emph{Principle Component Analysis (PCA)}. Vectors of all words are either viualized for exploratory analysis or clustered using a clustering algorithm of choice and the purity of the returned clusters is computed as a metric for this task~\brackettext{\cite{DBLP:books/daglib/0021593}}. 
-
-\section{Training Data}\label{sec:data}
-
-The models were trained on a subset of news articles from the English speaking outlet, the New York Times. The collection contains data for six months from June $1, 2016$ to November $30$, $2016$. There were total of $5,439$ article and $5,427,383$ sentences used.The news articles were used to create the LOAD network, which itself is a collection of nodes annotated by type and weighted edges that are used directly to generate the weighted adjacency matrices. The generated LOAD network contains $93,390$ nodes and $9,584,191$ edges. The number of nodes in each type is different, with the terms being the most frequent and dates the least frequent type. There exists $2,442$ date entities, $4,659$ location, $10,537$ actors, $3,789$ organisations and $71,963$ terms in total. For GloVe and word2vec a textual corpus was created by replacing the raw text form with the given LOAD node identifiers, to generate comparable results. Because the normal text contains stop-words and unwanted characters, terms were filtered to only necessary parts of speech tags for the model generation. The final corpus contains $4,468,993$ tokens, where each token is the node identifier of the respective entity or term in the LOAD network. 
- 
- \section{Parameter Tuning } \label{sec:setup}
-
-For the ease of use, the following naming convention is used to distinguish different models: Name of the Method\_\{additional parameters\}, where additional parameters show the different hyper-parameters or additional changes to the original model. 
-\begin{itemize}
-\item  \textbf{F:} Focal addition, which means rather than the pure context embedding for each type the respective focal embeddings were added back to the model with selective addition. 
-\item \textbf{W:} Short for weighted. In this case, the weighing function was used to cap the importance of highly frequent words with large weights. 
-\item \textbf{C$\{ number \}$:} Shows the value for $x_{max}$ or co-occurrence cap in the model, which is the maximum weight in the weighing function. 
-\item \textbf{S$\{ number \}$:} Shows the scaling factor of or $\alpha$ in the weighing function. This number is always between $0$ and $1$. For example $S5$ indicates $\alpha=0.5$ and $S75 $ shows $\alpha=0.75$. 
-\item \textbf{L:} Shorten for $log+1$.we tested the model with the addition of $1$ to the log of weights, to help distinguish between weights of $0$ and $1$. 
-
-\item \textbf{Uni:} Indicates that the model was trained using the unified cost function. If not present, the separate cost function was used. 
-\end{itemize}
-
-The weighing function was used in the model to boost the weak connections and stop the model from giving more weights to the edges with large weights. In case of the hyper-parameters, $\alpha$ and $x_{max}$ we did additional tuning. For $\alpha=[1,0.75,0.5,0.25,0]$ and for $x_{max}=[10,100,1000,10000]$ were experimented. Setting the $x_{max}$ to a number larger numbers, such as, $10000$ produced the best result. In case of a scaling factor, the suggested value by the author ($\frac{3}{4}$) led to the best result. 
-Unified cost and focal addition were treated as a binary parameter (either present during training or removed). Instead of a typical grid search, we chose a coarse-to-fine method, where instead of checking all the possible combinations, we randomly sampled some parameters and focused on the areas, where better models were trained. For example, focal addition proved to be beneficial in most cases, therefore, most of the models contain this attribute.\\
-
-\noindent
-All the models were trained for $200$ epochs with a learning rate of $0.05$ and a batch size of $256$. In addition, as a preprocessing step, all the edges for all the entities which occur less than five times in the corpus were removed from the input data. \\
-The facetted embedding, with or without unified cost, produced almost identical results, but when trained with separate costs, the training phase is faster. For that reason, only one instance of the facetted model with a unified cost is present in the results. \\
-\noindent
-All the created models were compared against two well-known models: GloVe and word2vec. Both of which were trained for $200$ epochs on a textual corpus of all the articles, with a learning rate of $\alpha=0.05$ and $\alpha=0.025$, respectively. Since the GloVe model also works on the whole corpus statistic, the words with the frequency less than five were removed from the model as a preprocessing step. For word2vec, on the other hand, such a property does not exist. 
-
-\begin{figure}
-\centering
-\subcaptionbox{\label{sfig:full_wordsim}}{
-\includegraphics[width=0.75\linewidth , height=0.65\linewidth]{images/Corr_plot_full_sim.pdf}}
-\subcaptionbox{\label{sfig:part_wordsim}}{
-\includegraphics[width=0.80\linewidth , height=0.65\linewidth]{images/wordsim_partial.pdf}}
-
-\caption{Correlation plot of the relatedness scores on wordsim353 using the~\subref{sfig:full_wordsim} full vectors and ~\subref{sfig:part_wordsim} using type-specific vectors. Red highlights show the correlation with the human annotations.}
-\label{fig:wordsim_cor}
-\end{figure}
-
-
-\section{Evaluation Results}\label{sec:eval_results}
-\subsection{Evaluation of entity embeddings}\label{subsec:eval_entity}
-\subsection{Evaluation of faceted embeddings}\label{subsec:eval_faceted}
-
-\section{Experimental Exploration}\label{sec:eval_experimental}
-\subsection{Analysis of entity embeddings}\label{subsec:exp_entity}
-\subsection{Analysis of faceted embeddings}\label{subsec:exp_faceted}
-
-\section{Word Relatedness}\label{sec:relatedness}
-
-Two dataset were chosen for comparing the relatedness scores, namely: \emph{wordsim353}~\cite{DBLP:conf/www/FinkelsteinGMRSWR01} and \emph{MEN}~\cite{DBLP:journals/jair/BruniTB14}. Wordsim353 contains $353$ sets of English word pairs along with human-assigned similarity judgments on a scale from $0$ (totally unrelated words) to $10$ (very much related or identical words). After filtering the set to match the entities available in our model $294$ word pairs were left. MEN dataset consists of
-$3,000$ word pairs, which instead of an absolute score is based on comparative judgments on two pair exemplars at a time. Each person was given a binary choice of ``right'' or ``wrong'' and in total each pair was compared $50$ times, thus obtaining a final score on a $50$-point scale. After filtering, $2,225$ pairs remained in the dataset.\\
-Since wordsim353 was the smaller set and could be evaluated quickly, this dataset was used as a semi-development set, where the models with different hyper-parameters were compared and only the most successful ones were later tested on the MEN dataset as well. \\
-Correlation plots for the partial and full similarities can be seen in Figures~\ref{sfig:full_wordsim} and~\ref{sfig:part_wordsim}. The most significant rows and columns are marked in red, which illustrates the correlation between the human annotators and the cosine similarity of the word vectors. Correlations were computed using \emph{Pearson} method and any cell with correlation with p-value bigger than $0.01$ is colored in blue.
-Some important observations from the correlation plot can be listed as follows:\\
-\begin{figure}[hb]
-\centering
-\subcaptionbox{\label{sfig:scaling_f}}{
-\resizebox{0.45\textwidth}{0.30\textwidth}{      
-\input{images/scaling_factor.tex}
-}}
-\subcaptionbox{\label{sfig:weight_cap}}{\resizebox{0.45\textwidth}{0.30\textwidth}{      
-\input{images/weight_cap.tex}
-}}
-
-\caption{\subref{sfig:scaling_f} Effect of scaling factor for facetted embeddings on the correlation on wordsim353. \subref{sfig:weight_cap} Effect of weight cap for facetted embeddings on the correlation on wordsim353.}
-\label{fig:correlation_change}
-\end{figure}
-\\
-\emph{Focal addition and weighing function:} In case of the full similarity using both, focal addition and weighing function, produces the best result. But it is still behind GloVe by a factor of $10$. Word2vec has the best performance on this dataset with the correlation coefficient of $0.52$ .
- \\
- \\
-\emph{Adding $1$ to the $log$:} Although adding a $1$ to the $log$ of the weights on its own improves the quality of the model from the basic facetted embedding, combining it with focal addition and a weighing function was proven to be destructive.\\
-\\
-\emph{Weight cap parameter:} Hyper-parameter of the weighing function to cap the weights ($x_{max}$) plays an important role in the overall performance. $x_{max}=10000$ achieves the best result for this dataset, whereas with the default GloVe model parameters ($100$) performance is reduced. The change of correlation with the weight cap can be seen in the Figure~\ref{sfig:weight_cap}.\\
-\\
-\emph{Scaling factor parameter:} Same as weight cap, the scaling factor also plays a role in the quality of the model. The same value suggested by the GloVe authors \big($\frac{3}{4}$\big), produced the most promising result. The effect of scaling factor on the correlation is plotted in Figure~\ref{sfig:scaling_f}.\\
-\\
-\emph{Separate and unified cost functions:} Facetted embedding with the separate and unified cost both achieve the same correlation with human judgment and are considered equal.\\
-\\
-\emph{Full and partial similarities:} Interestingly, the correlations between the human scores and the facetted method do not change significantly when the dimension is restricted to only the query words. The results can be seen in Figure~\ref{sfig:part_wordsim}, where the correlation between the methods tends to shrink, but the overall score with the humans is more or less stable. From this results, it could be presumed that the most important information about a specific type has been learned through the dimension related to it. 
-\\
-
-\begin{figure}
-\centering
-\subcaptionbox{\label{sfig:full_men}}{
-\includegraphics[width=0.7\linewidth , height=0.6\linewidth]{images/men_full.pdf}}
-\subcaptionbox{\label{sfig:part_men}}{
-\includegraphics[width=0.7\linewidth , height=0.6\linewidth]{images/men_part.pdf}}
-
-\caption{Correlation plot of the relatedness scores on MEN using the~\subref{sfig:full_men} full vectors and ~\subref{sfig:part_men} using type-specific vectors. Red highlights show the correlation with the human annotations.}
-\label{fig:men_cor}
-\end{figure}
-
-\noindent
-The MEN dataset contains more examples and consequently it is harder to achieve better results. To compare the facetted embedding with GloVe and Word2Vec we only chose the top three models from the previous test, namely:
-\begin{itemize}
-\item \emph{facetted\_FWC10000S75}, contains focal addition and weighing function with parameters $\alpha=0.75$ and $x_{max}=10000$.
-\item  \emph{facetted\_F}, contains only the focal additions.
-\item \emph{facetted\_FWC100S75}, contains focal addition and weighing function with parameters $\alpha=0.75$ and $x_{max}=100$.
-\end{itemize} 
-The results for both full and partial similarities can be seen in Figures~\ref{sfig:full_men} and~\ref{sfig:part_men}. \\
-GloVe and word2vec have maintained their performance on the larger dataset, but the correlation with facetted embeddings has decreased dramatically. It can be concluded that there is almost no correlation between annotations in the MEN dataset with facetted embeddings. Changing from full vectors to specific types increased the correlations slightly and even turned \emph{facetted\_FWC10000S75} from a negative to a positive correlation, but not enough to make any noticeable difference.
-
-\begin{figure}
-\centering
-\subcaptionbox{\label{sfig:word2vec_tsne}}{
-\includegraphics[width=0.48\linewidth , height=0.5\linewidth]{images/tsne_word2vec_cities.png}}
-\subcaptionbox{\label{sfig:glove_tsne}}{
-\includegraphics[width=0.48\linewidth , height=0.5\linewidth]{images/tsne_glove_cities.png}}
-\subcaptionbox{\label{sfig:complex_tsne}}{
-\includegraphics[width=0.5\linewidth , height=0.5\linewidth]{images/tsne_complex_cities.png}}
-
-\caption{t-SNE projections of the embeddings:\subref{sfig:word2vec_tsne} German, British and American cities using Word2Vec \subref{sfig:glove_tsne} GloVe and \subref{sfig:complex_tsne} facetted\_FWC10000S75.}
-\label{fig:clust}
-\end{figure}
-
-
-
-
-\section{Categorization}\label{sec:categorize}
-For clustering similar objects, three test sets were created using \emph{Wikidata Query Service} and were plotted using \emph{t-SNE}. Assuming the embedding dimension can capture the relation to other nearby words well, similar entities would cluster together. The dataset contains:
-  \begin{itemize}
-    \item ORGanisations of different domains: cars, software companies, websites. 
-    \item ACTors of different countries: German politicians, British and American politicians.
-    \item LOCations: German, British and American cities.
-    \end{itemize}
-In each case, up to $30$ entities form each category were chosen based on the highest edge count in LOAD. Some of the results for clustering of LOCations can be seen in Figure~\ref{fig:clust}. In general, no consistent pattern could be found in any of the projections. Although small clusters of objects tend to appear in case of GloVe and our best-selected model for facetted embeddings, most of the entities are scattered without a meaningful cluster. 
-\section{Word Analogies}\label{sec:alanlogies}
-Many datasets for testing linguistic regularities exist. The most popular one was developed by \cite{DBLP:journals/corr/abs-1301-3781}. The set contains $19,544$ question pairs ($8,869$ semantic and $10,675$ syntactic), with $14$ types of relations ($9$ morphological and $5$ semantic). The types and their meaning are shown in Table~\ref{table:analogy_types}.
-
+For entity embeddings, where the type of the embedding is known, we can also consider an easier, type-specific variation of this task, which only considers neighbours that match a given entity class. In the type-specific variation we only consider candidates that have the same entity type as the words in the triple $(a,b,x)$, thus making the task easier. We use two dataset for evaluating this task: 
+\begin{enumerate}
+ \item \emph{GA}: The \emph{Google Analogy} data consists of $19,544$ pairs($8,869$ semantic and $10,675$ syntactic), with $14$ types of relations ($9$ morphological and $5$ semantic), used in the word2vec paper~\brackettext{\cite{DBLP:journals/corr/abs-1301-3781}}. Beyond terms, it contains some location entities that support word : city relations. The types and their meaning are shown in Table~\ref{table:analogy_types}.
+\item \emph{MSR:} The \emph{Microsoft Research Syntactic analogies} dataset contains $8,000$ morphological questions. The questions contain base/comparative/superlative forms of adjectives; singular/plural forms of common nouns; possessive/non-possessive forms of common nouns; and base, past and 3rd person present tense forms of verbs~\cite{DBLP:conf/naacl/MikolovYZ13}. All word pairs are terms.
+\end{enumerate}
 
 
 \begin{table}[h]
@@ -189,30 +61,265 @@ city-in-state:   &      states and their cities name (US). \\ \hline
 currency:    &        name of a country with its currency.  \\
 \bottomrule
 \end{tabular}
- \caption{Types of questions in the Mikolovs test, in total $9$
-  morphological and $5$ semantic questions.} 
+ \caption{Types of questions in the Google Analogy test, in total nine
+  morphological and five semantic questions.} 
   \label{table:analogy_types}
 \end{table}
 
-\begin{table}[h]
-  \centering
-  {%
-    \raisebox{1.5cm}{%
-      \begin{tabular}{lSS}
-        \toprule
-        {Algorithm }                     & {Accuracy}   \\
-        \midrule
-        Facetted\_FWC10000S75   &0        \\
-        GloVe    & 0.008     \\
-        word2vec   & 0.015       \\
-        \bottomrule
-      \end{tabular}
-    }
-  }
-  \caption{The accuracy results on Mikolove's test set with $9,968$ word pairs.}
-  \label{table:analogy}
+\subsection{Categorization}
+When projecting the word embedding in a 2 or 3-dimensional space, iwe expected that the similar words form meaningful clusters. The embedding can be projected using \emph{t-SNE}~\brackettext{\cite{SCHOL:journals/jmlr/Maaten}} or \emph{Principle Component Analysis (PCA)}. Vectors of all words are either viualized for exploratory analysis or clustered using a clustering algorithm of choice and the purity of the returned clusters is computed as a metric for this task~\brackettext{\cite{DBLP:books/daglib/0021593}}. We use two datasets from the Lexical Semantics Workshop, which do not contain entities. Additionally,we created three test sets using \emph{Wikidata Query Service} to find entities of type person, location, and organization. In each case, up to $30$ entities form each category were chosen based on the highest frequency in our training data. 
+\begin{enumerate}
+  \item \emph{ESSLLI\_1a:} Acronym for the European Summer School in Logic, Language
+and Information.The goal of the sub-task is to group concrete nouns into semantic categories and contains $44$ concrete nouns that belong to six semantic categories~\cite{SCHO:workshop/Baroni}. 
+  \item \emph{ESSLLI\_2c:} The goal of the sub-task is to group verbs into semantic categories and contains$45$ verbs that belong to nine semantic classes~\cite{SCHO:workshop/Baroni}.
+  \item \emph{Cities:} $150$ major cities in the U.S., the U.K., and Germany. 
+  \item \emph{Politicians:} $150$ politicians from the U.S., the U.K., and Germany.
+  \item \emph{Companies:} $110$ software companies, Web services, and car manufacturers. 
+\end{enumerate}
+
+\section{Training Data}\label{sec:data}
+For training, we use $209,023$ news articles from English-speaking news outlets, collected from June to November $2016$~\brackettext{\cite{DBLP:conf/ecir/SpitzG18}}. The data contains a total of $5,427,383$ sentences and $4,468,993$ tokens. To train the regular word embeddings, we use the raw article text, with only common preprocessing steps. All articles are tokenized into words and stop words and punctuations are removed. Non-alphabetic characters, like Chinese or Arabic vocabulary, are disregard and multiple white spaces are reduced to only one.  Any HTML tags or numeric values are also removed from the text, to produce a clean document, containing only terms relevant to the model. In addition, all the words are converted to their lower-case form to avoid multiple representations of a single term.\\
+For annotated embeddings, prior to named entity annotation, POS tagging is performed by   the Stanford POS tagger~\brackettext{\cite{DBLP:conf/naacl/ToutanovaKMS03}}. 
+We removed punctuation and stop-word and filtered terms in the text to a certain POS-tag. Unnecessary tags are removed, namely  wh-determiner, wh-pronouns, wh-adverbs, common verbs, such as  \emph{have} and  \emph{do} in past or present, interjections (e.g. ah!, dear me!) and other terms that mostly fall into stop-words category such as: predeterminer (both and a lot of), possessive endings and prepositions (until, before,...), determiner (a, the, every) and coordinating conjunction (and, but, or). Afterwards, we extract named entities with \emph{Ambiverse}\footnote{\url{https://www.ambiverse.com}}, a state-of-the-art commercial annotator that links entity mentions to Wikidata identifiers, and select named entities that correspond to persons, locations, and organizations. For temporal expressions (date entities) we use \emph{HeidelTime}~\brackettext{\cite{DBLP:journals/lre/StrotgenG13}}.\\
+To generate input for the graph-based embeddings, we use the extraction code of the LOAD model~\brackettext{\cite{DBLP:conf/sigir/SpitzG16}} that generates implicit networks of locations, organizations, persons (actors), dates, and terms. 
+We include term co-occurrences only inside sentences and entity-entity co-occurrences up to a default window size of five sentences. The generated graph contains $T=93,390$ nodes and $E=9,584,191$ edges. From which $D=2,442$  are date entities, $L=4,659$ location, $A=10,537$ actors, $O=3,789$ organisations and $T=71,963$ are terms l.
+Since the evaluation data sets contain word that are not present in the training vocabulary, each data set is filtered accordingly.
+
+\section{Parameter Tuning } \label{sec:setup}
+ To achieve best performance we perform extensive parameter tuning for each model and only report the results for the best one. All embeddings have $100$ dimension. In the following, we first discuss the best parameter settings for annotated and raw models and then for faceted embeddings. Because of the random initialization of at the beginning of the training, all entity and raw models are trained $10$ times and the average performance is reported. Nevertheless, since faceted models were only an extension to annotated models and are only trained for experimental analysis we trained a single model for each. Moreover, even with a single model their performance is questionable. For all the models, instead of a typical grid search, we chose a coarse-to-fine method, where instead of checking all the possible combinations, we randomly sampled some parameters and focused on the areas, where better models were trained.
+ 
+\subsection{Parameter setting for  entity embeddings and regular word embeddings  }
+ 
+\emph{Word2vec-based models} both the word2vec on the raw data ($r$W2V) and on the annotated corpus ($a$W2V) are trained with a learning rate of $0.015$ and a window size of $10$. We use $8$ negative samples on the raw data, and $16$ on the annotated data. In addition to data pre-processing, we removed words with frequency of less than $3$, as there is not enough data to learn a meaningful representation of them. \\
+
+\noindent
+\emph{GloVe-based models}, namely GloVe model on the raw data ($r$GLV) and on the annotated text ($a$GLV) are trained with a learning rate of $0.06$ and a window size of $10$.For the weighting function, we did not use the authors suggested values, instead performed additional parameter training. A scaling factor of $0.5$ is used with a maximum cut-off of $1000$ has the best performance on our datasets. Words that occur less than $5$ times are removed from the input.\\
+
+\noindent
+\emph{DeepWalk models} use $100$ random walks of length $4$ from each node, for the both identity (DW$_{id}$) and logarithmic (DW$_{log}$) mapping. We did not experiment with walk lengths larger than $5$, because the co-occurrence graph is dense and has a relatively small diameter.  Thus, longer walks would introduce unrelated words into contexts and reduce the performance. For the skip-gram model, which was trained on the random walk corpus, we use a learning rate of $0.015$ and $64$ negative samples with the window-size of $10$. We removed words that were visited less than $3$ times in the random walk corpus. \\
+
+\noindent
+\emph{VERSE models} have a relatively small parameters for tuning. we use a learning rate of $0.025$ and $16$ negative samples.\\
+
+\noindent
+Comparison between the these models is not trivial. One main challenge is the fact that the training process of graph-based and textual methods is essentially incomparable. Graph-based models do not have a corpus and have an additional step of creating something similar either with random walk or node sampling. Typically , the performance of neural network based models increases with number of iteration and more data. While the textual models consider one pass through the corpus as one iteration, an iteration for the graph-based model is a different concept and not the only factor increasing performance. The data size in graph-based models is not limited to the corpus but the sampling process. Number of random walks that is used in DeepWalk corresponds directly to the performance, the more random walk, the larger the corpus and better the performance of the skip-gram model trained on it, even if the number of iterations are fixed. On the other hand, increasing the number of random walks also increase the runtime. In contrast, the VERSE model has no notion of iteration and samples nodes for positive observations from the empirical similarity distribution and negative observations from a  noise distribution. The more samples, better the performance and longer the runtime. Thus, to approach a fair evaluation, we use similar training times for all models (roughly $10$ hours per model on a $100$ core machine). We fix the number of iterations of the textual models and DeepWalk's skip-gram at $100$. For VERSE, we use $50,000$ sampling steps to obtain a comparable runtime.
+
+\subsection{Parameter setting for faceted models}
+\emph{Faceted GloVe model} is trained with a learning rate of $0.05$. For best performance we use focal addition and weighing function. The scaling factor for the weighing function is set to $0.75$ and maximum cut-off of $1000$. All nodes with less than $5$ edges are removed from the training data, before generating the weighted adjacency matrix. Normalization and adding $1$ to the logarithm are disregard as they did not improve the results. Moreover, we only report the results for $f$GLV$_{spe}$, which refers to the separate cost function as the performance of both cost functions are similar. As a result, each component was trained separately with the same parameter setting and embedding size of $20$, which after concatenation create the full $100$ dimensional embeddings. \\
+
+\noindent
+\emph{Faceted word2vec model} is trained with the learning rate of $0.015$ and $32$ negative sample. To achieve the embedding size of $100$, each component has the embeddings size of $20$. Any word with frequency less than $3$ is removed. \\
+
+\noindent
+\emph{Faceted DeepWalk models} use $100$ random walks of length $4$ from each node. We train the embeddings once using logarithmic normalization ($f$DW$_{log}$) and once without any normalization ($f$DW$_{lid}$). The skip-gram models use the learning rate of $0.015$ and $32$ negative samples. The window-size is set to $10$ and any node that is visited less than $3$ time in the random walk corpus is removed from the models. 
+\\
+
+Since a comparable faceted model does not exist, we compare our models against the regular word embeddings trained on raw text. 
+
+\section{Evaluation Results}\label{sec:eval_results}
+In the following we discus the results for relatedness, analogy and clustering tasks for entity embeddings and faceted models separately. We compare our approaches against the word embeddings trained on raw text and analysis their weaknesses and strength. For the faceted models, we take advantage of the separable dimensions and in addition testing the embeddings in their full dimension, we also look at components separately. The results for faceted GloVe model is not presented on all tasks, because of extreme lack of performance. 
+\subsection{Evaluation of entity embeddings}\label{subsec:eval_entity}
+The results of the relatedness task are shown in Table~\ref{wordsim_normal}. On this data, word2vec model predominantly performs better than GloVe on both raw and annotated text. Nevertheless, the performance of both models degrades slightly after annotation. 
+Therefore, to create embeddings of entities naively using a word embedding method on annotated corpus results into loss in performance. Since all dataset consist mostly of terms, this deduction can not be extended to entity-centric evaluations. The DeepWalk-based models perform better than GloVe but do poorly overall. The logarithmic normalization boosts the performance of the DeepWalk-based model slightly but not enough to be comparable to word2vec. Results for the VERSE model are rather diverse, in a sense that it works very well on some tasks, but is than word2vec trained on the raw data for rare words and the SimLex dataset. This is likely caused by the conceptual structure of the co-occurrence graph on which VERSE is trained, which captures relatedness and not similarity as tested by SimLex. Whereas on datasets, such as Relatedness353 and MEN, which are designed for relatedness tasks, VERSE is clearly the better choice. On average, word2vec based models outperform the rest on similarity tasks, both the model trained on raw text and on the annotated data have the highest scores on average. Thus, we can conclude that for purely term-based tasks, word2vec is the best choice for measuring word similarity, while VERSE captures the relatedness better. 
+
+\begin{table}[t]
+\caption{Word similarity results. Shown are the Pearson correlations between the cosine similarity of the embeddings and the human score on the word similarity datasets. The two best values per task are highlighted.}
+\label{wordsim_normal}
+\setlength{\tabcolsep}{6pt} % Default value: 6pt
+\renewcommand{\arraystretch}{1.0} % Default value: 1
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccccc}
+
+\toprule
+ & $r$W2V & $r$GLV & $a$W2V & $a$GLV & DW$_{id}$ & DW$_{log}$ & VRS \\
+\midrule
+%Wordsim353         & \textbf{0.586}   & 0.413   & 0.585& 0.412& 0.530  & 0.533     & \textbf{0.599}\\ %all of WordSim353
+Similarity353      &   \boldmath $\num{ 0.700}$   & 0.497   &   \boldmath $\num{ 0.697}$ & 0.450 & 0.571  & 0.572     & 0.641\\
+Relatedness353     &   \boldmath $\num{0.509}$   & 0.430   & 0.507& 0.428& 0.502  & 0.506   & \boldmath $\num{0.608}$\\
+MEN                &\boldmath $\num{0.619}$   & 0.471   & \boldmath $\num{0.619}$& 0.469& 0.539  & 0.546     & \boldmath $\num{0.640}$\\ 
+RG65               & \boldmath $\num{0.477}$   & 0.399   & 0.476& 0.386& 0.312  & 0.344     & \boldmath $\num{0.484}$\\ 
+RareWord           & \boldmath $\num{0.409}$   & 0.276   & \boldmath $\num{0.409}$& 0.274& \boldmath $\num{0.279}$  & 0.276    & 0.205\\  
+SimLex-999         &\boldmath $\num{0.319}$   & 0.211   & \boldmath $\num{0.319}$ & 0.211& \boldmath $\num{0.279}$  & 0.201      & 0.236\\ 
+MTurk              & \boldmath $\num{0.647}$  & 0.493   & 0.644& 0.502& 0.592  & 0.591   & \boldmath $\num{0.687}$\\
+\midrule
+average            & \boldmath $\num{0.526}$   & 0.400   & \boldmath $\num{0.524}$ & 0.389 & 0.439  & 0.433   & 0.500 \\
+\bottomrule
+\end{tabular}%
+}
+\vspace*{-10pt}
 \end{table}
+% comparison on locations in GA data set:
+% total locations = 6892
+% correct VRS = 1662 = 24.1%
+% correct aW2V = 14 = 0.20%
+% correct aGLV = 16 = 0.23%
+
+Table~\ref{analogy_normal} shows the accuracy achieved by entity-based and term-based models in the words analogy task. The overall results are quite poor for all models, which we attribute to the size of the training data. Successful models on this tasks are usually trained on billions of tokens, which is much larger than the size of the corpus used in this thesis. GloVe performs better than word2vec for this task on both raw and annotated data, while VERSE has a slight edge. When using the typed search for the analogy task, in which we only look at candidates that share the same type as the entities in question, task becomes easier and the results improve. The improvement is more noticeable for entity-centric questions, contained in GA task. If we consider only the subset of $6,892$ location targets for the GA task, we find that the graph-based models perform much better, with VERSE being able to predict up to $1,662$ $(24.1\%)$ of location targets on its best run, while $a$W2V and $a$GLV are only able to predict $14$ $(0.20\%)$ and $16$ $(0.23\%)$, respectively. This shows the potential advantage of entity-based methods for analogy tasks that contain them. Nevertheless, for MSR task, which does not contain entities, applying the typed search does not improve the results. 
+\begin{table}[t]
+\caption{Word analogy results. Shown is the prediction accuracy for the normal analogy tasks and the variation where predictions are limited to the correct entity type. The best two values per task and variation are highlighted.}
+\label{analogy_normal}
+\setlength{\tabcolsep}{2pt} % Default value: 6pt
+\renewcommand{\arraystretch}{1.0} % Default value: 1
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccccccccccc}
+\toprule
+ & \multicolumn{7}{c}{normal analogy} && \multicolumn{5}{c}{typed analogy} \\
+ \cmidrule(lr){2-8}
+ \cmidrule(lr){10-14}
+ & $r$W2V & $r$GLV & $a$W2V & $a$GLV & DW$_{id}$ & DW$_{log}$ & VRS 
+   && $a$W2V & $a$GLV & DW$_{id}$ & DW$_{log}$ & VRS \\
+\cmidrule(lr){1-1}
+\cmidrule(lr){2-8}
+\cmidrule(lr){10-14}
+GA        & 0.013 & \boldmath $\num{0.019}$ & 0.003 & 0.015 & 0.009 & 0.009 & \boldmath $\num{0.035} $
+   && 0.003 & \boldmath $\num{0.016}$ & 0.110 & 0.110 & \boldmath $\num{0.047}$ \\
+MSR       & \boldmath $\num{0.014}$ & \boldmath $\num{0.019}$ & 0.001 & \boldmath $\num{0.014}$ & 0.002 & 0.002 & 0.012 
+   && 0.001 & \boldmath $\num{0.014}$ & 0.002 & 0.002 & \boldmath $\num{0.012}$ \\
+\cmidrule(lr){1-1}
+\cmidrule(lr){2-8}
+\cmidrule(lr){10-14}
+avg       & 0.013 &\boldmath $\num{0.019}$ & 0.002 & 0.014 & 0.005 & 0.005 & \boldmath $\num{0.023}$
+   && 0.002 & \boldmath $\num{0.015}$ & 0.006 & 0.006 &\boldmath $\num{0.030}$ \\
+\bottomrule
+\end{tabular}%
+}
+\vspace*{-11pt}
+\end{table}
+
+The purity of clusters created with agglomerative clustering and mini-batch k-means for the categorization tasks are shown in Table~\ref{clustering_normal_p}. Since the Cities, Politicians and Companies are multi-word entities, they do not directly exist in the raw embedding models. To represent such words, we take the average of the vectors of individual words in the entity's name, and use the average vector for clustering tasks. Although the raw models do not embed the named entities directly, $r$W2V and $r$GLV create clusters with the best purity even on entity-based datasets. Nonetheless, most purity values lie in the range from $0.45$ to $0.65$ and no method is exceptionally bad. It is worth noting, that the clustering algorithm also plays a part in the obtained results. K-means clustering has a randomized nature and the results differs based on the initial conditions. For k-means $r$W2V generates the best clusters, meanwhile, for agglomerative clustering $r$GLV works better. The DeepWalk-based models also tend to have a higher purity using agglomerative clustering. Since this tasks only focuses on the terms and entities provided by the datasets, the results do not give us insight into the spatial mixing of terms and entities. We consider this property in our visual exploration in Section~\ref{sec:eval_experimental}.
+\begin{table}[t]
+\caption{Categorization results. Shown is the purity of clusters obtained with k-means and agglomerative clustering (AC). The best two values are highlighted. For the raw text models, multi-word entity names are the mean of word vectors.}
+\label{clustering_normal_p}
+\setlength{\tabcolsep}{4pt} % Default value: 6pt
+\renewcommand{\arraystretch}{1.0} % Default value: 1
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llccccccc}
+\toprule
+ && $r$W2V & $r$GLV & $a$W2V & $a$GLV & DW$_{id}$ & DW$_{log}$ & VRS \\
+\midrule 
+\multirow{6}{*}{k-means}  & ESSLLI\_1a &\boldmath $\num{0.575}$ & 0.545 & \boldmath $\num{0.593}$ & 0.454 & 0.570 & 0.520 & 0.534 \\ 
+                          & ESSLLI\_2c & 0.455 & 0.462 &\boldmath $\num{0.522}$ & 0.464 & 0.471 & 0.480 & \textbf{0.584} \\
+                          & Cities & \boldmath $\num{0.638}$ & \boldmath $\num{0.576}$ & 0.467 & 0.491 & 0.560 & 0.549 & 0.468 \\ 
+                          & Politicians & \boldmath $\num{0.635}$ & 0.509 & 0.402 & 0.482 & 0.470 & 0.439 & \boldmath $\num{0.540}$ \\
+                          & Companies & \boldmath $\num{0.697}$ & \boldmath $\num{0.566}$ & 0.505 & 0.487 & 0.504 & 0.534 & 0.540 \\
+\cmidrule(lr){2-9}
+                          & average & \boldmath $\num{0.600}$ & 0.532 & 0.498 & 0.476 & 0.515 & 0.504 & \boldmath $\num{0.533}$ \\ 
+\midrule
+\multirow{6}{*}{AC} & ESSLLI\_1a & 0.493 & \boldmath $\num{0.518}$ & 0.493 & 0.440 & 0.486 & 0.502 & \boldmath $\num{0.584}$ \\
+                    & ESSLLI\_2c & 0.455 & 0.398 & 0.382 & 0.349 & \boldmath $\num{0.560}$ & \boldmath $\num{0.408}$ & 0.442 \\
+                    & Cities & 0.447 & \boldmath $\num{0.580}$ & 0.440 & 0.515 & 0.364 & \boldmath $\num{0.549}$ & 0.359 \\
+                    & Politicians & 0.477 &\boldmath $\num{0.510}$ & \boldmath $\num{0.482}$ & 0.480 & 0.355 & 0.360 & 0.355\\
+                    & Companies & \boldmath $\num{0.511}$ & \boldmath $\num{0.519}$ & 0.475 & 0.504 & 0.474 & 0.469 & 0.473 \\
+\cmidrule(lr){2-9}
+                    & average & \boldmath $\num{0.477}$ & \boldmath $\num{0.505}$ & 0.454 & 0.458 & 0.448 & 0.458 & 0.443 \\ 
+\bottomrule
+\end{tabular}%
+}
+\vspace*{-12pt}
+\end{table}
+In summary, for term-based intrinsic evaluation tasks embedding the entities by state-of-the-art methods on annotated corpus has has an acceptable performance, yet degrades in comparison to the embeddings on the raw corpus and thus is not the best option. This lack in performance can be to some degree restored by using the graph-based techniques on a co-occurrence graph extracted from the annotated text. For task that include entities or require a measure of relatedness in particular, VERSE model often has better performance even compared to the embeddings on raw text. For clustering and word similarity tasks however, using the normal word embeddings tends to achieve better results. In general, when using the entity-based models the attributes of the downstream task has to be taken into account, as different embedding techniques demonstrate different properties. Although the term-based evaluations shines some light into the performance of these embeddings, the true potential of such models is still unknown, unless presented with entity specific tasks. Thus, in Section~\ref{sec:eval_experimental}, we explore the usefulness of the different embeddings for entity-centric tasks.
+\subsection{Evaluation of faceted embeddings}\label{subsec:eval_faceted}
+
+\section{Experimental Exploration}\label{sec:eval_experimental}
+\subsection{Analysis of entity embeddings}\label{subsec:exp_entity}
+\subsection{Analysis of faceted embeddings}\label{subsec:exp_faceted}
+
+\section{Word Relatedness}\label{sec:relatedness}
+Correlation plots for the partial and full similarities can be seen in Figures~\ref{sfig:full_wordsim} and~\ref{sfig:part_wordsim}. The most significant rows and columns are marked in red, which illustrates the correlation between the human annotators and the cosine similarity of the word vectors. Correlations were computed using \emph{Pearson} method and any cell with correlation with p-value bigger than $0.01$ is colored in blue.
+Some important observations from the correlation plot can be listed as follows:\\
+
+
+\emph{Full and partial similarities:} Interestingly, the correlations between the human scores and the facetted method do not change significantly when the dimension is restricted to only the query words. The results can be seen in Figure~\ref{sfig:part_wordsim}, where the correlation between the methods tends to shrink, but the overall score with the humans is more or less stable. From this results, it could be presumed that the most important information about a specific type has been learned through the dimension related to it. 
+\\
+
+\begin{figure}
+\centering
+\subcaptionbox{\label{sfig:full_men}}{
+\includegraphics[width=0.7\linewidth , height=0.6\linewidth]{images/men_full.pdf}}
+\subcaptionbox{\label{sfig:part_men}}{
+\includegraphics[width=0.7\linewidth , height=0.6\linewidth]{images/men_part.pdf}}
+
+\caption{Correlation plot of the relatedness scores on MEN using the~\subref{sfig:full_men} full vectors and ~\subref{sfig:part_men} using type-specific vectors. Red highlights show the correlation with the human annotations.}
+\label{fig:men_cor}
+\end{figure}
+
+\noindent
+The MEN dataset contains more examples and consequently it is harder to achieve better results. To compare the facetted embedding with GloVe and Word2Vec we only chose the top three models from the previous test, namely:
+\begin{itemize}
+\item \emph{facetted\_FWC10000S75}, contains focal addition and weighing function with parameters $\alpha=0.75$ and $x_{max}=10000$.
+\item  \emph{facetted\_F}, contains only the focal additions.
+\item \emph{facetted\_FWC100S75}, contains focal addition and weighing function with parameters $\alpha=0.75$ and $x_{max}=100$.
+\end{itemize} 
+The results for both full and partial similarities can be seen in Figures~\ref{sfig:full_men} and~\ref{sfig:part_men}. \\
+GloVe and word2vec have maintained their performance on the larger dataset, but the correlation with facetted embeddings has decreased dramatically. It can be concluded that there is almost no correlation between annotations in the MEN dataset with facetted embeddings. Changing from full vectors to specific types increased the correlations slightly and even turned \emph{facetted\_FWC10000S75} from a negative to a positive correlation, but not enough to make any noticeable difference.
+
+
+\
+\section{Word Analogies}\label{sec:alanlogies}
+
 
 \noindent
 After filtering the dataset to match our data we were left with $13$ types (no instance form the  gram6-nationality-adjective set) and $9,968$ word pairs. This test is unbalanced as the number of semantic and morphological relations are not equal. Additionally, \emph{country:capital} relation accounts for over $50$ percent of all semantic questions. As a result, usually, the average accuracy for all semantic/syntactic questions is reported, which has a lot of variations between different parameters, because an embedding might work better in one subcategory, but averaging the mean scores would yield lower results.\\
 All the learned embeddings performed poorly on this task. Facetted embeddings were unable to retrieve any of the analogies correctly. GloVe achieved an accuracy of $0.008$ with only $81$ correct pairs and word2vec $0.015$ with $161$ correct pairs. The results can be seen in Table~\ref{table:analogy}. A reason for this behavior could be that our subset does not contain enough tokens to learn many of these relations. On the other hand, most well-known tested models on this dataset are trained on billions of tokens. 
+
+%-----removed parts 
+
+%\begin{figure}
+%\centering
+%\subcaptionbox{\label{sfig:full_wordsim}}{
+%\includegraphics[width=0.75\linewidth , height=0.65\linewidth]{images/Corr_plot_full_sim.pdf}}
+%\subcaptionbox{\label{sfig:part_wordsim}}{
+%\includegraphics[width=0.80\linewidth , height=0.65\linewidth]{images/wordsim_partial.pdf}}
+%
+%\caption{Correlation plot of the relatedness scores on wordsim353 using the~\subref{sfig:full_wordsim} full vectors and ~\subref{sfig:part_wordsim} using type-specific vectors. Red highlights show the correlation with the human annotations.}
+%\label{fig:wordsim_cor}
+%\end{figure}
+%
+
+%\begin{figure}
+%\centering
+%\subcaptionbox{\label{sfig:word2vec_tsne}}{
+%\includegraphics[width=0.48\linewidth , height=0.5\linewidth]{images/tsne_word2vec_cities.png}}
+%\subcaptionbox{\label{sfig:glove_tsne}}{
+%\includegraphics[width=0.48\linewidth , height=0.5\linewidth]{images/tsne_glove_cities.png}}
+%\subcaptionbox{\label{sfig:complex_tsne}}{
+%\includegraphics[width=0.5\linewidth , height=0.5\linewidth]{images/tsne_complex_cities.png}}
+%
+%\caption{t-SNE projections of the embeddings:\subref{sfig:word2vec_tsne} German, British and American cities using Word2Vec \subref{sfig:glove_tsne} GloVe and \subref{sfig:complex_tsne} facetted\_FWC10000S75.}
+%\label{fig:clust}
+%\end{figure}
+
+
+%\begin{table}[h]
+%  \centering
+%  {%
+%    \raisebox{1.5cm}{%
+%      \begin{tabular}{lSS}
+%        \toprule
+%        {Algorithm }                     & {Accuracy}   \\
+%        \midrule
+%        Facetted\_FWC10000S75   &0        \\
+%        GloVe    & 0.008     \\
+%        word2vec   & 0.015       \\
+%        \bottomrule
+%      \end{tabular}
+%    }
+%  }
+%  \caption{The accuracy results on Mikolove's test set with $9,968$ word pairs.}
+%  \label{table:analogy}
+%\end{table}
+
+
+%\begin{figure}[hb]
+%\centering
+%\subcaptionbox{\label{sfig:scaling_f}}{
+%\resizebox{0.45\textwidth}{0.30\textwidth}{      
+%\input{images/scaling_factor.tex}
+%}}
+%\subcaptionbox{\label{sfig:weight_cap}}{\resizebox{0.45\textwidth}{0.30\textwidth}{      
+%\input{images/weight_cap.tex}
+%}}
+%
+%\caption{\subref{sfig:scaling_f} Effect of scaling factor for facetted embeddings on the correlation on wordsim353. \subref{sfig:weight_cap} Effect of weight cap for facetted embeddings on the correlation on wordsim353.}
+%\label{fig:correlation_change}
+%\end{figure}
