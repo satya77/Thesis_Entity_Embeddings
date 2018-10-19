@@ -146,7 +146,7 @@ average            & \boldmath $\num{0.526}$   & 0.400   & \boldmath $\num{0.524
 \bottomrule
 \end{tabular}%
 }
-\vspace*{-10pt}
+%\vspace*{-10pt}
 \end{table}
 % comparison on locations in GA data set:
 % total locations = 6892
@@ -183,7 +183,7 @@ avg       & 0.013 &\boldmath $\num{0.019}$ & 0.002 & 0.014 & 0.005 & 0.005 & \bo
 \bottomrule
 \end{tabular}%
 }
-\vspace*{-11pt}
+%\vspace*{-11pt}
 \end{table}
 
 The purity of clusters created with agglomerative clustering and mini-batch k-means for the categorization tasks are shown in Table~\ref{clustering_normal_p}. Since the Cities, Politicians and Companies are multi-word entities, they do not directly exist in the raw embedding models. To represent such words, we take the average of the vectors of individual words in the entity's name, and use the average vector for clustering tasks. Although the raw models do not embed the named entities directly, $r$W2V and $r$GLV create clusters with the best purity even on entity-based datasets. Nonetheless, most purity values lie in the range from $0.45$ to $0.65$ and no method is exceptionally bad. It is worth noting, that the clustering algorithm also plays a part in the obtained results. K-means clustering has a randomized nature and the results differs based on the initial conditions. For k-means $r$W2V generates the best clusters, meanwhile, for agglomerative clustering $r$GLV works better. The DeepWalk-based models also tend to have a higher purity using agglomerative clustering. Since this tasks only focuses on the terms and entities provided by the datasets, the results do not give us insight into the spatial mixing of terms and entities. We consider this property in our visual exploration in Section~\ref{sec:eval_experimental}.
@@ -215,13 +215,260 @@ The purity of clusters created with agglomerative clustering and mini-batch k-me
 \bottomrule
 \end{tabular}%
 }
-\vspace*{-12pt}
+%\vspace*{-12pt}
 \end{table}
 In summary, for term-based intrinsic evaluation tasks embedding the entities by state-of-the-art methods on annotated corpus has has an acceptable performance, yet degrades in comparison to the embeddings on the raw corpus and thus is not the best option. This lack in performance can be to some degree restored by using the graph-based techniques on a co-occurrence graph extracted from the annotated text. For task that include entities or require a measure of relatedness in particular, VERSE model often has better performance even compared to the embeddings on raw text. For clustering and word similarity tasks however, using the normal word embeddings tends to achieve better results. In general, when using the entity-based models the attributes of the downstream task has to be taken into account, as different embedding techniques demonstrate different properties. Although the term-based evaluations shines some light into the performance of these embeddings, the true potential of such models is still unknown, unless presented with entity specific tasks. Thus, in Section~\ref{sec:eval_experimental}, we explore the usefulness of the different embeddings for entity-centric tasks.
 \subsection{Evaluation of faceted embeddings}\label{subsec:eval_faceted}
+\begin{table}[t]
+\caption{Word analogy results. Shown is the prediction accuracy for the normal analogy tasks and the variation where predictions are limited to the correct entity type. The best two values per task and variation are highlighted.}
+\label{similiarty_related_facted}
+\setlength{\tabcolsep}{5pt} % Default value: 6pt
+\renewcommand{\arraystretch}{1.0} % Default value: 1
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccccccc}
+\toprule
+ & \multicolumn{5}{c}{normal similarity} && \multicolumn{3}{c}{Related similarity} \\
+\cmidrule(lr){2-6}
+\cmidrule(lr){8-10}
+
+
+ & $r$W2V & $r$GLV & $f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$ 
+   && $f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$\\
+\cmidrule(lr){2-6}
+\cmidrule(lr){8-10}
+
+
+Similarity353        &  & &  &  & &&  & &   \\
+\cmidrule(lr){1-1}
+\cmidrule(lr){2-6}
+\cmidrule(lr){8-10}
+Relatedness353     &  &  & &  &  & & &  &    \\
+\cmidrule(lr){1-1}
+\cmidrule(lr){2-6}
+\cmidrule(lr){8-10}
+MEN                &  & &  &  & & &  & &   \\
+\cmidrule(lr){1-1}
+\cmidrule(lr){2-6}
+\cmidrule(lr){8-10}
+RG65              &  & &  &  & &&  & &   \\
+\cmidrule(lr){1-1}
+\cmidrule(lr){2-6}
+\cmidrule(lr){8-10}
+RareWord          &  & &  &  & &&  & &   \\
+\cmidrule(lr){1-1}
+\cmidrule(lr){2-6}
+\cmidrule(lr){8-10}
+SimLex-999        &  & &  &  & &&  & &   \\
+\cmidrule(lr){1-1}
+\cmidrule(lr){2-6}
+\cmidrule(lr){8-10}
+MTurk             &  & &  &  & &&  & &   \\
+\midrule
+average           &  & &  &  & &&  & &  \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+
+
+\begin{table}[t]
+\caption{Word analogy results. Shown is the prediction accuracy for the normal analogy tasks and the variation where predictions are limited to the correct entity type. The best two values per task and variation are highlighted.}
+\label{similarity_components_faceted}
+\setlength{\tabcolsep}{1pt} % Default value: 6pt
+\renewcommand{\arraystretch}{1.0} % Default value: 1
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccccccccccccccccc}
+\toprule
+ & \multicolumn{3}{c}{Term similarity} && \multicolumn{3}{c}{Actor similarity} && \multicolumn{3}{c}{Location similarity} && \multicolumn{3}{c}{Organisation similarity}&& \multicolumn{3}{c}{Date similarity}\\
+\cmidrule(lr){2-4}
+\cmidrule(lr){6-8}
+\cmidrule(lr){10-12}
+\cmidrule(lr){14-16}
+\cmidrule(lr){18-20}
+
+
+ &$f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$
+   && $f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$&& $f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$ && $f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$ && $f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$\\
+\cmidrule(lr){2-4}
+\cmidrule(lr){6-8}
+\cmidrule(lr){10-12}
+\cmidrule(lr){14-16}
+\cmidrule(lr){18-20}
+
+Similarity353      &     &  &  && &   & &&  &   &  &&  &   & &&& &  \\
+\cmidrule(lr){1-1}
+\cmidrule(lr){2-4}
+\cmidrule(lr){6-8}
+\cmidrule(lr){10-12}
+\cmidrule(lr){14-16}
+\cmidrule(lr){18-20}
+Relatedness353         &     &  &  && &   & &&  &   &  &&  &   & &&& &  \\
+\cmidrule(lr){1-1}
+\cmidrule(lr){2-4}
+\cmidrule(lr){6-8}
+\cmidrule(lr){10-12}
+\cmidrule(lr){14-16}
+\cmidrule(lr){18-20}
+MEN                    &     &  &  && &   & &&  &   &  &&  &   & &&& &  \\
+\cmidrule(lr){1-1}
+\cmidrule(lr){2-4}
+\cmidrule(lr){6-8}
+\cmidrule(lr){10-12}
+\cmidrule(lr){14-16}
+\cmidrule(lr){18-20}
+RG65                  &     &  &  && &   & &&  &   &  &&  &   & &&& &  \\
+\cmidrule(lr){1-1}
+\cmidrule(lr){2-4}
+\cmidrule(lr){6-8}
+\cmidrule(lr){10-12}
+\cmidrule(lr){14-16}
+\cmidrule(lr){18-20}
+RareWord              &     &  &  && &   & &&  &   &  &&  &   & &&& &  \\
+\cmidrule(lr){1-1}
+\cmidrule(lr){2-4}
+\cmidrule(lr){6-8}
+\cmidrule(lr){10-12}
+\cmidrule(lr){14-16}
+\cmidrule(lr){18-20}
+SimLex-999            &     &  &  && &   & &&  &   &  &&  &   & &&& &  \\
+\cmidrule(lr){1-1}
+\cmidrule(lr){2-4}
+\cmidrule(lr){6-8}
+\cmidrule(lr){10-12}
+\cmidrule(lr){14-16}
+\cmidrule(lr){18-20}
+MTurk                 &     &  &  & & &   & & &  &   &  & &  &   & & && &  \\
+\midrule
+average           &     &  &  & & &   & & &  &   &  & &  &   & & && &  \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+
+
+\begin{table}[t]
+\caption{Word analogy results. Shown is the prediction accuracy for the normal analogy tasks and the variation where predictions are limited to the correct entity type. The best two values per task and variation are highlighted.}
+\label{analogy_facted}
+\setlength{\tabcolsep}{5pt} % Default value: 6pt
+\renewcommand{\arraystretch}{1.0} % Default value: 1
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccccccc}
+\toprule
+ & \multicolumn{5}{c}{normal analogy} && \multicolumn{3}{c}{typed analogy} \\
+\cmidrule(lr){2-6}
+\cmidrule(lr){8-10}
+
+
+ & $r$W2V & $r$GLV & $f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$ 
+   && $f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$\\
+\cmidrule(lr){2-6}
+\cmidrule(lr){8-10}
+
+
+GA       &  & &  &  & &&  & &   \\
+\cmidrule(lr){1-1}
+\cmidrule(lr){2-6}
+\cmidrule(lr){8-10}
+MSR     &  &  & &  &  & & &  &    \\
+\midrule
+average          &  &  & &  &  & & &  &  \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
 
 \section{Experimental Exploration}\label{sec:eval_experimental}
+
 \subsection{Analysis of entity embeddings}\label{subsec:exp_entity}
+To investigate the possible use-case and benefits of entity embeddings, we have to look at their performance downstream task. Nonetheless, such tasks are not yet available for embeddings of entities. Therefore, we consider visualizing the clustering task and analysing the neighbourhood for entities to obtain and impression of possible benefits that these embeddings can offer. 
+
+\subsubsection{Entity clustering.} 
+One way to investigate how the entity embeddings enhance the representation of entities is to observe whether they are able to cluster similar entities in the embedding space. For this purpose, we project the embedding from the Cities dataset into a 2-dimensional space using t-SNE. Since the training data is taken from news, we expect cities within a country to be spatially correlated. Some city names contains more than one word, for the raw text embedding, we present them by the the average of the embeddings of their individual components. Despite the unique representation of entities in annotated text, entity embeddings have poor performance on the clustering task. No obvious pattern can be found in their projections. Although $a$W2V and VRS tend to create a small batches of cities that belong to the same country, they do not show an obvious distinction between them. The word embeddings on raw text perform much better for this task. Nevertheless, without the knowledge of such entity names for multi-word entities, raw models are unable to recognize them as a distinct component. Thus, as long as the entity labels are known, raw text embeddings are clearly preferable. 
+
+\begin{figure}[t]
+\centering
+\subcaptionbox{$r$W2V\label{sfig:word2vec_r_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/tsne_word2vec_raw_cities.png}}
+\subcaptionbox{$r$GLV\label{sfig:glove_r_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/tsne_glove_raw_cities.png}}
+\subcaptionbox{$a$W2V\label{sfig:word2vec_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/tsne_word2vec_cities.png}}
+\subcaptionbox{$a$GLV\label{sfig:glove_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/tsne_glove_cities.png}}
+\subcaptionbox{DW$_{id}$\label{sfig:deepwalk_i_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/tsne_deepwalk_i_cities.png}}
+\subcaptionbox{DW$_{log}$\label{sfig:deepwalk_l_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/tsne_deepwalk_l_cities.png}}
+\subcaptionbox{VRS\label{sfig:verse_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/tsne_verse_cities.png}}
+%\vspace*{-5pt}
+\caption{t-SNE projections of the embeddings for U.S.\ (purple), British (orange), and German (green) cities. For the raw text models, multi-word entity names are represented as the mean of word vectors.}
+\label{fig:clust}
+%\vspace*{-8pt}
+\end{figure}
+
+
+\subsubsection{Entity neighbourhoods} 
+\begin{figure}[t]
+\centering
+\subcaptionbox{$r$W2V\label{sfig:obama_w2v_r}}{
+\includegraphics[width=0.30\linewidth , height=0.28\linewidth]{images/obama_w2v_r.png}}\hspace{12pt}%
+\subcaptionbox{$a$W2V\label{sfig:obama_w2v}}{
+\includegraphics[width=0.30\linewidth , height=0.28\linewidth]{images/obama_w2v.png}}\hspace{12pt}%
+\subcaptionbox{VRS\label{sfig:obama_verse}}{
+\includegraphics[width=0.30\linewidth , height=0.28\linewidth]{images/obama_verse.png}}
+%\vspace*{-5pt}
+\caption{t-SNE projections of the nearest neighbours of entity \emph{Barack Obama}.
+ % for \emph{w2vec\_r} in  (\subref{sfig:obama_w2v_r}), \emph{w2vec} in  (\subref{sfig:obama_w2v}) and \emph{``Vrs"} in (\subref{sfig:obama_verse}).
+}
+\label{fig:obama}
+%\vspace*{-15pt}
+\end{figure}
+To understand the neighbourhood relation and proximity of embeddings, we look at most similar word by cosine similarity on the example of the entity \emph{Barack Obama}. For the raw text models, we average the embeddings of the words \emph{barack} and \emph{obama}. A list of top five words is for all models are shown in Table~\ref{tbl:obama}. Entity-based models are more focused on related entities, whereas the the embeddings on raw text tend to focus more on surrounding terms. $r$W2V in particular retrieves mostly misspelled versions of the entity name, or it's separate components. Although these words are probably the most similar words in terms of semantic similarity (mostly synonyms that can substituted the entity name in a text), they do not give any further information about possible entity to entity relations. Once again, we observe that graph-based models on annotated text, VRS in particular, favours relatedness over similarity, as the top retrieved words are the related words that have some association to the entity in question. \\
+The Figure~\ref{fig:clust} shows the neighbourhood of top ten closest words to \emph{Barack Obama} for $r$W2V, $a$W2V, and VRS. We observe a similar trend in the 2-dimensional t-SNE projections, where word2vec on raw text tends to primarily identifies synonymously used words on the raw corpus (i.e., variations of the entity name) and focuses on similarity. Word2vec on the annotated text, while retrieving more entities also favours similarity, as the nearest neighbours are either other presidents or entities that share similar roles. In contrast, VERSE identifies related entities with different roles, such as administrative locations or the presidential candidates and the president elect in the 2016 U.S.\ election.\\
+Overall, for tasks that require word similarity word embedding methods tend to produce the best result, while the graph-based models have better performance when it comes to identifying relation or association between entities.
+\begin{table}[t]
+\caption{Four nearest neighbours of entity \emph{Barack Obama} with cosine similarity scores. Entity types include terms T, persons P, and locations L.}
+\label{tbl:obama}
+\setlength{\tabcolsep}{2pt} % Default value: 6pt
+\renewcommand{\arraystretch}{1.0} % Default value: 1
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lllllllllllllll}
+\toprule
+\multicolumn{3}{c}{$r$W2V} & & \multicolumn{3}{c}{$r$GLV} & & \multicolumn{3}{c}{$a$W2V} & & \multicolumn{3}{c}{$a$GLV} \\
+\cmidrule(lr){1-3}
+\cmidrule(lr){5-7}
+\cmidrule(lr){9-11}
+\cmidrule(lr){13-15}
+T & obama      & 0.90 &&  T & obama          & 0.99 && P & George W. Bush         & 0.76 && T & president      & 0.78 \\
+T & barack     & 0.74 &&  T & barack         & 0.98 && P & Jimmy Carter           & 0.73 && T & administration & 0.76 \\
+T & obamaobama & 0.68 &&  T & president      & 0.77 && T & barack obama           & 0.73 && P & George W. Bush & 0.72 \\
+T & obamathe   & 0.60 &&  T & administration & 0.74 && P & Enrique Pe{\~n}a Nieto & 0.67 && T & mr.            & 0.68 \\
+T & bush       & 0.55 &&  T & elect          & 0.66 && T & then-vice              & 0.67 && L & White House    & 0.67 \\
+\bottomrule         
+\end{tabular}%
+}
+
+\hspace*{21pt}
+\resizebox{0.87\textwidth}{!}{
+\begin{tabular}{lllllllllll}
+\toprule
+\multicolumn{3}{c}{DW$_{id}$} & & \multicolumn{3}{c}{DW$_{log}$} & & \multicolumn{3}{c}{VRS} \\
+\cmidrule(lr){1-3}
+\cmidrule(lr){5-7}
+\cmidrule(lr){9-11} 
+L & White House    & 0.88 && L & White House    & 0.88 && L & White House              & 0.87 \\
+T & president      & 0.79 && T & president      & 0.82 && T & president                & 0.79 \\ 
+T & presidency     & 0.76 && P & George W. Bush & 0.78 && L & United States of America & 0.76 \\
+T & administration & 0.75 && T & administration & 0.78 && P & Donald Trump             & 0.75 \\
+P & George W. Bush & 0.74 && T & presidency     & 0.78 && P & Hillary Clinton          & 0.74 \\
+\bottomrule
+\end{tabular}%
+}
+\vspace*{-10pt}
+\end{table}
 \subsection{Analysis of faceted embeddings}\label{subsec:exp_faceted}
 
 \section{Word Relatedness}\label{sec:relatedness}
