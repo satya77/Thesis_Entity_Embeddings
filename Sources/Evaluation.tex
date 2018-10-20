@@ -220,7 +220,7 @@ The purity of clusters created with agglomerative clustering and mini-batch k-me
 In summary, for term-based intrinsic evaluation tasks embedding the entities by state-of-the-art methods on annotated corpus has has an acceptable performance, yet degrades in comparison to the embeddings on the raw corpus and thus is not the best option. This lack in performance can be to some degree restored by using the graph-based techniques on a co-occurrence graph extracted from the annotated text. For task that include entities or require a measure of relatedness in particular, VERSE model often has better performance even compared to the embeddings on raw text. For clustering and word similarity tasks however, using the normal word embeddings tends to achieve better results. In general, when using the entity-based models the attributes of the downstream task has to be taken into account, as different embedding techniques demonstrate different properties. Although the term-based evaluations shines some light into the performance of these embeddings, the true potential of such models is still unknown, unless presented with entity specific tasks. Thus, in Section~\ref{sec:eval_experimental}, we explore the usefulness of the different embeddings for entity-centric tasks.
 \subsection{Evaluation of faceted embeddings}\label{subsec:eval_faceted}
 \begin{table}[t]
-\caption{Word analogy results. Shown is the prediction accuracy for the normal analogy tasks and the variation where predictions are limited to the correct entity type. The best two values per task and variation are highlighted.}
+\caption{Word similarity results for faceted models. Shown are the Pearson correlations between the cosine similarity of the embeddings and the human score on the word similarity datasets. The two best values per task are highlighted.}
 \label{similiarty_related_facted}
 \setlength{\tabcolsep}{5pt} % Default value: 6pt
 \renewcommand{\arraystretch}{1.0} % Default value: 1
@@ -238,33 +238,33 @@ In summary, for term-based intrinsic evaluation tasks embedding the entities by 
 \cmidrule(lr){8-10}
 
 
-Similarity353        &  & &  &  & &&  & &   \\
+Similarity353    0.700    & 0.497 & &  &  & &&  & &   \\
 \cmidrule(lr){1-1}
 \cmidrule(lr){2-6}
 \cmidrule(lr){8-10}
-Relatedness353     &  &  & &  &  & & &  &    \\
+Relatedness353   0.509  & 0.430 &  & &  &  & & &  &    \\
 \cmidrule(lr){1-1}
 \cmidrule(lr){2-6}
 \cmidrule(lr){8-10}
-MEN                &  & &  &  & & &  & &   \\
+MEN                & 0.619 & 0.471 &  &  & & &  & &   \\
 \cmidrule(lr){1-1}
 \cmidrule(lr){2-6}
 \cmidrule(lr){8-10}
-RG65              &  & &  &  & &&  & &   \\
+RG65              & 0.477 & 0.399 &  &  & &&  & &   \\
 \cmidrule(lr){1-1}
 \cmidrule(lr){2-6}
 \cmidrule(lr){8-10}
-RareWord          &  & &  &  & &&  & &   \\
+RareWord          &  0.409  & 0.276  &  &  & &&  & &   \\
 \cmidrule(lr){1-1}
 \cmidrule(lr){2-6}
 \cmidrule(lr){8-10}
-SimLex-999        &  & &  &  & &&  & &   \\
+SimLex-999        & 0.319 &  0.211 &  &  & &&  & &   \\
 \cmidrule(lr){1-1}
 \cmidrule(lr){2-6}
 \cmidrule(lr){8-10}
-MTurk             &  & &  &  & &&  & &   \\
+MTurk             & 0.647  & 0.493 &  &  & &&  & &   \\
 \midrule
-average           &  & &  &  & &&  & &  \\
+average           & 0.526  & 0.400  &  &  & &&  & &  \\
 \bottomrule
 \end{tabular}%
 }
@@ -349,7 +349,7 @@ average           &     &  &  & & &   & & &  &   &  & &  &   & & && &  \\
 
 
 \begin{table}[t]
-\caption{Word analogy results. Shown is the prediction accuracy for the normal analogy tasks and the variation where predictions are limited to the correct entity type. The best two values per task and variation are highlighted.}
+\caption{Word analogy results for faceted model . Shown is the prediction accuracy for the normal analogy tasks and the variation where predictions are limited to the correct entity type. The best two values per task and variation are highlighted.}
 \label{analogy_facted}
 \setlength{\tabcolsep}{5pt} % Default value: 6pt
 \renewcommand{\arraystretch}{1.0} % Default value: 1
@@ -367,13 +367,44 @@ average           &     &  &  & & &   & & &  &   &  & &  &   & & && &  \\
 \cmidrule(lr){8-10}
 
 
-GA       &  & &  &  & &&  & &   \\
+GA       & 0.013  & 0.019&  &  & &&  & &   \\
 \cmidrule(lr){1-1}
 \cmidrule(lr){2-6}
 \cmidrule(lr){8-10}
-MSR     &  &  & &  &  & & &  &    \\
+MSR     & 0.014 & 0.019  & &  &  & & &  &    \\
 \midrule
-average          &  &  & &  &  & & &  &  \\
+average          &  0.013 & 0.019  & &  &  & & &  &  \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+
+\begin{table}[t]
+\caption{Categorization results for faceted models. Shown is the purity of clusters obtained with k-means and agglomerative clustering (AC). The best two values are highlighted. For the raw text models, multi-word entity names are the mean of word vectors.}
+\label{clustering_normal_p}
+\setlength{\tabcolsep}{8pt} % Default value: 6pt
+\renewcommand{\arraystretch}{1.0} % Default value: 1
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llccccc}
+\toprule
+ && $r$W2V & $r$GLV & $f$W2V &$f$ DW$_{id}$ & $f$DW$_{log}$ \\
+\midrule 
+\multirow{6}{*}{k-means}  & ESSLLI\_1a &\boldmath $\num{0.575}$ & 0.545 &  & &  \\ 
+                          & ESSLLI\_2c & 0.455 & 0.462 &  & & \\
+                          & Cities & \boldmath $\num{0.638}$ & \boldmath $\num{0.576}$ &  & &\\ 
+                          & Politicians & \boldmath $\num{0.635}$ & 0.509 &  & & \\
+                          & Companies & \boldmath $\num{0.697}$ & \boldmath $\num{0.566}$ &  & & \\
+\cmidrule(lr){2-7}
+                          & average & \boldmath $\num{0.600}$ & 0.532 &  & & \\ 
+\midrule
+\multirow{6}{*}{AC} & ESSLLI\_1a & 0.493 & \boldmath $\num{0.518}$ &  & & \\
+                    & ESSLLI\_2c & 0.455 & 0.398&  & & \\
+                    & Cities & 0.447 & \boldmath $\num{0.580}$  &  & & \\
+                    & Politicians & 0.477 &\boldmath $\num{0.510}$  &  & &\\
+                    & Companies & \boldmath $\num{0.511}$ & \boldmath $\num{0.519}$ &  & & \\
+\cmidrule(lr){2-7}
+                    & average & \boldmath $\num{0.477}$ & \boldmath $\num{0.505}$&  & & \\ 
 \bottomrule
 \end{tabular}%
 }
