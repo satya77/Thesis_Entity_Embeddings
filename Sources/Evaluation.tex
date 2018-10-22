@@ -390,21 +390,21 @@ average          &  0.013 & \boldmath $\num{0.019}$  &\boldmath $\num{0.030}$ & 
 \toprule
  && $r$W2V & $r$GLV & $f$W2V &$f$ DW$_{id}$ & $f$DW$_{log}$ \\
 \midrule 
-\multirow{6}{*}{k-means}  & ESSLLI\_1a &\boldmath $\num{0.575}$ & 0.545 & 0.432  & 0.523& 0.523\\ 
+\multirow{6}{*}{k-means}  & ESSLLI\_1a &\boldmath $\num{0.575}$ & \boldmath $\num{0.545}$ & 0.432  & 0.523& 0.523\\ 
                           & ESSLLI\_2c & 0.455 & 0.462 & 0.400 & 0.444 & 0.422 \\
-                          & Cities & \boldmath $\num{0.638}$ & \boldmath $\num{0.576}$ & 0.550   & 0.567 & 0.633 \\ 
-                          & Politicians & \boldmath $\num{0.635}$ & 0.509 & 0.500 & 0.513 & 0.493 \\
-                          & Companies & \boldmath $\num{0.697}$ & \boldmath $\num{0.566}$ & 0.482 & 0.600 & 0.527 \\
+                          & Cities & \boldmath $\num{0.638}$ & 0.576 & 0.550   & 0.567 & \boldmath $\num{0.633}$ \\ 
+                          & Politicians & \boldmath $\num{0.635}$ & 0.509 & 0.500 & \boldmath $\num{0.513}$ & 0.493 \\
+                          & Companies & \boldmath $\num{0.697}$ & 0.566 & 0.482 & \boldmath $\num{0.600}$ & 0.527 \\
 \cmidrule(lr){2-7}
-                          & average & \boldmath $\num{0.600}$ & 0.532 &   & & \\ 
+                          & average & \boldmath $\num{0.600}$ & 0.532 & 0.473  &  \boldmath $\num{0.529}$ & 0.520 \\ 
 \midrule
-\multirow{6}{*}{AC} & ESSLLI\_1a & 0.493 & \boldmath $\num{0.518}$ & 0.455 & 0.432 & 0.432 \\
-                    & ESSLLI\_2c & 0.455 & 0.398& 0.378 & 0.444 & 0.444 \\
+\multirow{6}{*}{AC} & ESSLLI\_1a & \boldmath $\num{0.493}$ & \boldmath $\num{0.518}$ & 0.455 & 0.432 & 0.432 \\
+                    & ESSLLI\_2c & \boldmath $\num{0.455}$ & 0.398& 0.378 & \boldmath $\num{0.444}$ & \boldmath $\num{0.444}$ \\
                     & Cities & 0.447 & \boldmath $\num{0.580}$  & 0.470 & 0.347 & 0.347 \\
-                    & Politicians & 0.477 &\boldmath $\num{0.510}$  & 0.426 & 0.340 & 0.353 \\
+                    & Politicians & \boldmath $\num{0.477}$ &\boldmath $\num{0.510}$  & 0.426 & 0.340 & 0.353 \\
                     & Companies & \boldmath $\num{0.511}$ & \boldmath $\num{0.519}$ & 0.463 & 0.464 & 0.464 \\
 \cmidrule(lr){2-7}
-                    & average & \boldmath $\num{0.477}$ & \boldmath $\num{0.505}$&  & & \\ 
+                    & average & \boldmath $\num{0.477}$ & \boldmath $\num{0.505}$& 0.432  & 0.405 &  0.408 \\ 
 \bottomrule
 \end{tabular}%
 }
@@ -427,53 +427,60 @@ average          &  0.013 & \boldmath $\num{0.019}$  &\boldmath $\num{0.030}$ & 
  &&$f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$
    && $f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$&& $f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$ && $f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$ && $f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$\\
 \midrule 
-\multirow{6}{*}{KM}  & ESSLLI\_1a  &     & &  &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
+\multirow{6}{*}{KM}  & ESSLLI\_1a   &  0.500   & 0.545 & 0.568 &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
 \cmidrule(lr){3-5}
 \cmidrule(lr){7-9}
 \cmidrule(lr){11-13}
 \cmidrule(lr){15-17}
 \cmidrule(lr){19-21}
-                          & Cities &     & &  &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
+                   & ESSLLI\_2c &   0.444  & 0.422 & 0.444 &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
 \cmidrule(lr){3-5}
 \cmidrule(lr){7-9}
 \cmidrule(lr){11-13}
 \cmidrule(lr){15-17}
 \cmidrule(lr){19-21}
-                          & Politicians &     & &  &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
+
+                          & Cities &  0.570   & 0.467 & 0.506 &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
 \cmidrule(lr){3-5}
 \cmidrule(lr){7-9}
 \cmidrule(lr){11-13}
 \cmidrule(lr){15-17}
 \cmidrule(lr){19-21}
-                          & Companies &     & &  &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
+                          & Politicians &  0.432   & 0.453 & 0.486 &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
+\cmidrule(lr){3-5}
+\cmidrule(lr){7-9}
+\cmidrule(lr){11-13}
+\cmidrule(lr){15-17}
+\cmidrule(lr){19-21}
+                          & Companies &   0.518  & 0.481 &  0.481 &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
 \cmidrule(lr){2-21}
                           & average &     & &  &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
 \midrule
-\multirow{6}{*}{AC} & ESSLLI\_1a &     & &  &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
+\multirow{6}{*}{AC} & ESSLLI\_1a  &   0.454  & 0.522 & 0.500 &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
 \cmidrule(lr){3-5}
 \cmidrule(lr){7-9}
 \cmidrule(lr){11-13}
 \cmidrule(lr){15-17}
 \cmidrule(lr){19-21}
-                    & ESSLLI\_2c &     & &  &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
+                    & ESSLLI\_2c &   0.422  & 0.511 & 0.467 &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
 \cmidrule(lr){3-5}
 \cmidrule(lr){7-9}
 \cmidrule(lr){11-13}
 \cmidrule(lr){15-17}
 \cmidrule(lr){19-21}
-                    & Cities &     & &  &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
+                    & Cities &  0.570   & 0.340 & 0.346 &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
 \cmidrule(lr){3-5}
 \cmidrule(lr){7-9}
 \cmidrule(lr){11-13}
 \cmidrule(lr){15-17}
 \cmidrule(lr){19-21}
-                    & Politicians &     & &  &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
+                    & Politicians &  0.432   & 0.353 & 0.346 &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
 \cmidrule(lr){3-5}
 \cmidrule(lr){7-9}
 \cmidrule(lr){11-13}
 \cmidrule(lr){15-17}
 \cmidrule(lr){19-21}
-                    & Companies &     & &  &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
+                    & Companies &   0.463  & 0.464 & 0.490 &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
 \cmidrule(lr){2-21}
                     & average &     & &  &&  &  &   & &  & &   & &  &  &  &   &  &  &   \\
 \bottomrule
