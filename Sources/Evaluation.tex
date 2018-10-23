@@ -2,8 +2,10 @@
 \chapter{Experimental Evaluation}
 \label{chap:eval}
 In this chapter, we present different methods of evaluation and analysis for entity embeddings and the faceted models. In Section~\ref{sec:eval_embeddings}, most common methods for evaluation of word embeddings are discussed and the ones chosen for this study are presented. Section ~\ref{sec:data} explains the dataset used for training the embeddings, the preprocessing and graph extraction.Evaluation setup and parameter tuning for the models is discussed in in Section~\ref{sec:setup}. Evaluation results for the common tasks are shown in Section~\ref{sec:eval_results}, where the results for the entity embeddings and faceted models are discussed separately in Subsections~\ref{subsec:eval_entity} and \ref{subsec:eval_faceted} respectively. Finally, in Section~\ref{sec:eval_experimental} contains the experimental exploration and visualization of the embeddings neighbourhood. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Evaluation of Word Embeddings}\label{sec:eval_embeddings}
 In general, the evaluation of word embeddings falls into two major categories: the extrinsic and intrinsic evaluation. In an extrinsic evaluation trained embeddings are used as input of some downstream task and the performance is measured by a metric specific to that task, such as part-of-speech tagging, named-entity recognition and event summarization. However, since evaluations are task-specific, an embedding that works well for one task may fail for another. Intrinsic evaluations directly test for syntactic or semantic relationships between words. These tasks analyze how well the embeddings capture certain syntactic or semantic relations between a set of query and target words, referred to as \textit{query inventory}~\brackettext{\cite{DBLP:conf/emnlp/SchnabelLMJ15}}. Intrinsic tasks are easier and faster to test and provide a quick understanding of the system. The problem with such tests is that the notion of semantics is not universal~\brackettext{\cite{DBLP:journals/corr/abs-1801-09536}}. Some datasets reflect semantic relatedness and some semantic similarity, while very similar they measure quite different attributes. Two words are considered semantically similar, that are synonymy and can be substituted for each other in context. For instance, \emph{``rose"} and \emph{``flower"}. Semantic relatedness, however, is a broader concept. Words with any functional associations, like belongin to the same semantic field, are considered semantically related, e.g., \emph{``rose"} and \emph{``thorn"} ~\brackettext{\cite{DBLP:conf/nodalida/Kolb09}}. It is not obvious, if the word embedding should favour relatedness over similarity or visa versa. Furthermore, a high accuracy on these tasks does not necessarily mean that the model will perform well on real tasks unless some correlation between them is established. Thus, testing the model on an intrinsic task at first and an extrinsic task in final steps can provide a better overview of the model performance. Since there are no entity-centric extrinsic evaluation tasks in the literature and few intrinsic data sets include entities, we focus on the performance in term-based intrinsic tasks. We create some of our own datasets to incorporate the entities, but it is important to emphasize that the true potential of these entity-based models can only be truely investigated in the presence of suitable evaluation datasets. Following the approach by~\brackettext{\cite{DBLP:conf/emnlp/SchnabelLMJ15}}, we use three kinds of intrinsic evaluations. In the following we describe each tasks and give a brief description of the datasets we use for evaluating each of them. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  \subsection{Relatedness}
 This task is based on datasets containing relatedness or similarity scores for pairs of words annotated by humans; the cosine similarity or Euclidean distance between the embeddings for two words should have high correlation (Spearman or Pearson) with human similarity or relatedness scores. We choose seven datasets containing both relatedness and similarity scores. 
 \begin{enumerate}
@@ -18,6 +20,7 @@ amount of overlap for each definition of context. ~\brackettext{\cite{DBLP:journ
 $0$ to $5$, where scores were collected on Amazon Mechanical Turk~\brackettext{\cite{DBLP:conf/www/RadinskyAGM11}}.
 \end{enumerate}
 In case of faceted models we can investigate the similarity between two words further by looking at separate components. For this purpose, take advantage of the partial similarity defined in Chapter~\ref{chap:faceted} and compute the correlation between human annotations and partial similarity of each component separately. In addition, assuming that most of the information about the relationship between two words is in the component corresponding to their types, we compute the similarity between the types in relation. For example, if two word are of types actor and term, the actor and term component of the in both embeddings are kept and the cosine similarity is computed based on the two component related to word types in question. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Analogy}
 This task was popularized by the word2vec paper~\brackettext{\cite{DBLP:journals/corr/abs-1301-3781}}, where the goal is to find a term $x$ for a given term $y$, such that  $x : y$ best resembles a sample relationship $a : b$. In other words, given the triple $(a,b,x)$, the aim is to find the target word $y$ correctly. To find the target word we do the following:  
 \begin{itemize}
@@ -65,7 +68,7 @@ currency:    &        name of a country with its currency.  \\
   morphological and five semantic questions.} 
   \label{table:analogy_types}
 \end{table}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Categorization}
 When projecting the word embedding in a 2 or 3-dimensional space, iwe expected that the similar words form meaningful clusters. The embedding can be projected using \emph{t-SNE}~\brackettext{\cite{SCHOL:journals/jmlr/Maaten}} or \emph{Principle Component Analysis (PCA)}. Vectors of all words are either viualized for exploratory analysis or clustered using a clustering algorithm of choice and the purity of the returned clusters is computed as a metric for this task~\brackettext{\cite{DBLP:books/daglib/0021593}}. We use two datasets from the Lexical Semantics Workshop, which do not contain entities. Additionally,we created three test sets using \emph{Wikidata Query Service} to find entities of type person, location, and organization. In each case, up to $30$ entities form each category were chosen based on the highest frequency in our training data. 
 \begin{enumerate}
@@ -76,7 +79,7 @@ and Information.The goal of the sub-task is to group concrete nouns into semanti
   \item \emph{Politicians:} $150$ politicians from the U.S., the U.K., and Germany.
   \item \emph{Companies:} $110$ software companies, Web services, and car manufacturers. 
 \end{enumerate}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Training Data}\label{sec:data}
 For training, we use $209,023$ news articles from English-speaking news outlets, collected from June to November $2016$~\brackettext{\cite{DBLP:conf/ecir/SpitzG18}}. The data contains a total of $5,427,383$ sentences and $4,468,993$ tokens. To train the regular word embeddings, we use the raw article text, with only common preprocessing steps. All articles are tokenized into words and stop words and punctuations are removed. Non-alphabetic characters, like Chinese or Arabic vocabulary, are disregard and multiple white spaces are reduced to only one.  Any HTML tags or numeric values are also removed from the text, to produce a clean document, containing only terms relevant to the model. In addition, all the words are converted to their lower-case form to avoid multiple representations of a single term.\\
 For annotated embeddings, prior to named entity annotation, POS tagging is performed by   the Stanford POS tagger~\brackettext{\cite{DBLP:conf/naacl/ToutanovaKMS03}}. 
@@ -84,10 +87,10 @@ We removed punctuation and stop-word and filtered terms in the text to a certain
 To generate input for the graph-based embeddings, we use the extraction code of the LOAD model~\brackettext{\cite{DBLP:conf/sigir/SpitzG16}} that generates implicit networks of locations, organizations, persons (actors), dates, and terms. 
 We include term co-occurrences only inside sentences and entity-entity co-occurrences up to a default window size of five sentences. The generated graph contains $T=93,390$ nodes and $E=9,584,191$ edges. From which $D=2,442$  are date entities, $L=4,659$ location, $A=10,537$ actors, $O=3,789$ organisations and $T=71,963$ are terms l.
 Since the evaluation data sets contain word that are not present in the training vocabulary, each data set is filtered accordingly.
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Parameter Tuning } \label{sec:setup}
  To achieve best performance we perform extensive parameter tuning for each model and only report the results for the best one. All embeddings have $100$ dimension. In the following, we first discuss the best parameter settings for annotated and raw models and then for faceted embeddings. Because of the random initialization of at the beginning of the training, all entity and raw models are trained $10$ times and the average performance is reported. Nevertheless, since faceted models were only an extension to annotated models and are only trained for experimental analysis we trained a single model for each. Moreover, even with a single model their performance is questionable. For all the models, instead of a typical grid search, we chose a coarse-to-fine method, where instead of checking all the possible combinations, we randomly sampled some parameters and focused on the areas, where better models were trained.
- 
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Parameter setting for  entity embeddings and regular word embeddings  }
  
 \emph{Word2vec-based models} both the word2vec on the raw data ($r$W2V) and on the annotated corpus ($a$W2V) are trained with a learning rate of $0.015$ and a window size of $10$. We use $8$ negative samples on the raw data, and $16$ on the annotated data. In addition to data pre-processing, we removed words with frequency of less than $3$, as there is not enough data to learn a meaningful representation of them. \\
@@ -103,7 +106,7 @@ Since the evaluation data sets contain word that are not present in the training
 
 \noindent
 Comparison between the these models is not trivial. One main challenge is the fact that the training process of graph-based and textual methods is essentially incomparable. Graph-based models do not have a corpus and have an additional step of creating something similar either with random walk or node sampling. Typically , the performance of neural network based models increases with number of iteration and more data. While the textual models consider one pass through the corpus as one iteration, an iteration for the graph-based model is a different concept and not the only factor increasing performance. The data size in graph-based models is not limited to the corpus but the sampling process. Number of random walks that is used in DeepWalk corresponds directly to the performance, the more random walk, the larger the corpus and better the performance of the skip-gram model trained on it, even if the number of iterations are fixed. On the other hand, increasing the number of random walks also increase the runtime. In contrast, the VERSE model has no notion of iteration and samples nodes for positive observations from the empirical similarity distribution and negative observations from a  noise distribution. The more samples, better the performance and longer the runtime. Thus, to approach a fair evaluation, we use similar training times for all models (roughly $10$ hours per model on a $100$ core machine). We fix the number of iterations of the textual models and DeepWalk's skip-gram at $100$. For VERSE, we use $50,000$ sampling steps to obtain a comparable runtime.
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Parameter setting for faceted models}
 \emph{Faceted GloVe model} is trained with a learning rate of $0.05$. For best performance we use focal addition and weighing function. The scaling factor for the weighing function is set to $0.75$ and maximum cut-off of $1000$. All nodes with less than $5$ edges are removed from the training data, before generating the weighted adjacency matrix. Normalization and adding $1$ to the logarithm are disregard as they did not improve the results. Moreover, we only report the results for $f$GLV$_{spe}$, which refers to the separate cost function as the performance of both cost functions are similar. As a result, each component was trained separately with the same parameter setting and embedding size of $20$, which after concatenation create the full $100$ dimensional embeddings. \\
 
@@ -115,9 +118,10 @@ Comparison between the these models is not trivial. One main challenge is the fa
 \\
 
 Since a comparable faceted model does not exist, we compare our models against the regular word embeddings trained on raw text. 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Evaluation Results}\label{sec:eval_results}
 In the following we discus the results for relatedness, analogy and clustering tasks for entity embeddings and faceted models separately. We compare our approaches against the word embeddings trained on raw text and analysis their weaknesses and strength. For the faceted models, we take advantage of the separable dimensions and in addition testing the embeddings in their full dimension, we also look at components separately. The results for faceted GloVe model is not presented on all tasks, because of extreme lack of performance. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Evaluation of entity embeddings}\label{subsec:eval_entity}
 The results of the relatedness task are shown in Table~\ref{wordsim_normal}. On this data, word2vec model predominantly performs better than GloVe on both raw and annotated text. Nevertheless, the performance of both models degrades slightly after annotation. 
 Therefore, to create embeddings of entities naively using a word embedding method on annotated corpus results into loss in performance. Since all dataset consist mostly of terms, this deduction can not be extended to entity-centric evaluations. The DeepWalk-based models perform better than GloVe but do poorly overall. The logarithmic normalization boosts the performance of the DeepWalk-based model slightly but not enough to be comparable to word2vec. Results for the VERSE model are rather diverse, in a sense that it works very well on some tasks, but is than word2vec trained on the raw data for rare words and the SimLex dataset. This is likely caused by the conceptual structure of the co-occurrence graph on which VERSE is trained, which captures relatedness and not similarity as tested by SimLex. Whereas on datasets, such as Relatedness353 and MEN, which are designed for relatedness tasks, VERSE is clearly the better choice. On average, word2vec based models outperform the rest on similarity tasks, both the model trained on raw text and on the annotated data have the highest scores on average. Thus, we can conclude that for purely term-based tasks, word2vec is the best choice for measuring word similarity, while VERSE captures the relatedness better. 
@@ -218,6 +222,7 @@ The purity of clusters created with agglomerative clustering and mini-batch k-me
 %\vspace*{-12pt}
 \end{table}
 In summary, for term-based intrinsic evaluation tasks embedding the entities by state-of-the-art methods on annotated corpus has has an acceptable performance, yet degrades in comparison to the embeddings on the raw corpus and thus is not the best option. This lack in performance can be to some degree restored by using the graph-based techniques on a co-occurrence graph extracted from the annotated text. For task that include entities or require a measure of relatedness in particular, VERSE model often has better performance even compared to the embeddings on raw text. For clustering and word similarity tasks however, using the normal word embeddings tends to achieve better results. In general, when using the entity-based models the attributes of the downstream task has to be taken into account, as different embedding techniques demonstrate different properties. Although the term-based evaluations shines some light into the performance of these embeddings, the true potential of such models is still unknown, unless presented with entity specific tasks. Thus, in Section~\ref{sec:eval_experimental}, we explore the usefulness of the different embeddings for entity-centric tasks.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Evaluation of faceted embeddings}\label{subsec:eval_faceted}
 The results for relatedness task on faceted models is shown in Table ~\ref{tbl:similiarty_related_facted}. The similarity are computed based on the normal cosine similarity, where all the components of the faceted embeddings (actor, location, organisation, date, and term) are used to compute the cosine similarity and related similarity, where only the components related to the types of the embeddings in question are used. Since most of the words are terms, the related similarity is closely correlated with partial similarity of only the term component. The results on the $f$GlV$_{sep}$ is not shown in the table, because of extremely poor results.  $f$GlV$_{sep}$ achieved the score of$-0.021$ on the MEN dataset and $0.122$ was its best performance on similarity tasks. Faceted word2vec and faceted DeepWalk capture the similarity and relatedness among words better than the faceted GloVe model. Nonetheless, none of them are well-suited for relatedness tasks. The state-of-the art word embedding methods produce better results for all the datasets and are undoubtedly the better choice. Using only the related components, enhances the results, in particular for the DeepWalk model, which indicates that some components of the faceted model do not contain useful information about the relation among the words and might even have negative effect on the results. However, this is not the  case for $f$W2V, which not only has the highest scores for both normal and related similarity tasks, but also the score remain stable when removing unrelated components. To investigate the impact of each component separately on the relatedness task, we compute the partial similarity with respect to each entity type separately. The results for the partial similarity is shown in Table~\ref{tbl:similarity_components_faceted}. As expected, the terms component has the highest score with human judgement for all datasets. Because of the way $f$W2V is constructed, we observe many zeros for types other than term. In faceted word2vec, the component for a specific type is set to vector of zeros if the word that does not have any entity of that type in it's context. Although faceted DeepWalk models do not have strict zeros in their result, the correlation values are small number in the vicinity of zero for all non-term components. In general, separation of different types has negative effect on similarity tasks that are purely term-based, computing the related similarity or using only the term component, can enhance the performance. However, word embedding methods trained on raw text are clearly the better option. By looking at different components for the term-based datasets, we can deduce that most of the information about the similarity and relatedness of two terms lies in the surrounding terms and looking at only entities can be detrimental to this task. \\ 
 \begin{table}[t]
@@ -490,14 +495,14 @@ The purity of clustering achieved by k-means and agglomerative clustering method
 }
 \end{table}
 In summary, faceted models in their complete form (all the components concatenated) are not able to compete with word embedding on term-based intrinsic tasks. Using the components that are relevant for the type of the entities in question, restores some of the lack in performance. Analysing the components separately shows that the terms that appear in the context of a word tend to be the most influential in its meaning and define it's relation to other words. Without the terms, named entities on their own are not enough to generate useful representation of words.  In Section~\ref{sec:eval_experimental}, we explore the different components and their significance further using entity-centric tasks. 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experimental Exploration}\label{sec:eval_experimental}
 Entity embeddings and faceted model lack enough entity-centric tasks, while their creating and evaluation depends mainly on their performance on such tasks. For this reason we explore their utility for tasks invoking named entities through visualization and experimental evaluation of selected test cases. In Subsection~\ref{subsec:exp_entity} we look at possible benefits of entity embeddings and in Subsection~\ref{subsec:exp_faceted} we analyse different components of faceted models. 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Analysis of entity embeddings}\label{subsec:exp_entity}
 To investigate the possible use-case and benefits of entity embeddings, we have to look at their performance downstream task. Nonetheless, such tasks are not yet available for embeddings of entities. Therefore, we consider visualizing the clustering task and analysing the neighbourhood for entities to obtain and impression of possible benefits that these embeddings can offer. 
-
-\subsubsection{Entity clustering.} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Entity clustering} 
 One way to investigate how the entity embeddings enhance the representation of entities is to observe whether they are able to cluster similar entities in the embedding space. For this purpose, we project the embedding from the Cities dataset into a 2-dimensional space using t-SNE. Since the training data is taken from news, we expect cities within a country to be spatially correlated. Some city names contains more than one word, for the raw text embedding, we present them by the the average of the embeddings of their individual components. Despite the unique representation of entities in annotated text, entity embeddings have poor performance on the clustering task. No obvious pattern can be found in their projections. Although $a$W2V and VRS tend to create a small batches of cities that belong to the same country, they do not show an obvious distinction between them. The word embeddings on raw text perform much better for this task. Nevertheless, without the knowledge of such entity names for multi-word entities, raw models are unable to recognize them as a distinct component. Thus, as long as the entity labels are known, raw text embeddings are clearly preferable. 
 
 \begin{figure}[t]
@@ -522,7 +527,7 @@ One way to investigate how the entity embeddings enhance the representation of e
 %\vspace*{-8pt}
 \end{figure}
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Entity neighbourhoods} 
 \begin{figure}[t]
 \centering
@@ -543,7 +548,7 @@ To understand the neighbourhood relation and proximity of embeddings, we look at
 The Figure~\ref{fig:clust} shows the neighbourhood of top ten closest words to \emph{Barack Obama} for $r$W2V, $a$W2V, and VRS. We observe a similar trend in the 2-dimensional t-SNE projections, where word2vec on raw text tends to primarily identifies synonymously used words on the raw corpus (i.e., variations of the entity name) and focuses on similarity. Word2vec on the annotated text, while retrieving more entities also favours similarity, as the nearest neighbours are either other presidents or entities that share similar roles. In contrast, VERSE identifies related entities with different roles, such as administrative locations or the presidential candidates and the president elect in the 2016 U.S.\ election.\\
 Overall, for tasks that require word similarity word embedding methods tend to produce the best result, while the graph-based models have better performance when it comes to identifying relation or association between entities.
 \begin{table}[t]
-\caption{Four nearest neighbours of entity \emph{Barack Obama} with cosine similarity scores. Entity types include terms T, persons P, and locations L.}
+\caption{Four nearest neighbours of entity \emph{Barack Obama} with cosine similarity scores. Entity types include terms T, actors A, and locations L.}
 \label{tbl:obama}
 \setlength{\tabcolsep}{2pt} % Default value: 6pt
 \renewcommand{\arraystretch}{1.0} % Default value: 1
@@ -555,10 +560,10 @@ Overall, for tasks that require word similarity word embedding methods tend to p
 \cmidrule(lr){5-7}
 \cmidrule(lr){9-11}
 \cmidrule(lr){13-15}
-T & obama      & 0.90 &&  T & obama          & 0.99 && P & George W. Bush         & 0.76 && T & president      & 0.78 \\
-T & barack     & 0.74 &&  T & barack         & 0.98 && P & Jimmy Carter           & 0.73 && T & administration & 0.76 \\
-T & obamaobama & 0.68 &&  T & president      & 0.77 && T & barack obama           & 0.73 && P & George W. Bush & 0.72 \\
-T & obamathe   & 0.60 &&  T & administration & 0.74 && P & Enrique Pe{\~n}a Nieto & 0.67 && T & mr.            & 0.68 \\
+T & obama      & 0.90 &&  T & obama          & 0.99 && A & George W. Bush         & 0.76 && T & president      & 0.78 \\
+T & barack     & 0.74 &&  T & barack         & 0.98 && A & Jimmy Carter           & 0.73 && T & administration & 0.76 \\
+T & obamaobama & 0.68 &&  T & president      & 0.77 && T & barack obama           & 0.73 && A & George W. Bush & 0.72 \\
+T & obamathe   & 0.60 &&  T & administration & 0.74 && A & Enrique Pe{\~n}a Nieto & 0.67 && T & mr.            & 0.68 \\
 T & bush       & 0.55 &&  T & elect          & 0.66 && T & then-vice              & 0.67 && L & White House    & 0.67 \\
 \bottomrule         
 \end{tabular}%
@@ -574,17 +579,123 @@ T & bush       & 0.55 &&  T & elect          & 0.66 && T & then-vice            
 \cmidrule(lr){9-11} 
 L & White House    & 0.88 && L & White House    & 0.88 && L & White House              & 0.87 \\
 T & president      & 0.79 && T & president      & 0.82 && T & president                & 0.79 \\ 
-T & presidency     & 0.76 && P & George W. Bush & 0.78 && L & United States of America & 0.76 \\
-T & administration & 0.75 && T & administration & 0.78 && P & Donald Trump             & 0.75 \\
-P & George W. Bush & 0.74 && T & presidency     & 0.78 && P & Hillary Clinton          & 0.74 \\
+T & presidency     & 0.76 && A & George W. Bush & 0.78 && L & United States of America & 0.76 \\
+T & administration & 0.75 && T & administration & 0.78 && A & Donald Trump             & 0.75 \\
+A & George W. Bush & 0.74 && T & presidency     & 0.78 && A & Hillary Clinton          & 0.74 \\
 \bottomrule
 \end{tabular}%
 }
 \end{table}
 \subsection{Analysis of faceted embeddings}\label{subsec:exp_faceted}
+To analysis the separate components of faceted embeddings and investigate the semantics behind them, we consider visualizing the clustering task and analysing the neighbourhood for entities. In both cases, we look at the full embeddings with all the components concatenated and also analyse each component separately to understand how the different types of entities surrounding a word can contribute to its semantics and affect it's relations to other entities.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Entity clustering} 
+One way to understand which component is significant for representation of entities is to asses which component clusters the similar entities in the embedding. To achieve this, we project the full and partial embeddings of each component for the Cities dataset, which contains location entities, in a 2-dimensional space using t-SNE. The projection for  $f$DW$_{log}$ and $f$W2V are shown in Figure~\ref{fig:clust_fword2vec} and  Figure~\ref{fig:clust_fdeepwalk}, respectively. The subscript shows the embedding component that is used, e.g., $f$W2V$_{ACT}$ corresponds to facetted word2vec, using only the actor component and $f$W2V indicates the full embedding. Since the performance of $f$DW$_{id}$ and  $f$DW$_{log}$ are similar, we only illustrate the result for $f$DW$_{log}$. For both faceted models, it is not obvious what each component represents. None of the components of  $f$DW$_{log}$ form any meaningful cluster, however, the distinction between the three countries is somewhat visible for the location component. The faceted word2vec clearly indicates that dates surrounding a city name are not a good factor for their distinction as all the names are mapped to the same point. Two separate clusters are visible for the location component of $f$W2V, but they are not separated by the county of origin as both clusters are mixture of all three countries. In general, for the faceted models the visualization of the full embedding is closely related to term component, which is the dominate part in these models. 
+\begin{figure}[t]
+\centering
+\subcaptionbox{$f$W2V$_{ACT}$\label{sfig:fword2vec_act_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/fword2vec_act_tsne.png}}
+\subcaptionbox{$f$W2V$_{LOC}$\label{fig:fword2vec_loc_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/fword2vec_loc_tsne.png}}
+\subcaptionbox{$f$W2V$_{ORG}$\label{sfig:fword2vec_org_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/fword2vec_org_tsne.png}}
+\subcaptionbox{$f$W2V$_{DAT}$\label{sfig:fword2vec_dat_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/fword2vec_dat_tsne.png}}
+\subcaptionbox{$f$W2V$_{TER}$\label{sfig:fword2vec_ter_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/fword2vec_ter_tsne.png}}
+\subcaptionbox{$f$W2V\label{sfig:fword2vec_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/fword2vec_tsne.png}}
+\caption{t-SNE projections of the embeddings for U.S.\ (purple), British (orange), and German (green) cities, for facetted word2vec using different components. }
+\label{fig:clust_fword2vec}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\subcaptionbox{$f$DW$_{ACT}$\label{sfig:fdeepwalk_act_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/fdeepwalk_act_tsne.png}}
+\subcaptionbox{$f$DW$_{LOC}$\label{fig:fdeepwalk_loc_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/fdeepwalk_loc_tsne.png}}
+\subcaptionbox{$f$DW$_{ORG}$\label{sfig:fdeepwalk_org_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/fdeepwalk_org_tsne.png}}
+\subcaptionbox{$f$DW$_{DAT}$\label{sfig:fdeepwalk_dat_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/fdeepwalk_dat_tsne.png}}
+\subcaptionbox{$f$DW$_{TER}$\label{sfig:fdeepwalk_ter_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/fdeepwalk_ter_tsne.png}}
+\subcaptionbox{$f$DW\label{sfig:fdeepwalk_tsne}}{
+\includegraphics[width=0.23\linewidth , height=0.21\linewidth]{images/fdeepwalk_tsne.png}}
+\caption{t-SNE projections of the embeddings for U.S.\ (purple), British (orange), and German (green) cities, for facetted deepwalk with logarithmic normalization using different components. }
+\label{fig:clust_fdeepwalk}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Entity neighbourhoods} 
+To analyse the proximity of embeddings based on different components, we investigate the most similar words by cosine similarity to the example actor entity \emph{Barach Obama}. A list of top five words for the faceted models with full embedding and $r$W2V and $r$GLV is shown in Table~\ref{tbl:obama_faceted}. Same as the entity embeddings, the faceted models are more focused on entity relations, whereas the word embeddings on raw text retrieve synonymous terms. Although the $f$DW$_{id}$ tends to contain some terms in the top result, with the log normalization the result become close to $f$W2V,which mostly contains former presidents, the presidential candidate for 2016 election and other democrat politicians. In Table~\ref{tbl:obama_faceted_p} we look at the top five results based on separate components for $f$W2V and $f$DW$_{log}$, where the subscript indicates the component that is used to find the nearest neighbours. $f$DW$_{id}$ produces similar results and, thus, is not demonstrated. 
+\begin{table}[t]
+\caption{Four nearest neighbours of entity \emph{Barack Obama} with cosine similarity scores for faceted models and embeddings on raw text. Entity types include terms T and actors A.}
+\label{tbl:obama_faceted}
+\setlength{\tabcolsep}{1.5pt} % Default value: 6pt
+\renewcommand{\arraystretch}{1.0} % Default value: 1
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lllllllllllllllllll}
+\toprule
+\multicolumn{3}{c}{$r$W2V} & & \multicolumn{3}{c}{$r$GLV} & & \multicolumn{3}{c}{$f$W2V} & & \multicolumn{3}{c}{$f$DW$_{id}$} & & \multicolumn{3}{c}{$f$DW$_{log}$}\\
+\cmidrule(lr){1-3}
+\cmidrule(lr){5-7}
+\cmidrule(lr){9-11}
+\cmidrule(lr){13-15}
+\cmidrule(lr){17-19}
+T & obama      & 0.90 &&  T & obama     & 0.99 && A & Donald Trump & 0.92    && A & Donald Trump & 0.84&& A& Hillary Clinton & 0.85 \\
+T & barack     & 0.74 &&  T & barack         & 0.98 && A & Hillary Clinton & 0.91 && A & Hillary Clinton & 0.84 && A & Donald Trump & 0.85\\
+T & obamaobama & 0.68 &&  T & president      & 0.77 && A & Bill Clinton & 0.89 && T & nation & 0.83 && A & Bill Clinton & 0.83\\
+T & obamathe   & 0.60 &&  T & administration & 0.74 && A & Bernie Sanders & 0.87 && T & force & 0.83 && A & Josh Earnest & 0.82 \\
+T & bush       & 0.55 &&  T & elect          & 0.66 && A & George W. Bush & 0.87 && T & freedom & 0.82 && T & administration & 0.82\\
+\bottomrule         
+\end{tabular}%
+}
+\end{table}
 
 
+\begin{table}[t]
+\caption{Four nearest neighbours of entity \emph{Barack Obama} with cosine similarity scores .for separate components of $f$W2V and $f$DW$_{log}$. Entity types include terms T, actors A , and locations L, organisations O, dates D.}
+\label{tbl:obama_faceted_p}
+\setlength{\tabcolsep}{1.5pt} % Default value: 6pt
+\renewcommand{\arraystretch}{1.0} % Default value: 1
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lllllllllllllllllll}
+\toprule
+\multicolumn{3}{c}{$f$W2V$_{TER}$} & & \multicolumn{3}{c}{$f$W2V$_{ACT}$} & & \multicolumn{3}{c}{$f$W2V$_{LOC}$} & & \multicolumn{3}{c}{$f$W2V$_{ORG}$} & & \multicolumn{3}{c}{$f$W2V$_{DAT}$}\\
+\cmidrule(lr){1-3}
+\cmidrule(lr){5-7}
+\cmidrule(lr){9-11}
+\cmidrule(lr){13-15}
+\cmidrule(lr){17-19}
+L &White House & 0.97&& L & White House & 0.98 && T & 0324 & 0.77  && A & White House & 0.97&& D & 2016-01-26 & 0.64 \\
+T & democratic & 0.96&&  A & Donald Trump & 0.92&& L & St. John's Episcopal Church & 0.76 && A & Donald Trump & 0.93 && D & 2008-06-08 & 0.57\\
+T & presidential & 0.95 &&  L & Washington, D.C. & 0.92&& D & 2011-07-09 & 0.73 && O & U.S House of Representatives & 0.93 && D & 2005 & 0.56\\
+A & George W. Bush & 0.94 && A & Ben Rhodes & 0.91&& L & South Sudan & 0.72 && O & U.S Congress & 0.93 && D & 1865-05 & 0.56 \\
+T & republican & 0.94&&  A & Hillary Clinton & 0.91 && L & Palazzo Grassi & 0.71&& A & fHillary Clinton & 0.93&& D & 1970 & 0.55\\
+\bottomrule         
+\end{tabular}%
+}
 
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lllllllllllllllllll}
+\toprule
+\multicolumn{3}{c}{$f$DW$_{TER}$} & & \multicolumn{3}{c}{$f$DW$_{ACT}$} & & \multicolumn{3}{c}{$f$DW$_{LOC}$} & & \multicolumn{3}{c}{$f$DW$_{ORG}$} & & \multicolumn{3}{c}{$f$DW$_{DAT}$}\\
+\cmidrule(lr){1-3}
+\cmidrule(lr){5-7}
+\cmidrule(lr){9-11}
+\cmidrule(lr){13-15}
+\cmidrule(lr){17-19}
+L &Philadelphia & 0.94&& A & Daniel M. Ashe & 0.92 && T & decades & 0.97  && A & Bill Clinton & 0.97&& T & not & 0.99 \\
+L & Pennsylvania & 0.94&&  A & Hefty Stuart & 0.90&& T & reported & 0.97 && L & New York City & 0.96 && L & Alabama & 0.99\\
+D & 2016-07 & 0.92 &&  A & Elena Bromund & 0.90&& T & statement & 0.96 && T & according & 0.95 && T & party & 0.99\\
+L & New York City & 0.92 && A & Brendan O'Connor & 0.90&& T & rally & 0.96 && A & Donald Trump & 0.95 && T & timeline & 0.98 \\
+O & United States Congress & 0.92 &&  A & Glenn Hutchins & 0.90 && T & according & 0.96&& L & Benghazi & 0.95&& D & kept & 0.98\\
+\bottomrule         
+\end{tabular}%
+}
+\end{table}
 %-----removed parts 
 %
 %\begin{figure}
