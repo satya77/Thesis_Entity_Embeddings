@@ -17,7 +17,7 @@ amount of overlap for each definition of context. ~\brackettext{\cite{DBLP:journ
  \item \emph{MTurk:} $771$ words pairs with semantic relatedness scores from
 $0$ to $5$, where scores were collected on Amazon Mechanical Turk~\brackettext{\cite{DBLP:conf/www/RadinskyAGM11}}.
 \end{enumerate}
-
+In case of faceted models we can investigate the similarity between two words further by looking at separate components. For this purpose, take advantage of the partial similarity defined in Chapter~\ref{chap:faceted} and compute the correlation between human annotations and partial similarity of each component separately. In addition, assuming that most of the information about the relationship between two words is in the component corresponding to their types, we compute the similarity between the types in relation. For example, if two word are of types actor and term, the actor and term component of the in both embeddings are kept and the cosine similarity is computed based on the two component related to word types in question. 
 \subsection{Analogy}
 This task was popularized by the word2vec paper~\brackettext{\cite{DBLP:journals/corr/abs-1301-3781}}, where the goal is to find a term $x$ for a given term $y$, such that  $x : y$ best resembles a sample relationship $a : b$. In other words, given the triple $(a,b,x)$, the aim is to find the target word $y$ correctly. To find the target word we do the following:  
 \begin{itemize}
@@ -219,15 +219,16 @@ The purity of clusters created with agglomerative clustering and mini-batch k-me
 \end{table}
 In summary, for term-based intrinsic evaluation tasks embedding the entities by state-of-the-art methods on annotated corpus has has an acceptable performance, yet degrades in comparison to the embeddings on the raw corpus and thus is not the best option. This lack in performance can be to some degree restored by using the graph-based techniques on a co-occurrence graph extracted from the annotated text. For task that include entities or require a measure of relatedness in particular, VERSE model often has better performance even compared to the embeddings on raw text. For clustering and word similarity tasks however, using the normal word embeddings tends to achieve better results. In general, when using the entity-based models the attributes of the downstream task has to be taken into account, as different embedding techniques demonstrate different properties. Although the term-based evaluations shines some light into the performance of these embeddings, the true potential of such models is still unknown, unless presented with entity specific tasks. Thus, in Section~\ref{sec:eval_experimental}, we explore the usefulness of the different embeddings for entity-centric tasks.
 \subsection{Evaluation of faceted embeddings}\label{subsec:eval_faceted}
+The results for relatedness task on faceted models is shown in Table ~\ref{tbl:similiarty_related_facted}. The similarity are computed based on the normal cosine similarity, where all the components of the faceted embeddings (actor, location, organisation, date, and term) are used to compute the cosine similarity and related similarity, where only the components related to the types of the embeddings in question are used. Since most of the words are terms, the related similarity is closely correlated with partial similarity of only the term component. The results on the $f$GlV$_{sep}$ is not shown in the table, because of extremely poor results.  $f$GlV$_{sep}$ achieved the score of$-0.021$ on the MEN dataset and $0.122$ was its best performance on similarity tasks. Faceted word2vec and faceted DeepWalk capture the similarity and relatedness among words better than the faceted GloVe model. Nonetheless, none of them are well-suited for relatedness tasks. The state-of-the art word embedding methods produce better results for all the datasets and are undoubtedly the better choice. Using only the related components, enhances the results, in particular for the DeepWalk model, which indicates that some components of the faceted model do not contain useful information about the relation among the words and might even have negative effect on the results. However, this is not the  case for $f$W2V, which not only has the highest scores for both normal and related similarity tasks, but also the score remain stable when removing unrelated components. To investigate the impact of each component separately on the relatedness task, we compute the partial similarity with respect to each entity type separately. The results for the partial similarity is shown in Table~\ref{tbl:similarity_components_faceted}. As expected, the terms component has the highest score with human judgement for all datasets. Because of the way $f$W2V is constructed, we observe many zeros for types other than term. In faceted word2vec, the component for a specific type is set to vector of zeros if the word that does not have any entity of that type in it's context. Although faceted DeepWalk models do not have strict zeros in their result, the correlation values are small number in the vicinity of zero for all non-term components. In general, separation of different types has negative effect on similarity tasks that are purely term-based, computing the related similarity or using only the term component, can enhance the performance. However, word embedding methods trained on raw text are clearly the better option. By looking at different components for the term-based datasets, we can deduce that most of the information about the similarity and relatedness of two terms lies in the surrounding terms and looking at only entities can be detrimental to this task. \\ 
 \begin{table}[t]
-\caption{Word similarity results for faceted models. Shown are the Pearson correlations between the cosine similarity of the embeddings and the human score on the word similarity datasets. The two best values per task are highlighted.}
-\label{similiarty_related_facted}
+\caption{Word similarity results for faceted models for the normal word similarity and similarity between the components related to word types. Shown are the Pearson correlations between the cosine similarity of the embeddings and the human score on the word similarity datasets. The two best values per task are highlighted.}
+\label{tbl:similiarty_related_facted}
 \setlength{\tabcolsep}{5pt} % Default value: 6pt
 \renewcommand{\arraystretch}{1.0} % Default value: 1
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lccccccccc}
 \toprule
- & \multicolumn{5}{c}{normal similarity} && \multicolumn{3}{c}{Related similarity} \\
+ & \multicolumn{5}{c}{normal similarity} && \multicolumn{3}{c}{related similarity} \\
 \cmidrule(lr){2-6}
 \cmidrule(lr){8-10}
 
@@ -273,8 +274,8 @@ average           &\boldmath $\num{ 0.526}$  & \boldmath $\num{0.400}$  & 0.269 
 
 
 \begin{table}[t]
-\caption{Word analogy results. Shown is the prediction accuracy for the normal analogy tasks and the variation where predictions are limited to the correct entity type. The best two values per task and variation are highlighted.}
-\label{similarity_components_faceted}
+\caption{Word similarity results for faceted models for the partial similarity between different components of the faceted models. Shown are the Pearson correlations between the cosine similarity of each component and the human score on the word similarity datasets. The two best values per task are highlighted.}
+\label{tbl:similarity_components_faceted}
 \setlength{\tabcolsep}{1pt} % Default value: 6pt
 \renewcommand{\arraystretch}{1.0} % Default value: 1
 \resizebox{\textwidth}{!}{%
@@ -346,11 +347,11 @@ average           &  \boldmath $\num{ 0.271}$  &  \boldmath $\num{ 0.254}$ &  \b
 }
 \end{table}
 
-
+In Table~\ref{tbl:analogy_facted}, accuracy achieved by the analogy task for faceted models and normal word embeddings. The $f$GLV$_{sep}$ was unable to retrieve any of the analogies correctly and is removed from the results. The faceted DeepWalk models also achieve very poor performance for analogy tasks. Nonetheless $f$W2V manages to outperform the normal word embeddings for Google Analogy task but it's performance degrades for the purely term-based dataset of MRS. The boost in performance comes from the location entities in the GA dataset. From the subset of $6,892$ location targets for the GA task, we find that $f$W2V is able to predict $963$ $(14\%)$ of the locations targets, while $a$W2V and $a$GLV are only able to predict $14$ $(0.20\%)$ and $16$ $(0.23\%)$, respectively. We observed the same effect for the entity embeddings evaluation, where the models on annotated text are more successful in predicting entity-based relation. Since the input of $f$W2V is the edge of the co-occurrence graph extracted from an annotated text, it is expected to have similar performance to entity-based embeddings. Unlike the entity-based embedding, however, the type search, in which we only look at candidates of the same type as they entities in question, does not have a huge impact on the results. 
 
 \begin{table}[t]
 \caption{Word analogy results for faceted model . Shown is the prediction accuracy for the normal analogy tasks and the variation where predictions are limited to the correct entity type. The best two values per task and variation are highlighted.}
-\label{analogy_facted}
+\label{tbl:analogy_facted}
 \setlength{\tabcolsep}{8pt} % Default value: 6pt
 \renewcommand{\arraystretch}{1.0} % Default value: 1
 \resizebox{\textwidth}{!}{%
@@ -378,11 +379,12 @@ average          &  0.013 & \boldmath $\num{0.019}$  &\boldmath $\num{0.030}$ & 
 \end{tabular}%
 }
 \end{table}
+%137+747+78=962 total =6892-> 0.14
 
-
+The purity of clustering achieved by k-means and agglomerative clustering methods for the faceted models and the word embeddings on raw text are shown in Table~\ref{tbl:clustering_normal_faceted}. For the faceted models all the components were used to generate the embeddings. Multi-words in city, politician and company names for the raw embedding models are presented by the average of the embeddings for the individual words in their names. Predominantly, word embedding on the raw text create the best clusters, even for entity-based datasets. Despite the good performance of $f$W2V in other evaluation tasks, the model is not able to cluster similar words effectively and faceted DeepWalk models tend to have better performance in this case. To analyse the effect of different components in the faceted models, we perform the categorization task using each component separately. The purity of the clustering for k-mean and agglomerative clustering are shown in Table~\ref{tbl:clustering_faceted_components}. Once again, the component corresponding to the on average terms achieves the highest score for all models, in particular of term-based datasets. This effect is most noticeable in the case of $f$W2V, where for the rest of the components the purity is mostly a constant number. For example, in case of ESSLLI\_1a and ESSLLI\_2c datasets for k-means, other than the terms component, the result for actor, location, organisation and date are $0.295$ and $0.111$, respectively, corresponding to the lowest possible purity score when all the words are mapped to the same point. The values are more diverse for Faceted DeepWalk models, since all the components have non-zero values. In case of Faceted DeepWalk model, for datasets that contain named entities, the components that correspond to the type of the entities in question become significant. The actor component achieves the highest purity score on dataset with politicians, while the location and organisation tends to separate companies of different countries better. 
 \begin{table}[t]
-\caption{Categorization results for faceted models. Shown is the purity of clusters obtained with k-means and agglomerative clustering (AC). The best two values are highlighted. For the raw text models, multi-word entity names are the mean of word vectors.}
-\label{clustering_normal_p}
+\caption{Categorization results for faceted models and the word embedding on raw text. Shown is the purity of clusters obtained with k-means and agglomerative clustering (AC). The best two values are highlighted. For the raw text models, multi-word entity names are the mean of word vectors.}
+\label{tbl:clustering_normal_faceted}
 \setlength{\tabcolsep}{9pt} % Default value: 6pt
 \renewcommand{\arraystretch}{1.0} % Default value: 1
 \resizebox{\textwidth}{!}{%
@@ -412,13 +414,13 @@ average          &  0.013 & \boldmath $\num{0.019}$  &\boldmath $\num{0.030}$ & 
 
 \begin{table}[t]
 \caption{Categorization results for faceted models. Shown is the purity of clusters obtained with k-means (KM) and agglomerative clustering (AC). The best two values are highlighted. For the raw text models, multi-word entity names are the mean of word vectors.}
-\label{clustering_normal_p}
+\label{tbl:clustering_faceted_components}
 \setlength{\tabcolsep}{1pt} % Default value: 6pt
 \renewcommand{\arraystretch}{1} % Default value: 1
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{llccccccccccccccccccc}
 \toprule
- && \multicolumn{3}{c}{Term similarity} && \multicolumn{3}{c}{Actor similarity} && \multicolumn{3}{c}{Location similarity} && \multicolumn{3}{c}{Organisation similarity}&& \multicolumn{3}{c}{Date similarity}\\
+ && \multicolumn{3}{c}{Term component} && \multicolumn{3}{c}{Actor component} && \multicolumn{3}{c}{Location component} && \multicolumn{3}{c}{Organisation  component}&& \multicolumn{3}{c}{Date  component}\\
 \cmidrule(lr){3-5}
 \cmidrule(lr){7-9}
 \cmidrule(lr){11-13}
@@ -427,66 +429,67 @@ average          &  0.013 & \boldmath $\num{0.019}$  &\boldmath $\num{0.030}$ & 
  &&$f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$
    && $f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$&& $f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$ && $f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$ && $f$W2V & $f$DW$_{id}$ & $f$DW$_{log}$\\
 \midrule 
-\multirow{6}{*}{KM}  & ESSLLI\_1a   &  0.500   & 0.545 & 0.568 && 0.295 & 0.386 & 0.386 && 0.295 & 0.432 & 0.455 && 0.295 & 0.409 & 0.477 && 0.295 & 0.454 &  0.386 \\
+\multirow{6}{*}{KM}  & ESSLLI\_1a   &  0.500   & \boldmath $\num{0.545}$ & \boldmath $\num{0.568}$ && 0.295 & 0.386 & 0.386 && 0.295 & 0.432 & 0.455 && 0.295 & 0.409 & 0.477 && 0.295 & 0.454 &  0.386 \\
 \cmidrule(lr){3-5}
 \cmidrule(lr){7-9}
 \cmidrule(lr){11-13}
 \cmidrule(lr){15-17}
 \cmidrule(lr){19-21}
-                   & ESSLLI\_2c &   0.444  & 0.422 & 0.444 && 0.111 & 0.311 & 0.333 && 0.111 & 0.356 & 0.356 && 0.111 & 0.356 & 0.377 && 0.111 & 0.311 & 0.355  \\
+                   & ESSLLI\_2c &   \boldmath $\num{0.444}$  & 0.422 & \boldmath $\num{0.444}$ && 0.111 & 0.311 & 0.333 && 0.111 & 0.356 & 0.356 && 0.111 & 0.356 & 0.377 && 0.111 & 0.311 & 0.355  \\
 \cmidrule(lr){3-5}
 \cmidrule(lr){7-9}
 \cmidrule(lr){11-13}
 \cmidrule(lr){15-17}
 \cmidrule(lr){19-21}
 
-                          & Cities &  0.570   & 0.467 & 0.506 && 0.157 & 0.500 & 0.473 && 0.490 & 0.560 & 0.500 && 0.510 & 0.507 & 0.520 && 0.342 & 0.380  &  0.413  \\
+                          & Cities &  \boldmath $\num{0.570}$   & 0.467 & 0.506 && 0.157 & 0.500 & 0.473 && 0.490 & \boldmath $\num{0.560}$ & 0.500 && 0.510 & 0.507 & 0.520 && 0.342 & 0.380  &  0.413  \\
 \cmidrule(lr){3-5}
 \cmidrule(lr){7-9}
 \cmidrule(lr){11-13}
 \cmidrule(lr){15-17}
 \cmidrule(lr){19-21}
-                          & Politicians &  0.432   & 0.453 & 0.486 && 0.493 & 0.527 & 0.500 && 0.338 & 0.427 & 0.440  && 0.460 & 0.440 & 0.460 && 0.338 & 0.367 & 0.373 \\
+                          & Politicians &  0.432   & 0.453 & 0.486 && 0.493 & \boldmath $\num{0.527}$ & \boldmath $\num{0.500}$ && 0.338 & 0.427 & 0.440  && 0.460 & 0.440 & 0.460 && 0.338 & 0.367 & 0.373 \\
 \cmidrule(lr){3-5}
 \cmidrule(lr){7-9}
 \cmidrule(lr){11-13}
 \cmidrule(lr){15-17}
 \cmidrule(lr){19-21}
-                          & Companies &   0.518  & 0.481 &  0.481 && 0.455 & 0.481 &  0.500 && 0.455 & 0.500 & 0.500  && 0.455 & 0.527 & 0.564 && 0.455 & 0.464 & 0.464  \\
+                          & Companies &   \boldmath $\num{0.518}$  & 0.481 &  0.481 && 0.455 & 0.481 &  0.500 && 0.455 & 0.500 & 0.500  && 0.455 & \boldmath $\num{0.527}$ & 0.564 && 0.455 & 0.464 & 0.464  \\
 \cmidrule(lr){2-21}
-                          & average &  0.4928 & 0.4736 & 0.497 && 0.302 & 0.441 & 0.438 && 0.338 & 0.455 & 0.450  && 0.366 & 0.448 & 0.480 && 0.308 & 0.395 & 0.398  \\
+                          & average &  \boldmath $\num{0.493}$ & 0.474 & \boldmath $\num{0.497}$ && 0.302 & 0.441 & 0.438 && 0.338 & 0.455 & 0.450  && 0.366 & 0.448 & 0.480 && 0.308 & 0.395 & 0.398  \\
 \midrule
-\multirow{6}{*}{AC} & ESSLLI\_1a  &   0.454  & 0.522 & 0.500 && 0.409 & 0.363 & 0.341 && 0.409 & 0.341 & 0.341 && 0.409 & 0.341 & 0.341 && 0.409 & 0.340 & 0.364  \\
+\multirow{6}{*}{AC} & ESSLLI\_1a  &   0.454  & \boldmath $\num{0.522}$ & \boldmath $\num{0.500}$ && 0.409 & 0.363 & 0.341 && 0.409 & 0.341 & 0.341 && 0.409 & 0.341 & 0.341 && 0.409 & 0.340 & 0.364  \\
 \cmidrule(lr){3-5}
 \cmidrule(lr){7-9}
 \cmidrule(lr){11-13}
 \cmidrule(lr){15-17}
 \cmidrule(lr){19-21}
-                    & ESSLLI\_2c &   0.422  & 0.511 & 0.467 && 0.288 & 0.311 & 0.333 && 0.288 & 0.311 & 0.333 && 0.288 & 0.356 & 0.288 && 0.288  & 0.311 &  0.333   \\
+                    & ESSLLI\_2c &   0.422  & \boldmath $\num{0.511}$ & \boldmath $\num{0.467}$ && 0.288 & 0.311 & 0.333 && 0.288 & 0.311 & 0.333 && 0.288 & 0.356 & 0.288 && 0.288  & 0.311 &  0.333   \\
 \cmidrule(lr){3-5}
 \cmidrule(lr){7-9}
 \cmidrule(lr){11-13}
 \cmidrule(lr){15-17}
 \cmidrule(lr){19-21}
-                    & Cities &  0.570   & 0.340 & 0.346 && 0.467 & 0.347 & 0.380 && 0.403 & 0.567 & 0.573 && 0.503 & 0.373 & 0.367 && 0.349 & 0.367 &  0.367 \\
+                    & Cities &  \boldmath $\num{0.570}$   & 0.340 & 0.346 && 0.467 & 0.347 & 0.380 && 0.403 & 0.567 & \boldmath $\num{0.573}$ && 0.503 & 0.373 & 0.367 && 0.349 & 0.367 &  0.367 \\
 \cmidrule(lr){3-5}
 \cmidrule(lr){7-9}
 \cmidrule(lr){11-13}
 \cmidrule(lr){15-17}
 \cmidrule(lr){19-21}
-                    & Politicians &  0.432   & 0.353 & 0.346 && 0.351 & 0.507 & 0.566 && 0.351 & 0.347 & 0.367 && 0.405 & 0.353 & 0.353 && 0.351 & 0.353 & 0.347  \\
+                    & Politicians &  0.432   & 0.353 & 0.346 && 0.351 & \boldmath $\num{0.507}$ & \boldmath $\num{0.566}$ && 0.351 & 0.347 & 0.367 && 0.405 & 0.353 & 0.353 && 0.351 & 0.353 & 0.347  \\
 \cmidrule(lr){3-5}
 \cmidrule(lr){7-9}
 \cmidrule(lr){11-13}
 \cmidrule(lr){15-17}
 \cmidrule(lr){19-21}
-                    & Companies &   0.463  & 0.464 & 0.490 && 0.464 & 0.473 & 0.455 && 0.455 & 0.482 & 0.482 && 0.518 & 0.482 & 0.473 && 0.455 & 0.455 &  0.464 \\
+                    & Companies &   0.463  & 0.464 & \boldmath $\num{0.490}$ && 0.464 & 0.473 & 0.455 && 0.455 & \boldmath $\num{0.482}$ & \boldmath $\num{0.482}$ && 0.518 & \boldmath $\num{0.482}$ & 0.473 && 0.455 & 0.455 &  0.464 \\
 \cmidrule(lr){2-21}
-                    & average & 0.468 & 0.438 & 0.430 && 0.396 & 0.400 & 0.415  && 0.381 & 0.410 & 0.419 && 0.4246 & 0.381 & 0.364 && 0.370 & 0.365 & 0.375 \\
+                    & average &\boldmath $\num{ 0.468}$ & \boldmath $\num{0.438}$ & 0.430 && 0.396 & 0.400 & 0.415  && 0.381 & 0.410 & 0.419 && 0.425 & 0.381 & 0.364 && 0.370 & 0.365 & 0.375 \\
 \bottomrule
 \end{tabular}%
 }
 \end{table}
+In summary, faceted models in their complete form (all the components concatenated) are not able to compete with word embedding on term-based intrinsic tasks. Using the components that are relevant for the type of the entities in question, restores some of the lack in performance. Analysing the components separately shows that the terms that appear in the context of a word tend to be the most influential in its meaning and define it's relation to other words. Without the terms, named entities on their own are not enough to generate useful representation of words.  In Section~\ref{sec:eval_experimental}, we explore the different components and their significance further using entity-centric tasks. 
 
 \section{Experimental Exploration}\label{sec:eval_experimental}
 
@@ -576,50 +579,13 @@ P & George W. Bush & 0.74 && T & presidency     & 0.78 && P & Hillary Clinton   
 \bottomrule
 \end{tabular}%
 }
-\vspace*{-10pt}
 \end{table}
 \subsection{Analysis of faceted embeddings}\label{subsec:exp_faceted}
 
-\section{Word Relatedness}\label{sec:relatedness}
-Correlation plots for the partial and full similarities can be seen in Figures~\ref{sfig:full_wordsim} and~\ref{sfig:part_wordsim}. The most significant rows and columns are marked in red, which illustrates the correlation between the human annotators and the cosine similarity of the word vectors. Correlations were computed using \emph{Pearson} method and any cell with correlation with p-value bigger than $0.01$ is colored in blue.
-Some important observations from the correlation plot can be listed as follows:\\
 
-
-\emph{Full and partial similarities:} Interestingly, the correlations between the human scores and the facetted method do not change significantly when the dimension is restricted to only the query words. The results can be seen in Figure~\ref{sfig:part_wordsim}, where the correlation between the methods tends to shrink, but the overall score with the humans is more or less stable. From this results, it could be presumed that the most important information about a specific type has been learned through the dimension related to it. 
-\\
-
-\begin{figure}
-\centering
-\subcaptionbox{\label{sfig:full_men}}{
-\includegraphics[width=0.7\linewidth , height=0.6\linewidth]{images/men_full.pdf}}
-\subcaptionbox{\label{sfig:part_men}}{
-\includegraphics[width=0.7\linewidth , height=0.6\linewidth]{images/men_part.pdf}}
-
-\caption{Correlation plot of the relatedness scores on MEN using the~\subref{sfig:full_men} full vectors and ~\subref{sfig:part_men} using type-specific vectors. Red highlights show the correlation with the human annotations.}
-\label{fig:men_cor}
-\end{figure}
-
-\noindent
-The MEN dataset contains more examples and consequently it is harder to achieve better results. To compare the facetted embedding with GloVe and Word2Vec we only chose the top three models from the previous test, namely:
-\begin{itemize}
-\item \emph{facetted\_FWC10000S75}, contains focal addition and weighing function with parameters $\alpha=0.75$ and $x_{max}=10000$.
-\item  \emph{facetted\_F}, contains only the focal additions.
-\item \emph{facetted\_FWC100S75}, contains focal addition and weighing function with parameters $\alpha=0.75$ and $x_{max}=100$.
-\end{itemize} 
-The results for both full and partial similarities can be seen in Figures~\ref{sfig:full_men} and~\ref{sfig:part_men}. \\
-GloVe and word2vec have maintained their performance on the larger dataset, but the correlation with facetted embeddings has decreased dramatically. It can be concluded that there is almost no correlation between annotations in the MEN dataset with facetted embeddings. Changing from full vectors to specific types increased the correlations slightly and even turned \emph{facetted\_FWC10000S75} from a negative to a positive correlation, but not enough to make any noticeable difference.
-
-
-\
-\section{Word Analogies}\label{sec:alanlogies}
-
-
-\noindent
-After filtering the dataset to match our data we were left with $13$ types (no instance form the  gram6-nationality-adjective set) and $9,968$ word pairs. This test is unbalanced as the number of semantic and morphological relations are not equal. Additionally, \emph{country:capital} relation accounts for over $50$ percent of all semantic questions. As a result, usually, the average accuracy for all semantic/syntactic questions is reported, which has a lot of variations between different parameters, because an embedding might work better in one subcategory, but averaging the mean scores would yield lower results.\\
-All the learned embeddings performed poorly on this task. Facetted embeddings were unable to retrieve any of the analogies correctly. GloVe achieved an accuracy of $0.008$ with only $81$ correct pairs and word2vec $0.015$ with $161$ correct pairs. The results can be seen in Table~\ref{table:analogy}. A reason for this behavior could be that our subset does not contain enough tokens to learn many of these relations. On the other hand, most well-known tested models on this dataset are trained on billions of tokens. 
 
 %-----removed parts 
-
+%
 %\begin{figure}
 %\centering
 %\subcaptionbox{\label{sfig:full_wordsim}}{
@@ -631,8 +597,8 @@ All the learned embeddings performed poorly on this task. Facetted embeddings we
 %\label{fig:wordsim_cor}
 %\end{figure}
 %
-
-%\begin{figure}
+%
+%%\begin{figure}
 %\centering
 %\subcaptionbox{\label{sfig:word2vec_tsne}}{
 %\includegraphics[width=0.48\linewidth , height=0.5\linewidth]{images/tsne_word2vec_cities.png}}
@@ -644,8 +610,8 @@ All the learned embeddings performed poorly on this task. Facetted embeddings we
 %\caption{t-SNE projections of the embeddings:\subref{sfig:word2vec_tsne} German, British and American cities using Word2Vec \subref{sfig:glove_tsne} GloVe and \subref{sfig:complex_tsne} facetted\_FWC10000S75.}
 %\label{fig:clust}
 %\end{figure}
-
-
+%
+%
 %\begin{table}[h]
 %  \centering
 %  {%
@@ -664,8 +630,8 @@ All the learned embeddings performed poorly on this task. Facetted embeddings we
 %  \caption{The accuracy results on Mikolove's test set with $9,968$ word pairs.}
 %  \label{table:analogy}
 %\end{table}
-
-
+%
+%
 %\begin{figure}[hb]
 %\centering
 %\subcaptionbox{\label{sfig:scaling_f}}{
@@ -678,4 +644,16 @@ All the learned embeddings performed poorly on this task. Facetted embeddings we
 %
 %\caption{\subref{sfig:scaling_f} Effect of scaling factor for facetted embeddings on the correlation on wordsim353. \subref{sfig:weight_cap} Effect of weight cap for facetted embeddings on the correlation on wordsim353.}
 %\label{fig:correlation_change}
+%\end{figure}
+%
+%
+%\begin{figure}
+%\centering
+%\subcaptionbox{\label{sfig:full_men}}{
+%\includegraphics[width=0.7\linewidth , height=0.6\linewidth]{images/men_full.pdf}}
+%\subcaptionbox{\label{sfig:part_men}}{
+%\includegraphics[width=0.7\linewidth , height=0.6\linewidth]{images/men_part.pdf}}
+%
+%\caption{Correlation plot of the relatedness scores on MEN using the~\subref{sfig:full_men} full vectors and ~\subref{sfig:part_men} using type-specific vectors. Red highlights show the correlation with the human annotations.}
+%\label{fig:men_cor}
 %\end{figure}
