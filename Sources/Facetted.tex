@@ -331,10 +331,10 @@ P_{ i,j }=\left\{
 \end{equation} 
 \noindent
 Function $f$ is the edge normalization function. Like entity embeddings, we use two normalization functions: \\
-\begin{inparaenum}
+\begin{enumerate}
 \item  $f=\mathrm{id}$, identity function. We refer to these models as $f$DW$_{id}$, where $id$ shows the identity mapping. \\
 \item  $f=\log$, logarithmic normalization. These models are denoted by  $f$DW$_{log}$.\\
-\end{inparaenum}
+\end{enumerate}
 \noindent
 An example of the type-restricted random walk for type location is illustrated in Figure~\ref{fig:facetteddeepwalk}. Any nodes in the random walk have to be a location to be visited, otherwise, it is disregard. Hence, by creating a type specific corpus with the type-restricted random walk, we can train a skip-gram model that learns the representation of all nodes with regards to a single entity type. By repeating this process for all node types and concatenating the results we achieve the faceted model.
 \begin{figure}
