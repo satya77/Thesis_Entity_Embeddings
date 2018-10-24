@@ -590,7 +590,7 @@ A & George W. Bush & 0.74 && T & presidency     & 0.78 && A & Hillary Clinton   
 To analysis the separate components of faceted embeddings and investigate the semantics behind them, we consider visualizing the clustering task and analysing the neighbourhood for entities. In both cases, we look at the full embeddings with all the components concatenated and also analyse each component separately to understand how the different types of entities surrounding a word can contribute to its semantics and affect it's relations to other entities.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Entity clustering} 
-One way to understand which component is significant for representation of entities is to asses which component clusters the similar entities in the embedding. To achieve this, we project the full and partial embeddings of each component for the Cities dataset, which contains location entities, in a 2-dimensional space using t-SNE. The projection for  $f$DW$_{log}$ and $f$W2V are shown in Figure~\ref{fig:clust_fword2vec} and  Figure~\ref{fig:clust_fdeepwalk}, respectively. The subscript shows the embedding component that is used, e.g., $f$W2V$_{ACT}$ corresponds to facetted word2vec, using only the actor component and $f$W2V indicates the full embedding. Since the performance of $f$DW$_{id}$ and  $f$DW$_{log}$ are similar, we only illustrate the result for $f$DW$_{log}$. For both faceted models, it is not obvious what each component represents. None of the components of  $f$DW$_{log}$ form any meaningful cluster, however, the distinction between the three countries is somewhat visible for the location component. The faceted word2vec clearly indicates that dates surrounding a city name are not a good factor for their distinction as all the names are mapped to the same point. Two separate clusters are visible for the location component of $f$W2V, but they are not separated by the county of origin as both clusters are mixture of all three countries. In general, for the faceted models the visualization of the full embedding is closely related to term component, which is the dominate part in these models. 
+One way to understand which component is significant for representation of entities is to asses which component clusters the similar entities in the embedding. To achieve this, we project the full and partial embeddings of each component for the Cities dataset, which contains location entities, in a 2-dimensional space using t-SNE. The projection for  $f$DW$_{log}$ and $f$W2V are shown in Figure~\ref{fig:clust_fword2vec} and  Figure~\ref{fig:clust_fdeepwalk}, respectively. The subscript shows the embedding component that is used, e.g., $f$W2V$_{ACT}$ corresponds to facetted word2vec, using only the actor component and $f$W2V indicates the full embedding. Since the performance of $f$DW$_{id}$ and  $f$DW$_{log}$ are similar, we only illustrate the result for $f$DW$_{log}$. For both faceted models, it is not obvious what each component represents. None of the components of  $f$DW$_{log}$ form any meaningful cluster, however, the distinction between the three countries is somewhat visible for the location component. The faceted word2vec clearly indicates that dates surrounding a city name are not a good factor for their distinction as all the names are mapped to the same point. Two separate clusters are visible for the location component of $f$W2V, but they are not separated by the county of origin as both clusters are mixture of all three countries. In general, for the faceted models the visualization of the full embedding is closely related to term component, which is the dominate part in these models.
 \begin{figure}[t]
 \centering
 \subcaptionbox{$f$W2V$_{ACT}$\label{sfig:fword2vec_act_tsne}}{
@@ -629,7 +629,20 @@ One way to understand which component is significant for representation of entit
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Entity neighbourhoods} 
-To analyse the proximity of embeddings based on different components, we investigate the most similar words by cosine similarity to the example actor entity \emph{Barach Obama}. A list of top five words for the faceted models with full embedding and $r$W2V and $r$GLV is shown in Table~\ref{tbl:obama_faceted}. Same as the entity embeddings, the faceted models are more focused on entity relations, whereas the word embeddings on raw text retrieve synonymous terms. Although the $f$DW$_{id}$ tends to contain some terms in the top result, with the log normalization the result become close to $f$W2V,which mostly contains former presidents, the presidential candidate for 2016 election and other democrat politicians. In Table~\ref{tbl:obama_faceted_p} we look at the top five results based on separate components for $f$W2V and $f$DW$_{log}$, where the subscript indicates the component that is used to find the nearest neighbours. $f$DW$_{id}$ produces similar results and, thus, is not demonstrated. 
+\begin{figure}[t]
+\centering
+\subcaptionbox{$r$W2V\label{sfig:obama_w2v_r}}{
+\includegraphics[width=0.30\linewidth , height=0.28\linewidth]{images/obama_w2v_r.pdf}}\hspace{12pt}%
+\subcaptionbox{$f$W2V\label{sfig:obama_fw2v}}{
+\includegraphics[width=0.30\linewidth , height=0.28\linewidth]{images/obama_fw2v.pdf}}\hspace{12pt}%
+\subcaptionbox{$f$DW$_{log}$\label{sfig:obama_fdw}}{
+\includegraphics[width=0.30\linewidth , height=0.28\linewidth]{images/obama_fdw.pdf}}
+\caption{t-SNE projections of the nearest neighbours of entity \emph{Barack Obama} for faceted embeddings.
+}
+\end{figure}
+\label{fig:obama_faceted}
+%\vspace*{-15pt}
+To analyse the proximity of embeddings based on different components, we investigate the most similar words by cosine similarity to the example actor entity \emph{Barach Obama}. A list of top five words for the faceted models with full embedding and $r$W2V and $r$GLV is shown in Table~\ref{tbl:obama_faceted}. Same as the entity embeddings, the faceted models are more focused on entity relations, whereas the word embeddings on raw text retrieve synonymous terms. Although the $f$DW$_{id}$ tends to contain some terms in the top result, with the log normalization the result become close to $f$W2V,which mostly contains former presidents, the presidential candidate for 2016 election and other democrat politicians. In Table~\ref{tbl:obama_faceted_p} we look at the top five results based on separate components for $f$W2V and $f$DW$_{log}$, where the subscript indicates the component that is used to find the nearest neighbours. $f$DW$_{id}$ produces similar results and, thus, is not demonstrated. We observe an interesting trend in $f$W2V, where the type of the most similar entity to a word is dependent on the component type. Most similar entities to \emph{Barack Obama} in the date components are dates themselves, including $2005$ when his career in United States Senate begin. The same applies for locations, organisation and actors, where most of retrieve entities share the type of the component. For example, locations such as South Sudan in the location component or  \emph{United States Congress} for the organisation. It appears that the topic of Embassy in  \emph{Benghazi} is dominate in the data as the dates $2011-07-09$, actors  \emph{Ben Rhodes} and  \emph{Hillary Clinton} and location  \emph{South Sudan} are all considered as relevant entities to \emph{Barack Obama}. In case of $f$DW$_{log}$, the effect of component type is less visible, with only the actor component containing only actors as it's top five. The actors have no obvious connection to \emph{Barack Obama}, except \emph{Glenn Hutchins}, which was an advisor to \emph{Bill Clinton} and probably for that reason shows up in the result. The unrelated results of DeepWalk based models may lie in the structure of the co-occurrence graph and the type restricted random walk. Since we restricted the random walk to only edges that have a specific entity type as the end node for each component we focus on very limited information. For example, to perform a type restricted random walk for actors from the start node of  \emph{Barack Obama}, we retrieve actors that connected through other actors. Therefore, results, such as \emph{Glenn Hutchins} that are not a result of direct connection show up in the result.
 \begin{table}[t]
 \caption{Four nearest neighbours of entity \emph{Barack Obama} with cosine similarity scores for faceted models and embeddings on raw text. Entity types include terms T and actors A.}
 \label{tbl:obama_faceted}
@@ -655,6 +668,7 @@ T & bush       & 0.55 &&  T & elect          & 0.66 && A & George W. Bush & 0.87
 \end{table}
 
 
+
 \begin{table}[t]
 \caption{Four nearest neighbours of entity \emph{Barack Obama} with cosine similarity scores .for separate components of $f$W2V and $f$DW$_{log}$. Entity types include terms T, actors A , and locations L, organisations O, dates D.}
 \label{tbl:obama_faceted_p}
@@ -673,7 +687,7 @@ L &White House & 0.97&& L & White House & 0.98 && T & 0324 & 0.77  && A & White 
 T & democratic & 0.96&&  A & Donald Trump & 0.92&& L & St. John's Episcopal Church & 0.76 && A & Donald Trump & 0.93 && D & 2008-06-08 & 0.57\\
 T & presidential & 0.95 &&  L & Washington, D.C. & 0.92&& D & 2011-07-09 & 0.73 && O & U.S House of Representatives & 0.93 && D & 2005 & 0.56\\
 A & George W. Bush & 0.94 && A & Ben Rhodes & 0.91&& L & South Sudan & 0.72 && O & U.S Congress & 0.93 && D & 1865-05 & 0.56 \\
-T & republican & 0.94&&  A & Hillary Clinton & 0.91 && L & Palazzo Grassi & 0.71&& A & fHillary Clinton & 0.93&& D & 1970 & 0.55\\
+T & republican & 0.94&&  A & Hillary Clinton & 0.91 && L & Palazzo Grassi & 0.71&& A & Hillary Clinton & 0.93&& D & 1970 & 0.55\\
 \bottomrule         
 \end{tabular}%
 }
@@ -691,11 +705,15 @@ L &Philadelphia & 0.94&& A & Daniel M. Ashe & 0.92 && T & decades & 0.97  && A &
 L & Pennsylvania & 0.94&&  A & Hefty Stuart & 0.90&& T & reported & 0.97 && L & New York City & 0.96 && L & Alabama & 0.99\\
 D & 2016-07 & 0.92 &&  A & Elena Bromund & 0.90&& T & statement & 0.96 && T & according & 0.95 && T & party & 0.99\\
 L & New York City & 0.92 && A & Brendan O'Connor & 0.90&& T & rally & 0.96 && A & Donald Trump & 0.95 && T & timeline & 0.98 \\
-O & United States Congress & 0.92 &&  A & Glenn Hutchins & 0.90 && T & according & 0.96&& L & Benghazi & 0.95&& D & kept & 0.98\\
+O & United States Congress & 0.92 &&  A & Glenn Hutchins & 0.90 && T & according & 0.96&& L & Benghazi & 0.95&& T & kept & 0.98\\
 \bottomrule         
 \end{tabular}%
 }
 \end{table}
+\section{Summary}\label{sec:eval_summary}
+In this chapter, we reported the results of intrinsic evaluation on entity embeddings and faceted embeddings, we compare them against the state-of-the-art word embedding methods on popular tasks. In addition, we investigated the characteristics of each method through exploratory analysis and visualization.\\
+In general, while the word embedding on raw text capture the similarity among words well, they tend to map the synonymous words closer in the embedding space, while models on the annotated corpus (faceted and entity embeddings) focus on association among entities. Models that use the co-occurrence graphs from annotated text as input, in particular, focus on relatedness and are more entity oriented, and tend produce better results on entity-centric analogy task. In addition, they are able retrieve associated entities with a neighbourhood search. Nonetheless, for most term-based intrinsic tasks, the normal word embedding are the better choice.\\
+Faceted models share many similarity with the entity embedding, in terms of capturing relatedness and good performance on entity-centric analogy task. However, overall they perform poorly on most word similarity and categorization tasks. These models retrieve related entities with a neighbourhood search and have the extra advantage of separable components. Through studying the component separately, we show that for the most term-based intrinsic task the most important entity type is term. Although components other than term are not significant for the term-based  evaluations, they can be used to search the neighbourhood of a word based on entity types. $f$W2V is notably good at retrieving entities of a particular type with nearest neighbour search in the relevant subspace.
 %-----removed parts 
 %
 %\begin{figure}
