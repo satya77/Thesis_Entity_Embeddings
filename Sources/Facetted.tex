@@ -1,19 +1,19 @@
-
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Faceted Embedding Model}\label{chap:faceted}
-To further understand the effect of each entity type on the meaning of a word and as an effort to make the dimension of entity embeddings more interpretable, we experimented with creating embeddings with separable parts. Although we could not compete with the normal word embeddings in performance, by studying these models we gain some insights about the significance of each entity type for vector representations of words. In order to create these faceted models, we modify the well-established word embedding and graph-embedding techniques. In Section~\ref{sec:faceted_overview}, an overview of the objectives is given. In Section~\ref{sec:faceted_glove}, the first model based on the GloVe word embedding is proposed. For the faceted GloVe, we experiment with different cost functions, but as we later see in Chapter~\ref{chap:eval}, this method fails to produce promising results and is disregard. Nevertheless, the full description of the different variations of the model is explained in Section~\ref{sec:faceted_glove}. In Section~\ref{sec:faceted_word2vec}, a faceted model based on word2vec is introduced, which is more promising in comparison to faceted GloVe. Since the graph-based embeddings performed the best for entity-based embeddings, we experiment with DeepWalk to generate similar embeddings for the faceted model in Section~\ref{sec:faceted_deepwalk}. For all models, the modifications to the original techniques and training procedures are discussed. 
-
+To further understand the effect of each entity type on the meaning of a word and as an effort to make the dimension of entity embeddings more interpretable, we experimented with creating embeddings with separable parts. By studying these models we gain some insights about the significance of each entity type for vector representations of words and explore if the embedding can be efficiently divided based on these types. In order to create these faceted models, we modify the well-established word embedding and graph-embedding techniques. In Section~\ref{sec:faceted_overview}, an overview of the objectives is given. In Section~\ref{sec:faceted_glove}, the first model based on the GloVe word embedding is proposed. For the faceted GloVe, we experiment with different cost functions, to obtain good performance. In Section~\ref{sec:faceted_word2vec}, a faceted model based on word2vec is introduced, which takes the edges of a co-occurrence graph as input. Since the graph-based embeddings performed the best for entity-based embeddings, we experiment with DeepWalk to generate similar embeddings for the faceted model in Section~\ref{sec:faceted_deepwalk}. For all models, the modifications to the original techniques and training procedures are discussed. 
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Overview and Objectives}\label{sec:faceted_overview}
-Faceted embeddings are word embeddings, where each dimension represents the relation of the embedded word to a specific type of entities surrounding it. Which types are considered during training is arbitrary, but for the purpose of this work, we choose to contain actors, locations, organisations, dates, and terms, since these types are available by the LOAD model. One visual example of such an embedding ($w$) for a corpus containing types of actor (ACT), location (LOC), organisation (ORG), date (DAT) and term (TER) is shown below: \\
-\mathleft
-\begin{equation}
-w=\left[ \underbrace { \begin{matrix}{ a }_{ 1,1 } ... { a }_{ 1,M } \end{matrix} } |\underbrace { \begin{matrix}{ a }_{ 1,M+1 } ... { a }_{ 1,2M } \end{matrix} } |\underbrace { \begin{matrix}{ a }_{ 1,2M+1 } ... { a }_{ 1,3M } \end{matrix} } |\underbrace { \begin{matrix}{ a }_{ 1,3M+1 } ... { a }_{ 1,4M } \end{matrix} } |\underbrace { \begin{matrix}{ a }_{ 14M+1 } ... { a }_{ 1,5M } \end{matrix} }  \right] 
-\label{eq:concat_vec}
-\end{equation}
-$$ \quad  \mathrm{ACT} \quad  \qquad  \mathrm{LOC}\qquad \qquad \mathrm{ORG}\qquad \quad \qquad \mathrm{DAT}\qquad \quad  \qquad  \mathrm{TER}\qquad \qquad$$
-\mathcenter
-With this separation of parts, the embeddings stand to be more interpretable. Interpretability to this day remains a challenge for vector space models. In the work of~\brackettext{\cite{DBLP:journals/corr/FaruquiTYDS15}} transformation of word vectors into sparse (and optionally binary) vectors is proposed. Each vector is projected into an over-complete binary vector, where each dimension represents a feature similar to ones used in traditional NLP systems but found automatically during training. However, since their dimensions are binary valued, there is no notion of the extent to which a word participates in a particular dimension. Later, a model based on rotating the word vectors was introduced in order to improve the interpretability.~\brackettext{\cite{DBLP:conf/emnlp/ParkBO17}}. Followed by a neural network-based approach to the problem by using sparse auto-encoders~\brackettext{\cite{DBLP:conf/aaai/SubramanianPJBH18}}. Although these works shine some light on the potential meaning of each dimension, they focus purely on terms. Whereas, we try to generate embeddings that each part reflects the word related to entities of a certain type and takes more than terms into account. \\
-An illustration of a faceted embedding for the entity \emph{``Donald Trump"} is shown in Figure~\ref{fig:faceted_emb}. The center word is the entity \emph{``Donald Trump"} marked in red and each type is annotated with the different color in the text. Any word that is not an entity or a date is considered a term. Ideally, a faceted model is able to capture the surrounding relation for each type separately in different components of the vector. \\
-Provided that the most common dimension for word embeddings are between $100$ to $300$, to maintain the same order of dimension in faceted embeddings all the different parts have the same dimension but in a lower magnitude ($20$ to $50$). These small embeddings are concatenated as shown in Figure~\ref{fig:faceted_emb} to create the final embedding. Each part is independent of the rest and is usually trained separately. As explained in Chapter~\ref{chap:background}, the aim of the word embedding is to reduce the high dimensional space of text and embed words into a meaningful space, where words with similar meaning are mapped to points close to each other. In the case of faceted embedding, it is as if we are dividing the textual space into all possible entity types, where each subspace contains only entities of a specific type. To put it differently, the space of all terms $T$ is represented as $T=A\bigcup  L\bigcup  \bigcup  O\bigcup  D\bigcup  \acute {N} $, where $A$,$L$,$O$,$D$ are the sets of all actors, locations, organisations and, dates, respectively and $ \acute {N}$ denotes all the words which are not a named-entity. The goal is then to map each word into all the subspaces, where words that co-occur with the same entities of a specific type are mapped closer together. Since all the subspaces are independent of each other (e.g., space of all actors does not have any of the location entities inside it), each embedding learned on the different subspace is also independent. Hence, it is perfectly reasonable that two words are close in one subspace and far in another. 
+Word embedding are in general very ambiguous, it is unknown what the value in the vector representation indicate, if each value corresponds to a distinct attribute of the word or shows the to what degree each word belongs to a certain group. We introduce the faceted embedding models to address this problems, where we divide the word embedding into components that show a pre-defined attribute of each word, namely its relation to entities with specific type. 
+\begin{figure}
+\centering 
+\resizebox{0.97\textwidth}{0.16\textwidth}{      
+\input{images/facetted_pipeline.tex}
+}
+\caption{Pipeline for generating faceted embeddings. The first step is the annotation of the raw text with POS tagging, entity recognition, and disambiguation. A co-occurrence graph is extracted, which is used as input for node embedding or variation of word embedding methods.   }
+\label{fig:facetted_pipeline}
+\end{figure}
+Since we are looking at entity-based relations, the corpus should be annotated with named entities. A general pipeline of the approach is shown in Figure~\ref{fig:facetted_pipeline}, where the entity recognition and disambiguation is applied to the input text which is used to extract a co-occurrence graph. The graph representation of the corpus is then used by graph-based embeddings or variations of common word embedding techniques to generate a typed embedding, in which the instead of capturing the semantic of a word in relation to the entire vocabulary (as normal word embeddings do), we capture the semantic in relation to entities of a specific type. This process is repeated for all the entity type available for the model, which results into multiple embedding, each specific to a type. These embeddings can be concatenated to generate a final embedding or used separately based on the use-case scenario. \\
+Ideally, a faceted model is able to capture the surrounding relation for each type separately in different components of the vector, where the relation to entities that co-occur with a word would be captured by the corresponding component. An illustration of a faceted embedding for the entity \emph{``Donald Trump"} is shown in Figure~\ref{fig:faceted_emb}. The center word is the entity \emph{``Donald Trump"} marked in red and each type is annotated with the different color in the text. Any word that is not an entity or a date is considered a term. Each component is responsible for mapping the entity \emph{``Donald Trump"} in the neighbourhood of entities of a specific type that co-occur with it. \\
 \begin{figure}
 \centering 
 \resizebox{0.97\textwidth}{0.3\textwidth}{      
@@ -22,7 +22,7 @@ Provided that the most common dimension for word embeddings are between $100$ to
 \caption{Faceted embedding of the entity \emph{``Donald Trump"} for a short paragraph. Each part of the embedding corresponds to the relation of the center word to that specific type. Each entity type is illustrated with matching color in text and embedding. }
 \label{fig:faceted_emb}
 \end{figure} 
-Some of the potential advantages of analysing each part separately are as follows: 
+Some of the potential advantages and motivation for analysing each part separately are as follows: 
 \begin{compactitem}
 \item \emph{Interpretability of relations:} Since each part of the embedding vector encodes relations to one of the entity types, e.g., the actors part only encodes the actors in the context of a word. Through this separate components, the relations between two word or entities become more interpretable. Any similarity measure to compare two word vectors can be applied to each component separately. Thus, the similarity of the words can be broken down into their different attributes. If two entities are closer in location space and farther in actors space, it is possible that they are situated close locally, but are not related to the same people. \\
 
@@ -32,70 +32,124 @@ Some of the potential advantages of analysing each part separately are as follow
 
 \item \emph{Flexible neighbourhood search:} With faceted models, the search for a similar word or entity becomes more flexible. Same as the embedding space, the search space can be divided into various types, where one can look for neighbours in a specific context. The type-specific information can be used in the search, where one can query for entities that are closer to a certain word in the temporal or location aspect. For example, \emph{``Washington''} as a political person should appear more often with the same actors and has a different actor dimension than \emph{``Washington DC''} as a location. The standard embedding treats all the word equally and therefore cannot reflect this type of similarity. Since the dimensions are independent and can be combined in an arbitrary way, a combination of different dimensions can tailor the search results further and create a type-specific search. 
 \end{compactitem}
+To achieve this type of embeddings, we define faceted embeddings as word embeddings, where each dimension represents the relation of the embedded word to a specific type of entities surrounding it. Which types are considered during training is arbitrary, but for the purpose of this work, we choose to contain actors, locations, organisations, dates, and terms, since these types are available by the LOAD model. An example of such an embedding vector ($w$) for a corpus containing types of actor (ACT), location (LOC), organisation (ORG), date (DAT) and term (TER) is shown below: \\
+\mathleft
+\begin{equation}
+w=\left[ \underbrace { \begin{matrix}{ a }_{ 1,1 } ... { a }_{ 1,M } \end{matrix} } |\underbrace { \begin{matrix}{ a }_{ 1,M+1 } ... { a }_{ 1,2M } \end{matrix} } |\underbrace { \begin{matrix}{ a }_{ 1,2M+1 } ... { a }_{ 1,3M } \end{matrix} } |\underbrace { \begin{matrix}{ a }_{ 1,3M+1 } ... { a }_{ 1,4M } \end{matrix} } |\underbrace { \begin{matrix}{ a }_{ 14M+1 } ... { a }_{ 1,5M } \end{matrix} }  \right] 
+\label{eq:concat_vec}
+\end{equation}
+$$ \quad  \mathrm{ACT} \quad  \qquad  \mathrm{LOC}\qquad \qquad \mathrm{ORG}\qquad \quad \qquad \mathrm{DAT}\qquad \quad  \qquad  \mathrm{TER}\qquad \qquad$$
+\mathcenter
+Provided that the most common dimension for word embeddings are between $100$ to $300$, to maintain the same order of dimension in faceted embeddings all the different parts have the same dimension but in a lower magnitude ($20$ to $50$). These small embeddings are concatenated to create the final embedding. Each part is independent of the rest and is usually trained separately.
+With these independent components, the embeddings stand to be more interpretable. Although a model that divides the embedding space into entity types has not been studied, some work has been done to make the vector representations more interpretable. In the work of Frauqui et al. transformation of word vectors into sparse (and optionally binary) vectors is proposed~\brackettext{\cite{DBLP:journals/corr/FaruquiTYDS15}}. Each vector is projected into an over-complete binary vector, where each dimension represents a feature similar to ones used in traditional NLP systems but found automatically during training. However, since their dimensions are binary valued, there is no notion of the extent to which a word participates in a particular dimension. Later, a model based on rotating the word vectors was introduced in order to improve the interpretability.~\brackettext{\cite{DBLP:conf/emnlp/ParkBO17}}. Recently, a neural network-based approach to the problem was introduced by using sparse auto-encoders~\brackettext{\cite{DBLP:conf/aaai/SubramanianPJBH18}}. Although these works shine some light on the potential meaning of each dimension, they focus purely on terms. whereas, we generate embeddings that each part reflects the word related to entities of a certain type and takes more than terms into account. As explained in Chapter~\ref{chap:background}, the aim of the word embedding is to reduce the high dimensional space of text and embed words into a meaningful space, where words with similar meaning are mapped to points close to each other. In the case of faceted embedding, it is as if we are dividing the textual space into all possible entity types, where each subspace contains only entities of a specific type. To put it differently, the space of all words $V$ is represented as $V=A\bigcup  L\bigcup  O\bigcup  D\bigcup \overline {N} $, where $A$,$L$,$O$,$D$ are the sets of all actors, locations, organisations and, dates, respectively and $ T=\overline{N}$ denotes all the words which are not a named entity. The goal is then to map each word into all the subspaces, where words that co-occur with the same entities of a specific type are mapped closer together. Since all the subspaces are independent of each other (e.g., the space of all actors does not have any of the location entities inside it), each embedding learned on the different subspace is also independent. Hence, it is perfectly reasonable that two words are close in one subspace and far in another. \\
 In the remainder of this chapter, we aim to introduce faceted models as a general framework for learning embeddings with known types and separable dimensions. To create such embeddings we propose three approaches, two of which are based on word embedding models and one use the graph embedding techniques: 
 \begin{compactenum}
 \item Modifying the cost function of the GloVe model to train a separate embedding for each entity type on an annotated corpus. Although the original GloVe uses the word co-occurrence matrix as input, we transform the model to use the adjacency matrix of a co-occurrence graph. 
 \item Using a variation of the word2vec model, which supports an arbitrary definition of context for each word to train an embedding for each entity type. This model is also trained on a corpus annotated with named entities.
 \item Extracting a co-occurrence graph from the annotated text and modifying the graph embedding model to generate embeddings based on neighbours of a specific type. 
 \end{compactenum}
-Although we explain all three models in this chapter, it is worth noting that the GloVe based model was disregarded early on, because of lack of performance. We see in Chapter~\ref{chap:eval} that faceted embeddings although more interpretable, are less likely to perform well on common evaluation tasks. 
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Faceted GloVe}\label{sec:faceted_glove}
-In the previous chapter, we indicated that the LOAD edge weight captures the corpus relations similar to the co-occurrence matrix and that meaning components can be extracted from them. In this chapter, we use this knowledge to create faceted embeddings from the weighted adjacency matrix of the LOAD graph. In the first part, the construction of a weighted adjacency matrix is illustrated followed by the model definition. We denoted the faceted GloVe model by $f$GLV, where \emph{``f"} indicates the faceted model. The proposed model contains two type of cost functions, that are discussed separately in Section~\ref{sec:normal_cost} and~\ref{sec:unified_cost}. 
+In the previous chapter, we indicated that the LOAD edge weight captures the corpus relations similar to the co-occurrence matrix and that meaning components can be extracted from them. In this chapter, we use this knowledge to create faceted embeddings from the weighted adjacency matrix of the LOAD graph. In the first part, the construction of a weighted adjacency matrix is illustrated followed by the model definition. We denote the faceted GloVe model by $f$GLV, where \emph{``f"} indicates the faceted model. The proposed model contains two type of cost functions, that are discussed separately in Section~\ref{sec:normal_cost} and~\ref{sec:unified_cost}. \\
+The complete training task can be formulated in four steps: 
+ \begin{enumerate}        
+ \item Extraction of co-occurrence matrices for different types, explained in Section~\ref{sec:adj_matrix}. 
+ \item For each type, a GloVe based embedding is learned using either a separate or unified cost function, discussed separately in Section~\ref{sec:normal_cost} and~\ref{sec:unified_cost}. 
+ \item The context embedding is kept and the focal embedding is either disregarded to added with focal addition, discussed in Section~\ref{sec:faceted_embeddings}.
+ \item The results of the third step are different embeddings for each type, which can be concatenated to generate the final faceted embedding. 
+ \end{enumerate}
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Weighted Adjacency Matrix}\label{sec:adj_matrix}
-To learn the embeddings, a weighted adjacency matrix for each type of entity and term is needed (ACT, LOC, TER, ORG, DAT). The matrices are constructed based on the weighted edge list of the co-occurrence graph, where the weights can be co-occurrence counts (identical to the GloVe model) or, any other distance measure defined by the graph. For example, the weighted adjacency matrix for actors contains the edges that have an actor as start nodes and any other type as the end node. Since the co-occurrence graphs are mostly undirected, the same edge exists in the opposite direction. For instance, an edge between an actor and a term is repeated twice and will be used once to create the actor matrix and once to create the term matrix. More formally, the matrices can be constructed as shown in Figure~\ref{fig:co-matrix}, where the entries of the matrices are the edge weights between two words.  
+To learn the embeddings, a weighted adjacency matrix for each type of entity and term is needed (ACT, LOC, TER, ORG, DAT). The matrices are constructed based on the weighted edge list of the co-occurrence graph, where the weights can be co-occurrence counts (identical to the GloVe model) or, any other distance measure defined by the graph. For example, the weighted adjacency matrix for actors contains the edges that have an actor as start nodes and any other type as the end node. Since in this thesis we use undirected co-occurrence graphs, the same edge exists in the opposite direction. For instance, an edge between an actor and a term is repeated twice and will be used once to create the actor matrix and once to create the term matrix. More formally, the matrices can be constructed as shown in Figure~\ref{fig:co-matrix}, where the entries of the matrices are the edge weights between two words.  
 \begin{figure}
-\[\mathrm{ACT}=
-\begin{blockarray}{cccccccc}
- &\mathrm{TER}_1  & \color{myblue}{ \mathrm{ORG}_1 } &  \mathrm{TER}_2  & \mathrm{ACT}_1 & \mathrm{DAT}_1 & \mathrm{LOC}_1 & ... \\
-\begin{block}{c(ccccccc)}
-  \mathrm{ACT}_1 &m_{00} & \color{myblue}{ m_{01}}  &  m_{02} & m_{03} & m_{04} &m_{00}& ... \\
-  \mathrm{ACT}_2 & m_{10} & \color{myblue}{ m_{11} } &  m_{12} & m_{13} & m_{14} &m_{15}& ... \\
-  \mathrm{ACT}_3 & m_{20} &  \color{myblue}{m_{21} } &  m_{22} & m_{23} & m_{24} &m_{25}& ... \\
-  .. & ... &  \color{myblue}{...}  &  ... & ... & ... &...& ... \\
-\end{block}
-\end{blockarray}
- \]
-\[\mathrm{ORG}=
-\begin{blockarray}{cccccccc}
- &\mathrm{TER}_1  & \color{myblue}{ \mathrm{ORG}_1} &  \mathrm{TER}_2  & \mathrm{ACT}_1 & \mathrm{DAT}_1 & \mathrm{LOC}_1 & ... \\
-\begin{block}{c(ccccccc)}
-  \mathrm{ORG}_1 &m_{00} & \color{myblue}{ m_{01}}  &  m_{02} & m_{03} & m_{04} &m_{00}& ... \\
-  \mathrm{ORG}_2 & m_{10} & \color{myblue}{ m_{11} } &  m_{12} & m_{13} & m_{14} &m_{15}& ... \\
-  \mathrm{ORG} _3& m_{20} &  \color{myblue}{m_{21} } &  m_{22} & m_{23} & m_{24} &m_{25}& ... \\
-  .. & ... &  \color{myblue}{...}  &  ... & ... & ... &...& ... \\
-\end{block}
-\end{blockarray}
- \]
- \[\mathrm{DAT}=
-\begin{blockarray}{cccccccc}
- &TER1  & \color{myblue}{ \mathrm{ORG}_1} &  \mathrm{TER}_2  & \mathrm{ACT}_1 & \mathrm{DAT}_1 & \mathrm{LOC}_1 & ... \\
-\begin{block}{c(ccccccc)}
-  \mathrm{DAT}_1 &m_{00} & \color{myblue}{ m_{01}}  &  m_{02} & m_{03} & m_{04} &m_{00}& ... \\
-  \mathrm{DAT}_2 & m_{10} & \color{myblue}{ m_{11} } &  m_{12} & m_{13} & m_{14} &m_{15}& ... \\
-  \mathrm{DAT}_3 & m_{20} &  \color{myblue}{m_{21} } &  m_{22} & m_{23} & m_{24} &m_{25}& ... \\
-  .. & ... &  \color{myblue}{...}  &  ... & ... & ... &...& ... \\
-\end{block}
-\end{blockarray}
- \]
- \caption{Faceted weighted adjacency matrix. For each type of entity a weighted adjacency matrix is created, which contains all the entities of that type on the rows and all the words in the vocabulary in the rows.}
+%\[\mathrm{ACT}=
+%\begin{blockarray}{cccccccc}
+% &\mathrm{TER}_1  & \color{myblue}{ \mathrm{ORG}_1 } &  \mathrm{TER}_2  & \mathrm{ACT}_1 & \mathrm{DAT}_1 & \mathrm{LOC}_1 & ... \\
+%\begin{block}{c(ccccccc)}
+%  \mathrm{ACT}_1 &m_{00} & \color{myblue}{ m_{01}}  &  m_{02} & m_{03} & m_{04} &m_{00}& ... \\
+%  \mathrm{ACT}_2 & m_{10} & \color{myblue}{ m_{11} } &  m_{12} & m_{13} & m_{14} &m_{15}& ... \\
+%  \mathrm{ACT}_3 & m_{20} &  \color{myblue}{m_{21} } &  m_{22} & m_{23} & m_{24} &m_{25}& ... \\
+%  .. & ... &  \color{myblue}{...}  &  ... & ... & ... &...& ... \\
+%\end{block}
+%\end{blockarray}
+% \]
+%\[\mathrm{ORG}=
+%\begin{blockarray}{cccccccc}
+% &\mathrm{TER}_1  & \color{myblue}{ \mathrm{ORG}_1} &  \mathrm{TER}_2  & \mathrm{ACT}_1 & \mathrm{DAT}_1 & \mathrm{LOC}_1 & ... \\
+%\begin{block}{c(ccccccc)}
+%  \mathrm{ORG}_1 &m_{00} & \color{myblue}{ m_{01}}  &  m_{02} & m_{03} & m_{04} &m_{00}& ... \\
+%  \mathrm{ORG}_2 & m_{10} & \color{myblue}{ m_{11} } &  m_{12} & m_{13} & m_{14} &m_{15}& ... \\
+%  \mathrm{ORG} _3& m_{20} &  \color{myblue}{m_{21} } &  m_{22} & m_{23} & m_{24} &m_{25}& ... \\
+%  .. & ... &  \color{myblue}{...}  &  ... & ... & ... &...& ... \\
+%\end{block}
+%\end{blockarray}
+% \]
+% \[\mathrm{DAT}=
+%\begin{blockarray}{cccccccc}
+% &TER1  & \color{myblue}{ \mathrm{ORG}_1} &  \mathrm{TER}_2  & \mathrm{ACT}_1 & \mathrm{DAT}_1 & \mathrm{LOC}_1 & ... \\
+%\begin{block}{c(ccccccc)}
+%  \mathrm{DAT}_1 &m_{00} & \color{myblue}{ m_{01}}  &  m_{02} & m_{03} & m_{04} &m_{00}& ... \\
+%  \mathrm{DAT}_2 & m_{10} & \color{myblue}{ m_{11} } &  m_{12} & m_{13} & m_{14} &m_{15}& ... \\
+%  \mathrm{DAT}_3 & m_{20} &  \color{myblue}{m_{21} } &  m_{22} & m_{23} & m_{24} &m_{25}& ... \\
+%  .. & ... &  \color{myblue}{...}  &  ... & ... & ... &...& ... \\
+%\end{block}
+%\end{blockarray}
+% \]
+\centering 
+\resizebox{0.97\textwidth}{0.26\textwidth}{      
+\input{images/adj_matrix.tex}
+}
+ \caption{Faceted weighted adjacency matrix. For each type of entity a weighted adjacency matrix is created, which contains all the entities of that type on the rows and all the words in the vocabulary in the columns.}
  \label{fig:co-matrix}
 \end{figure}
-The columns marked in blue in matrices $\mathrm{ACT}\in R^{V_{\mathrm{ACT}}\times V}$ , $ORG\in R^{V_{\mathrm{ORG}}\times V}$  and $\mathrm{DAT}\in R^{V_{\mathrm{\mathrm{DAT}}}\times V}$ will be used to learn the actor, organisation and date part of the ORG$_1$embedding respectively. The complete vocabulary is divided into words belonging into each entity type. As a result, if $V$ is the size of the vocabulary and $V_{\mathrm{ACT}}$,$V_{\mathrm{LOC}}$ $V_{\mathrm{ORG}}$, $V_{\mathrm{DAT}}$, and $V_{\mathrm{TER}}$ are the number of actors, location, organization, dates, and terms in the graph, we will have $V=V_{\mathrm{ACT}}+V_{\mathrm{LOC}}+V_{\mathrm{ORG}}+V_{\mathrm{DAT}}+V_{\mathrm{TER}}$. The model will learn an embedding for all entities in the row and all entities in the column of the matrix. In case of a symmetric co-occurrence matrix the model learns the same embedding twice. Nevertheless, in our case the matrices are not symmetric and that leads to a definition of a new cost function, where this asymmetry is taken into account.
+The columns marked in blue in matrices $\mathrm{ACT}\in R^{|V_{\mathrm{ACT}}|\times |V|}$ , $ORG\in R^{|V_{\mathrm{ORG}}|\times |V|}$  and $\mathrm{DAT}\in R^{|V_{\mathrm{DAT}}|\times |V|}$ will be used to learn the actor, organisation and date part of the ORG$_1$embedding respectively. The complete vocabulary is divided into words belonging into each entity type. As a result, if $V$ is the complete vocabulary and $V_{\mathrm{ACT}}$,$V_{\mathrm{LOC}}$ $V_{\mathrm{ORG}}$, $V_{\mathrm{DAT}}$, and $V_{\mathrm{TER}}$ are the set of all actors, location, organization, dates, and terms in the graph, we will have $V=V_{\mathrm{ACT}}+V_{\mathrm{LOC}}+V_{\mathrm{ORG}}+V_{\mathrm{DAT}}+V_{\mathrm{TER}}$. The model will learn an embedding for all entities in the row and all entities in the column of the matrix. In case of a symmetric co-occurrence matrix the model learns the same embedding twice. Nevertheless, in our case the matrices are not symmetric and that leads to a definition of a new cost function, where this asymmetry is taken into account.
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Cost function of faceted embeddings}
 \label{sec:faceted_embeddings}
-For each different adjacency matrix, different embeddings need to be learned. To train all embeddings, two methods are proposed. First, training a network for each type separately and concatenating the outputs to generate the faceted embeddings. Second, train all the embeddings at once in a single network with a unified cost function. We refer to separate and unified cost function as $f$GLV$_{sep}$ and $f$GLV$_{uni}$, respectively. In the following, both methods are described in detail. Yet, the second method, despite the compactness, is slower than optimizing separate cost functions. It is worth noting that the switching between the training method has no effect on the quality of embeddings, only the training time. For the sake of completeness however, we present both methods. \\
+For each different adjacency matrix, different embeddings need to be learned. To train all embeddings, two methods are proposed. First, training a network for each type separately and concatenating the outputs to generate the faceted embeddings. Second, train all the embeddings at once in a single network with a unified cost function. We refer to separate and unified cost function as $f$GLV$_{sep}$ and $f$GLV$_{uni}$, respectively.  the second method, despite the compactness, is slower than optimizing separate cost functions. It is worth noting that the switching between the training method has no effect on the quality of embeddings, only the training time. For the sake of completeness however, we present both methods. Below we consider some alteration to the cost function of original GloVe that are considered to make faceted embedding possible and also to achieve better results. 
+\begin{compactitem}
+\item \emph{Asymmetry of context and focal embeddings:} Similar to GloVe embeddings for both context and focal are learned, but the focal embedding can no longer be naively summed up with the context. Instead, the focal embeddings can either be disregarded completely or added in a new way. For this purpose, we propose selectional addition, where the focal embedding of a certain type is only added to the corresponding embedding in the context. As an example, take the adjacency matrices in Section~\ref{sec:adj_matrix} as our input, then for the matrix ACT,  focal embedding will learn to encode each row, while the context will encode the columns. The rows of the matrix will represent embeddings of all the actors with respect to the whole vocabulary. We are interested in column embeddings that encode the actor part for all the words in our vocabulary, which is the purpose of this model. Focal embedding also contains information about the whole vocabulary, but only for the focal words (actors), adding back this information in terms of selectional addition is beneficial to the model. The selectional addition adds the focal embedding of a type only to the respective entities of that type in the context matrix. The rest of embeddings remain intact, because a corresponding embedding column for them in the focal matrix does not exist. A visualization of the focal addition for type actor can be seen in Figure~\ref{fig:focal_addition}.\\
+
+\item \emph{Final concatenation:} The output of the model is an embedding for each type. Therefore, these vectors can later be combined to generate the complete faceted embedding. As the embeddings are independent, the combination can be arbitrary with only the desired dimensions kept. \\
+
+\item \emph{Weighting function:} The weighting function ($f(X_{ij})$) is the weighting function for GloVe. The model is valid with or without the use of a weighting function, but since the weights of a co-occurrence graph are highly unbalanced, without a weighting function, very large weights will overpower the smaller ones and reduce performance. Therefore cutting off the weights at a certain threshold can to some extent balance out this effect. The hyperparameters of the weighting function should be tuned based on the dataset.\\
+
+\item \emph{Normalization:} Some variations to the model were experimented with, but because of extremely poor results were disregard. One of such approaches is edge weight normalization. In an attempt to boost performance, weights of the graph were normalized using logarithmic normalization. With normalization, we reduce the range of values, in which the weights fluctuate. Moreover, the gradient descent algorithm can converge more smoothly to the functions minimum. Unfortunately, adding the normalization for the GloVe model made the problem ill-conditioned and the algorithm could not converge to a solution and, therefore, is dismissed. The reason for this could be that the normalization $log$ might result in negative values. In the cost function, a second $log$ is applied to the inputs, and the $log$ of a negative number is undefined, resulting in undefined gradient updates and untrainable weights. Other than log normalization, a linear transformation like \emph{min max normalization} was also experimented. Min-max normalization forces all the weights to be between $0$ and $1$ and is calculated with Equation~\ref{eq:minmaxNom}, where $e=(e_1,...,e_n)$ is the set of input weights and $z_i$ is the $i$th normalized data. Unfortunately, adding this form of normalization does not improve the results and is also removed from the model.
+\begin{equation}
+z_{ i }=\frac { e_{ i }-min(e) }{ max(e)-min(e) } 
+\label{eq:minmaxNom}
+\end{equation}
+
+\item \emph{Adding $1$ to the logarithm:} The cost function applies a logarithm to the weights. For an edge weight of $1$ the $log(1)=0$. Therefore, we tested the model with the addition of $1$ to the $log$ of weights, to adjust for this effect. With this change, the cost function is changed to Equation~\ref{eq:log_plus}. Although in some cases this change improved the model performance, in other cases it generated poor results. More details about how this change affects the model is discussed in Section~\ref{sec:setup}. 
+\begin{equation}
+J_e=\sum _{ j=1 }^{ |V| }{}\sum _{ i=1 }^{ |V_f| }{ f({ X }_{ ij } } )(w_{ i }^{ T }\tilde{  w_{ j } } +b_{ i }+\tilde{  b_{ j } } -(log{ X }_{ ij }+1))^2
+\label{eq:log_plus}
+\end{equation}
+\end{compactitem}
+All the discussed alterations to the original cost function of GloVe can be applied to both unified and separate cost function. In the following, we discus the two cost functions for faceted GloVe and explain their difference. 
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Separate cost functions}
 \label{sec:normal_cost}
 
-The general cost function for a single network is the one used for the GloVe model with minor differences.
+The general cost function for a single network is the one used for the GloVe model with minor modifications.
 As noted in the previous section, context and focal embeddings are no longer symmetric like the GloVe model, since the size of context vocabulary is different from the focal. 
-By limiting the focal words to a certain type we try to infer the impact of that type on all the words and generate type-specific embeddings. Accordingly, the context embedding in each case reflects these type-specific properties for all words. The biases can no longer be symmetric as well. Therefore, the GloVe cost function can be re-written to Equation~\ref{eq:sep_cost}, where $V_e$ is the size of the focal vocabulary.
+By limiting the focal words to a certain type we try to infer the impact of that type on all the words and generate type-specific embeddings. Accordingly, the context embedding in each case reflects these type-specific properties for all words. The biases can no longer be symmetric as well. Therefore, the GloVe cost function can be re-written to Equation~\ref{eq:sep_cost}, where $V_f$ is the size of the focal vocabulary.
 \begin{equation}
-J_e=\sum _{ j=1 }^{ V }{}\sum _{ i=1 }^{ V_e }{ f({ X }_{ ij } } )(w_{ i }^{ T }\tilde{  w_{ j } } +b_{ i }+\tilde{  b_{ j } } -log{ X }_{ ij })^2
+J_e=\sum _{ j=1 }^{ |V| }{}\sum _{ i=1 }^{ |V_f| }{ f({ X }_{ ij } } )(w_{ i }^{ T }\tilde{  w_{ j } } +b_{ i }+\tilde{  b_{ j } } -log{ X }_{ ij })^2
 \label{eq:sep_cost}
 \end{equation}
-The cost function has to be minimized separately for each entity type. Thus, the training will contain a separate training phases for each type and a final concatenation. \\
-
+The cost function has to be minimized separately for each entity type. Thus, the training will contain a separate training phases for each type and a final concatenation. 
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Unified cost function  }
+\label{sec:unified_cost}
+The unified cost function is simply the summation of all the separate cost functions in the previous section, where $K$ is the set of all possible types, shown in Equation~\ref{eq:unified_cost}.
+\begin{equation}
+J=\sum _{ k=1 }^{ |K| }{J_k}=\sum _{ k=1 }^{ |K| }{}\sum _{ j=1 }^{ |V| }{}\sum _{ i=1 }^{ |V_f| }{ f({ X }_{ ij } } )(w_{ i }^{ T }\tilde{  w_{ j } } +b_{ i }+\tilde{  b_{ j } } -log{ X }_{ ij })^2
+\label{eq:unified_cost}
+\end{equation}
+As a result, all embeddings can be generated with a single network. For a better understanding of the differences between the methods a visual comparison is shown in Figures~\ref{fig:separate_cost} and~\ref{fig:unified_cost} for a loss on a single input. Each input is an edge with its corresponding weight, if the input has the starting node of type actor, the rest of the layers related to other types of embeddings will be frozen during training and only the weights for the actor network will be updated through backpropagation. Hence, it is as if all the networks were trained separately.  \\
+In Figure~\ref{fig:separate_cost}, two networks are shown as an example. A single edge refers to two embeddings, one for the focal (start node) and one for the context (end node). Each network is trained separately and a final embedding for a single context word is the concatenation of all learned embeddings. \\
+In contrast, in Figure~\ref{fig:unified_cost}, one network with five times more parameters is trained, where each input edge only affects the weight of the network associated with the focal word (start node). Therefore, an edge between an actor and term does not affect the location related embedding. Since the edges are undirected, the edge in the opposite direction will be fed as an input to the term network and hence no information is lost. All other aspects discussed for faceted embeddings with a separate cost function (focal addition, normalization and \dots) also applies to the unified cost function.
 \begin{figure}
 {\small 
 \tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
@@ -103,27 +157,7 @@ The cost function has to be minimized separately for each entity type. Thus, the
 }
 \caption{Selectional addition of focal and context embedding in case of the actor embeddings. ACT$_1$ is shown as an example, where embeddings in focal and context matrices are combined to make the final embedding.} \label{fig:focal_addition}
 \end{figure}
-\noindent
-\begin{compactitem}
 
-\item \emph{Asymmetry of context and focal embeddings:} Similar to GloVe embeddings for both context and focal are learned, but the focal embedding can no longer be naively summed up with the context. Instead, the focal embeddings can either be disregarded completely or added in a new way. For this purpose, we propose selectional addition, where the focal embedding of a certain type is only added to the corresponding embedding in the context. As an example, take the adjacency matrices in Section~\ref{sec:adj_matrix} as our input, then for the matrix ACT,  focal embedding will learn to encode each row, while the context will encode the columns. The rows of the matrix will represent embeddings of all the actors with respect to the whole vocabulary. We are interested in column embeddings that encode the actor part for all the words in our vocabulary, which is the purpose of this model. Focal embedding also contains information about the whole vocabulary, but only for the focal words (actors), adding back this information in terms of selectional addition is beneficial to the model. The selectional addition, adds the focal embedding of a type, only to the respective entities of that type in the context matrix. The rest of embeddings remain intact, because a corresponding embedding column for them in the focal matrix does not exist. A visualization of the focal addition for type actor can be seen in Figure~\ref{fig:focal_addition}.\\
-
-\item \emph{Final concatenation:} The output of the model is an embedding for each type. Therefore, these vectors can later be combined to generate the complete faceted embedding. As the embeddings are independent, the combination can be arbitrary with only the desired dimensions kept. \\
-
-\item \emph{Weighting function:} The weighting function ($f(X_{ij})$) is the weighting function for GloVe. The model is valid with or without the use of a weighting function, but since the weights of a co-occurrence graph are highly unbalanced, without a weighting function, very large weights will overpower the smaller ones and reduce performance. Therefore cutting off the weights at a certain threshold can to some extent balance out this effect. The hyperparameters of the weighting function should be tuned based on the dataset.\\
-
-\item \emph{Normalization:} Some variations to the model were experimented with, but because of extremely poor results were disregard. One of such approaches is edge weight normalization. In an attempt to boost performance, weights of the graph were normalized using logarithmic normalization. With normalization, we reduce the range of values, in which the weights fluctuate. Moreover, the gradient descent algorithm can converge more smoothly to the functions minimum. Unfortunately, adding the normalization for the GloVe model, made the problem ill-conditioned and the algorithm could not converge to a solution and, therefore, is dismissed. The reason for this could be that the normalization $log$ might result in negative values. In the cost function, a second $log$ is applied to the inputs, and the $log$ of a negative number is undefined, resulting in undefined gradient updates and untrainable weights. Other than log normalization, a linear transformation like \emph{min max normalization} was also experimented. Min-max normalization forces all the weights to be between $0$ and $1$ and is calculated with Equation~\ref{eq:minmaxNom}, where $e=(e_1,...,e_n)$ is the set of input weights and $z_i$ is the $i$th normalized data. Unfortunately, adding this form of normalization does not improve the results and is also removed from the model.
-\begin{equation}
-z_{ i }=\frac { e_{ i }-min(e) }{ max(e)-min(e) } 
-\label{eq:minmaxNom}
-\end{equation}
-
-\item \emph{Adding $1$ to the logarithm:} The cost function applies a logarithm to the weights. For an edge weight of $1$ the $log(1)=0$. Therefore, we tested the model with the addition of $1$ to the $log$ of weights, to adjust for this effect. With this change, the cost function is changed to Equation~\ref{eq:log_plus}. Although in some cases this change improved the model performance, in other cases it generated poor results. More details about how this change effects the model is discussed in Section~\ref{sec:setup}. 
-\begin{equation}
-J_e=\sum _{ j=1 }^{ V }{}\sum _{ i=1 }^{ V_e }{ f({ X }_{ ij } } )(w_{ i }^{ T }\tilde{  w_{ j } } +b_{ i }+\tilde{  b_{ j } } -(log{ X }_{ ij }+1))^2
-\label{eq:log_plus}
-\end{equation}
-\end{compactitem}
 \begin{figure}
 {\small 
 \tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
@@ -138,26 +172,8 @@ J_e=\sum _{ j=1 }^{ V }{}\sum _{ i=1 }^{ V_e }{ f({ X }_{ ij } } )(w_{ i }^{ T }
 \caption{Faceted embedding with unified cost function. Training for a single input is shown using only one network. The target word is TER$_1$, which is being trained against all actors, organisations, locations, dates and terms. While training, the weights related to actors are only updated if the input edge weight has the start node type of an actor. Meanwhile, the rest of the weights related to other entity-types are freezed. The final embedding is created by concatenating the columns in the context embedding matrices that are associated with TER$_1$.} \label{fig:unified_cost}
 }
 \end{figure}
-\subsubsection{Unified cost function  }
-\label{sec:unified_cost}
-The unified cost function is simply the summation of all the separate cost functions in the previous section, where $K$ is the set of all possible types, shown in Equation~\ref{eq:unified_cost}.
-\begin{equation}
-J=\sum _{ k=1 }^{ K }{J_k}=\sum _{ k=1 }^{ K }{}\sum _{ j=1 }^{ V }{}\sum _{ i=1 }^{ V_e }{ f({ X }_{ ij } } )(w_{ i }^{ T }\tilde{  w_{ j } } +b_{ i }+\tilde{  b_{ j } } -log{ X }_{ ij })^2
-\label{eq:unified_cost}
-\end{equation}
-As a result, all embeddings can be generated with a single network. For a better understanding of the differences between the methods a visual comparison is shown in Figures~\ref{fig:separate_cost} and~\ref{fig:unified_cost} for a loss on a single input. Each input is an edge with its corresponding weight, if the input has the starting node of type actor, the rest of the layers related to other types of embeddings will be frozen during training and only the weights for the actor network will be updated through backpropagation. Hence, it is as if all the networks were trained separately.  \\
-In Figure~\ref{fig:separate_cost}, two networks are shown as an example. A single edge refers to two embeddings, one for the focal (start node) and one for the context (end node). Each network is trained separately and a final embedding for a single context word is the concatenation of all learned embeddings. \\
-In contrast, in Figure~\ref{fig:unified_cost}, one network with five times more parameters is trained, where each input edge only affects the weight of the network associated with the focal word (start node). Therefore, an edge between an actor and term does not affect the location related embedding. Since the edges are undirected, the edge in the opposite direction will be fed as an input to the term network and hence no information is lost. All other aspects discussed for faceted embeddings with a separate cost function (focal addition, normalization and \dots) also applies to the unified cost function.
-
-\subsection{Generating faceted embeddings with GloVe}
-The complete training task can be formulated in four steps: 
- \begin{enumerate}        
- \item Extraction of co-occurrence matrices for different types, explained in Section~\ref{sec:adj_matrix}. 
- \item For each type, a GloVe based embedding is learned using either a separate or unified cost function. 
- \item The context embedding is kept and the focal embedding is either disregarded to added with focal addition.
- \item The results of the third step are different embeddings for each type, which can be concatenated to generate the final faceted embedding. 
- \end{enumerate}
- 
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Vectorized faceted embeddings}
 In order to speed up the model and use batch gradient descent we need to vectorize the cost function. In the following we go through the vectorization process for the embeddings with separate costs. The same idea can also be applied during the training of the unified cost function.\\
 If we consider $W$ as the matrix of all focal embeddings and $\tilde{ W }$ as the matrix of all context embeddings stacked row-wise, then we can vectorize the model according to Equation~\ref{eq:vectorized}. 
@@ -172,109 +188,116 @@ J=(W \hat{  W }^{ T } +B+\tilde{ B } -log{ X })^{ 2 }
 %\item $B,\tilde{B} \in R^{V \times 1}$ biases for focal and context embeddings. 
 %\item $X \in R^{V\times V} $ co-occurrence matrix of the whole vocabulary. 
 %\end{itemize}
-Unlike the GloVe model, the dimensions of  $W$ and $\tilde{ W } $ are no longer equal as our weighted adjacency matrix is no longer symmetric $X \in R^{V_e\times V} $.  $V_e$ is the size of the focal vocabulary, which is defined by the input. If actors are the focal words then $V_e$ is the number of actors in the vocabulary. The parameters of the model are as follows: 
+Unlike the original GloVe model, the dimensions of  $W$ and $\tilde{ W } $ are no longer equal as our weighted adjacency matrix is no longer symmetric $X \in R^{|V_f|\times |V|} $.  $V_f$ is the set of all focal words, which is defined by the input. If actors are the focal words then $V_f$ is the  of all actors in the vocabulary. The parameters of the model are as follows: 
 \begin{itemize}
-\item $W \in R^{V_e \times M} $ for focal embeddings.
- \item $\tilde{ W }  \in R^{V \times M} $ for context embeddings.
-\item $B,\tilde{B} \in R^{V_e \times 1}$ biases for focal and context embeddings.
-\item $X \in R^{V_e\times V} $ co-occurrence matrix of the whole vocabulary. 
+\item $W \in R^{|V_f| \times M} $ for focal embeddings.
+ \item $\tilde{ W }  \in R^{|V| \times M} $ for context embeddings.
+\item $B,\tilde{B} \in R^{|V_f| \times 1}$ biases for focal and context embeddings.
+\item $X \in R^{|V_f|\times |V|} $ co-occurrence matrix of the whole vocabulary. 
 \end{itemize}
-Biases have to be added row-wise to the matrices to preserve the original cost function~\ref{eq:glove_cost}. As a consequence, they are transformed to column vectors in the size of the focal vocabulary. A visual comparison between the original GloVe model and our faceted cost function can be seen below:\\
-\[J_{GloVe}=\stackrel{\mbox{$W(V\times M)$ }}{%
+Biases have to be added row-wise to the matrices to preserve the original cost function~\ref{eq:glove_cost}. As a consequence, they are transformed to column vectors in the size of the focal vocabulary. A visual comparison between the original GloVe model ($J_g$) and our faceted cost function ($J_f$) can be seen below, where the size of the vocabulary is indicated by $|V|=v$ and size of the focal vocabulary by $|V_f|=v_f$\\
+\[J_{f}=\stackrel{\mbox{$W(v\times M)$ }}{%
     \begin{bmatrix}
     a_{11} & a_{12}  \cdots  a_{1M} \\
     a_{21} & a_{22}  \cdots  a_{2M} \\
     \vdots & \vdots  \ddots  \vdots \\
-    a_{V1} & a_{V2}  \cdots  a_{VM}
+    a_{v1} & a_{v2}  \cdots  a_{vM}
     \end{bmatrix}%
   } .
-  \stackrel{\mbox{$\tilde{W}^T(M \times V)$ }}{%
+  \stackrel{\mbox{$\tilde{W}^T(M \times v)$ }}{%
     \begin{bmatrix}
-    a_{11} & a_{12}  \cdots  a_{1V} \\
-    a_{21} & a_{22}  \cdots  a_{2V} \\
+    a_{11} & a_{12}  \cdots  a_{1v} \\
+    a_{21} & a_{22}  \cdots  a_{2v} \\
     \vdots & \vdots  \ddots  \vdots \\
-    a_{M1} & a_{M2}  \cdots  a_{MV}
+    a_{M1} & a_{M2}  \cdots  a_{Mv}
     \end{bmatrix}%
   } +
-  \stackrel{B( V \times 1)}{%
+  \stackrel{B( v \times 1)}{%
     \begin{bmatrix}
     e_1 \\
     e_2 \\
     \vdots \\
-    e_V
+    e_{v}
     \end{bmatrix}%
    }
    +
-  \stackrel{\tilde{B( V \times 1)}}{%
+  \stackrel{\tilde{B |V|\times 1)}}{%
     \begin{bmatrix}
     e_1 \\
     e_2 \\
     \vdots \\
-    e_V
+    e_{v}
     \end{bmatrix}%
    }-
-   \stackrel{\mbox{$logX(V \times V)$ }}{%
+   \stackrel{\mbox{$logX(v \times v)$ }}{%
     \begin{bmatrix}
-    a_{11} & a_{12}  \cdots  a_{1V} \\
-    a_{21} & a_{22}  \cdots  a_{2V} \\
+    a_{11} & a_{12}  \cdots  a_{1v} \\
+    a_{21} & a_{22}  \cdots  a_{2v} \\
     \vdots & \vdots  \ddots  \vdots \\
-    a_{V1} & a_{V2}  \cdots  a_{VV}
+    a_{v1} & a_{v2}  \cdots  a_{vv}
     \end{bmatrix}%
   }
 \]
 \\
-\[J_{New } =\stackrel{\mbox{$W( V_{e}\times M)$ }}{%
+\[J_{f} =\stackrel{\mbox{$W( v_{f}\times M)$ }}{%
     \begin{bmatrix}
     a_{11} & a_{12}  \cdots  a_{1M} \\
     a_{21} & a_{22}  \cdots  a_{2M} \\
     \vdots & \vdots  \ddots  \vdots \\
-    a_{V1} & a_{V2}  \cdots  a_{V
+    a_{v1} & a_{v2}  \cdots  a_{v
 _{e}M}
     \end{bmatrix}%
   } .
-  \stackrel{\mbox{$\tilde{W}^T(M \times V)$ }}{%
+  \stackrel{\mbox{$\tilde{W}^T(M \times |V|)$ }}{%
     \begin{bmatrix}
-    a_{11} & a_{12}  \cdots  a_{1V} \\
-    a_{21} & a_{22} \cdots  a_{2V} \\
+    a_{11} & a_{12}  \cdots  a_{1v} \\
+    a_{21} & a_{22} \cdots  a_{2v} \\
     \vdots & \vdots \ddots \vdots \\
-    a_{M1} & a_{M2}  \cdots  a_{MV}
+    a_{M1} & a_{M2}  \cdots  a_{Mv}
     \end{bmatrix}%
   } +
-  \stackrel{B( V_{e}\times 1)}{%
+  \stackrel{B( v_{f}\times 1)}{%
     \begin{bmatrix}
     e_1 \\
     e_2 \\
     \vdots \\
-    e_{V_{e}}
+    e_{v_{f}}
     \end{bmatrix}%
    }
    +
-  \stackrel{\tilde{B}(V_{e}\times 1)}{%
+  \stackrel{\tilde{B}(v_{f}\times 1)}{%
     \begin{bmatrix}
     e_1 \\
     e_2 \\
     \vdots \\
-    e_{V_{e}}
+    e_{v_{f}}
     \end{bmatrix}%
    }-
-   \stackrel{\mbox{$logX( V_{e}\ \times V)$ }}{%
+   \stackrel{\mbox{$logX( v_{f}\ \times v)$ }}{%
     \begin{bmatrix}
-    a_{11} & a_{12}  \cdots  a_{1V} \\
-    a_{21} & a_{22}  \cdots  a_{2V} \\
+    a_{11} & a_{12}  \cdots  a_{1v} \\
+    a_{21} & a_{22}  \cdots  a_{2v} \\
     \vdots & \vdots  \ddots  \vdots \\
-    a_{V1} & a_{V2}  \cdots  a_{V_{e}V}
+    a_{v1} & a_{v2}  \cdots  a_{v_{f}v}
     \end{bmatrix}%
   }
 \]
 
 \section{Faceted Word2vec}\label{sec:faceted_word2vec}
-Word embeddings are used as input features in many NLP tasks. Although methods like word2vec capture semantic features well, they often lack task-specific features. Thus, many studies focus on modifying and tweaking the existing methods for certain tasks, such as text classification~\brackettext{\cite{DBLP:conf/coling/LiuHGWTL18}}, semantic relation classification~\brackettext{\cite{DBLP:conf/conll/HashimotoSMT15}} and dependency parsing~\brackettext{\cite{DBLP:conf/acl/BansalGL14}}. In $2014$, Levy and Goldberg proposed a method to generalize the skip-gram model to include arbitrary contexts and used it to create dependency based embeddings~\brackettext{\cite{DBLP:conf/acl/LevyG14}}. We use the idea behind this model to define our own context for the skip-gram model, which allows us to learn the separate components of the faceted embedding. In this section, first, we give a brief description of embeddings with arbitrary contexts by Levy and Goldberg. Then, we look at our definition of context and modifications to the original model. Finally, we use this knowledge to generate the algorithm faceted word2vec. 
-
-\subsection{Embeddings with arbitrary contexts}
-The general principle behind skip-gram is to bring words that appear in similar contexts in the text, closer in embedding space, where the contexts of a word are the words surrounding it. Therefore, the context vocabulary $C$ is identical to the complete word vocabulary $V$. In other words, the focal words and their context share the same vocabulary. Nonetheless, for embeddings with arbitrary contexts, this restriction is not required. The context does not need to correspond to words and can be defined based on the use-case, which is an important attribute for the faceted model. The negative sampling objective of word2vec, shown in Equation~\ref{eq:w2v_negative}, assumes a dataset $Q$ of focal and context pairs $(f,c)$ from a large body of text and samples negative examples form $\acute{Q}$. The model assigns a low score to the random negative samples and a high score to the real focal and context pairs. Since the input of the model is word pairs, it can be constructed in an arbitrary way. Levy and Goldberg specifically look at contexts, based on the syntactic relations, where the context is defined by the type of the dependency relation between the head and the modifier. They scan the text once and create focal and context pairs based on specific dependency relations and then use the generated pairs as positive inputs. For each $(f,c) \in Q$, $n$ samples $(f,c_1),\dots,(f,c_n)$ are constructed as negative examples, where $c_j$ is drawn according to its unigram distribution raised to the $\frac{3}{4}$ power~\brackettext{\cite{DBLP:conf/acl/LevyG14}}. Their framework is not only limited to dependency relations but also allows for various context definitions\footnote{The code for embeddings with arbitrary contexts is publicly available at: https://bitbucket.org/yoavgo/word2vecf.}. Following their example, we can define a type-specific context to generate faceted embeddings. We denoted the faceted word2vec model by $f$W2V, where $f$ indicates the faceted model. In the following section, we show how the edges of co-occurrence graphs are used as focal and context pairs for our study.
-
-\subsection{Edges of co-occurrence graphs as focal and context pairs}
-We take advantage of the arbitrary context definition and define our context based on the types of entities surrounding a word. Our goal is to create embeddings, such that each part corresponds to the word related to the specific type of entities and a co-occurrence graph extracted from annotated text can help us achieve just that. To obtain each part of the embedding we define a type-specific edge list, in a similar fashion as type-specific adjacency matrices for faceted GloVe, where the start nodes are entities of a specific type and end nodes can be any term or entity from the vocabulary. More formally, in the heterogeneous graph $G=(T,E)$, where $T=A\bigcup  L\bigcup  \bigcup  O\bigcup  D\bigcup  \acute {N} $ is the set of all nodes with types actors, locations, organisations, dates and, any non-entity word (term) and $E$ is the set of all weighted edges, we extract the edge list where the start node is one of the types in set $T$. An example of the edge lists is shown in Figure~\ref{fig:facettedword2vec}. As demonstrated in Figure~\ref{fig:facettedword2vec}, we have a different edge list for each type. These edge lists can be treated as a focal and context pairs $(f,c)$ for the input of embeddings with arbitrary contexts, where $c \in T$ and $a$ is a specific type, e.g, $f \in A$ for generating actor part of the embedding. Thus, the focal and context vocabulary are not equal, as the focal vocabulary is always a subset of the context ($A \subset  T$). 
+Word embeddings are used as input features in many NLP tasks. Although methods like word2vec capture semantic features well, they often lack task-specific features. Thus, many studies focus on modifying and tweaking the existing methods for certain tasks, such as text classification~\brackettext{\cite{DBLP:conf/coling/LiuHGWTL18}}, semantic relation classification~\brackettext{\cite{DBLP:conf/conll/HashimotoSMT15}} and dependency parsing~\brackettext{\cite{DBLP:conf/acl/BansalGL14}}. Since with faceted embedding we also aim to modify existing methods to match our specific task, we looked a wide range of litreture on modifications of word embedding methods. In $2014$, Levy and Goldberg proposed a method to generalize the skip-gram achitecure of word2vec to include arbitrary contexts and used it to create dependency based embeddings~\brackettext{\cite{DBLP:conf/acl/LevyG14}}. We use the idea behind this model to define our own context for the skip-gram model, which allows us to learn the separate components of the faceted embedding. In this section, first, we give a brief description of embeddings with arbitrary contexts by Levy and Goldberg. Then, we look at our definition of context and modifications to the original model. Finally, we use this knowledge to generate the algorithm faceted word2vec. The model proposed by Levy and Goldberg uses the skip-gram architecture, thus, we also generate the faceted word2vec based on skip-gram and do not use the CBOW architecture.\\
+For creating the faceted model using embeddings with arbitrary contexts, we follow these four steps: 
+\begin{enumerate}        
+ \item Extraction of type-specific edge lists from the co-occurrence graph, discussed in Section~\ref{sec:edges_as_pairs}.
+ \item Training a low dimensional embedding for each edge list using the method proposed by  Levy and Goldberg, where the focal context pairs are edges of the graph~\brackettext{\cite{DBLP:conf/acl/LevyG14}}, discussed in Section~\ref{sec:arbitarty_context}.
+ \item Disregarding the focal embeddings and keeping only the context embeddings, as it represents the relation of a word to entities of a specific type. 
+ \item Concatenating the context embedding of all types to create the final embedding. 
+ \end{enumerate}
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Embeddings with arbitrary contexts}\label{sec:arbitarty_context}
+The general principle behind skip-gram is to bring words that appear in similar contexts in the text, closer in embedding space, where the contexts of a word are the words surrounding it. Therefore, the context vocabulary $C$ is identical to the complete word vocabulary $V$. In other words, the focal words and their context share the same vocabulary. Nonetheless, for embeddings with arbitrary contexts, this restriction is not required. The context does not need to correspond to words and can be defined based on the use-case, which is an important attribute for the faceted model. The negative sampling objective of word2vec, shown in Equation~\ref{eq:w2v_negative}, assumes a dataset $Q$ of focal and context pairs $(f,c)$ from a large body of text and samples negative examples form $\overline{Q}$. The model assigns a low score to the random negative samples and a high score to the real focal and context pairs. Since the input of the model is word pairs, it can be constructed in an arbitrary way. Levy and Goldberg specifically look at contexts, based on the syntactic relations, where the context is defined by the type of the dependency relation between the head and the modifier. They scan the text once and create focal and context pairs based on specific dependency relations and then use the generated pairs as positive inputs. For each $(f,c) \in Q$, $n$ samples $(f,c_1),\dots,(f,c_n)$ are constructed as negative examples, where $c_j$ is drawn according to its unigram distribution raised to the power of $\frac{3}{4}$~\brackettext{\cite{DBLP:conf/acl/LevyG14}}. Their framework is not only limited to dependency relations but also allows for various context definitions\cite{SCHOL:website/Levy2014}. Following their example, we can define a type-specific context to generate faceted embeddings. We denoted the faceted word2vec model by $f$W2V, where $f$ indicates the faceted model. In the following section, we show how the edges of co-occurrence graphs are used as focal and context pairs for our study.
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Edges of co-occurrence graphs as focal and context pairs}\label{sec:edges_as_pairs}
+We take advantage of the definition of arbitrary context and define our context based on the types of entities surrounding a word. Our goal is to create embeddings, such that each part corresponds to the word related to the specific type of entities and a co-occurrence graph extracted from annotated text can help us achieve just that. To obtain each part of the embedding we define a type-specific edge list, in a similar fashion as type-specific adjacency matrices for faceted GloVe, where the start nodes are entities of a specific type and end nodes can be any term or entity from the vocabulary. More formally, in the heterogeneous graph $G=(V,E)$, where $V=A\bigcup  L\bigcup  \bigcup  O\bigcup  D\bigcup T $ is the set of all nodes with types actors, locations, organisations, dates, and any non-entity word (term) and $E$ is the set of all weighted edges, we extract the edge list where the start node is one of the types in set $V$. An example of the edge lists is shown in Figure~\ref{fig:facettedword2vec}. As demonstrated in Figure~\ref{fig:facettedword2vec}, we have a different edge list for each type. These edge lists can be treated as a focal and context pairs $(f,c)$ for the input of embeddings with arbitrary contexts, where $c \in V$ and $a$ is a specific type, e.g, $f \in A$ for generating actor part of the embedding. Thus, the focal and context vocabulary are not equal, as the focal vocabulary is always a subset of the context ($A \subset  V$). 
 \begin{figure}
 \centering 
 \resizebox{0.80\textwidth}{0.28\textwidth}{      
@@ -283,24 +306,25 @@ We take advantage of the arbitrary context definition and define our context bas
 \caption{An example of creating type specific edge lists for a graph with node type: actor (A), location (L), organisation (L), date (D), and term (T).}
 \label{fig:facettedword2vec}
 \end{figure} 
-Based on each edge list the model learns a separate embedding, with entities of a certain type as focal words and the rest of the vocabulary as context. As a result, each context embedding encodes the relation of the complete vocabulary with a certain type. For example, if we look at the context embedding for actors, it encodes the relation of the words in the vocabulary to all the actors. Naturally, if a word does not have an edge to any actor it will not be present in the context embeddings. For such cases, we set the actor part of that word equal to a vector of zeros. In Figure~\ref{fig:facettedword2vec}, $T_2$ will only have a date part and the rest are set to zero. 
+Based on each edge list the model learns a separate embedding, with entities of a certain type as focal words and the rest of the vocabulary as context. As a result, each context embedding encodes the relation of the complete vocabulary with a certain type. For example, if we look at the context embedding for actors, it encodes the relation of the words in the vocabulary to all the actors. Naturally, if a word does not have an edge to any actor it will not be present in the context embeddings. For such cases, we set the actor part of that word equal to a vector of zeros. In Figure~\ref{fig:facettedword2vec}, $T_2$ will only have a date part and the rest are set to zero. As we will see later in Chapter~\ref{chap:eval}, 
 %Since the co-occurrence graphs in this study are weighted, we experimented with incorporating the edge weights in the model. We use the weighted edge list of the graph and change the update rule of the algorithm to take the edge weights into account. 
-\subsection{Generating faceted embeddings with word2vec}
-For creating the faceted model using embeddings with arbitrary contexts, we follow these four steps: 
-\begin{enumerate}        
- \item Extraction of type-specific edge lists from the co-occurrence graph. 
- \item Training a low dimensional embedding for each edge list using the method proposed by  Levy and Goldberg, where the focal context pairs are edges of the graph~\brackettext{\cite{DBLP:conf/acl/LevyG14}}.
- \item Disregarding the focal embeddings and keeping only the context embeddings, as it represents the relation of a word to entities of a specific type. 
- \item Concatenating the context embedding of all types to create the final embedding. 
- \end{enumerate}
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Faceted DeepWalk}\label{sec:faceted_deepwalk}
-Another way to achieve the faceted model is by taking advantage of the type-restricted random walks. For this purpose, we alter the DeepWalk model to meet our needs. In $2017$, \emph{metapath2vec} was proposed by Dong et al. to study representation learning in heterogeneous graphs with multiple edge and node types, such as coauthor relationships graphs. Metapath2vec learns a low dimensional representation of the graph using random walks that are restricted to the only transition between particular types of nodes and edges. They also introduce a heterogeneous skip-gram which maximizes the probability of having the heterogeneous context for a given node~\brackettext{\cite{DBLP:journals/tkde/CaiZC18}}. Since our co-occurrence graph has much similar but simpler structure, we take a more straightforward approach. We take advantage of the weighted random walks used in Chapter~\ref{chap:entity} to generate entity embeddings to introduce a new type-restricted random walk. Formally, a type-restricted random walk in graph $G=(T,E)$is denoted in the form of $t_1 \rightarrow t_2 \rightarrow t_3\rightarrow \dots \rightarrow t_n$, the nodes $t_i$ belong to a certain node type. In a graph, where $T=A\bigcup  L\bigcup  \bigcup  O\bigcup  D\bigcup  \acute {N}$, to sample the only locations related to a node, we perform a location-restricted random walk. Consequently, the transition probability for the restricted type $L$ between node $i$ and $j$ in a weighted graph is defined in Equation ~\ref{eq:transition_type_restricted}, where $e_{i,j}$ is the edge weight between the two nodes $i$ and $j$. Given that we are removing the possibility of transitioning to any type other than the pre-defined one, the probabilities are normalized by the summation of the edge weight of the pre-defined type.
+Another way to achieve the faceted model is by taking advantage of the type-restricted random walks. For this purpose, we alter the DeepWalk model to meet our needs. In $2017$, \emph{metapath2vec} was proposed by Dong et al. to study representation learning in heterogeneous graphs with multiple edge and node types, such as coauthor relationships graphs~\brackettext{\cite{DBLP:conf/kdd/DongCS17}}. Metapath2vec learns a low dimensional representation of the graph using random walks that are restricted to the only transition between particular types of nodes and edges. They also introduce a heterogeneous skip-gram which maximizes the probability of having the heterogeneous context for a given node~\brackettext{\cite{DBLP:journals/tkde/CaiZC18}}. For learning the faceted embeddings, however, we take a more straightforward approach. We take advantage of the weighted random walks used in Chapter~\ref{chap:entity} to generate entity embeddings to introduce a new type-restricted random walk to restrict the context of a word to certain entity type. 
+In general, faceted DeepWalk model consists of three steps: 
+\begin{enumerate}
+\item Generating type specific corpus based on type-restricted fixed length random walks starting from all the nodes in the graphs.
+\item Applying the skip-gram model on the random walk corpora. 
+\item Concatenating the resulting embedding for each type to achieve the final faceted model.  
+\end{enumerate}
+\emph{Type-restricted random walk:} Formally, a type-restricted random walk in graph $G=(V,E)$ is denoted in the form of $v_1 \rightarrow v_2 \rightarrow v_3\rightarrow \dots \rightarrow t_n$, where the nodes $t_i$ belong to a certain node type. In a graph, where $V=A\bigcup  L\bigcup  O\bigcup  D\bigcup  T$, to sample only locations related to a node, we perform a location-restricted random walk. Consequently, the transition probability for the restricted type $L$ between node $i$ and $j$ in a weighted graph is defined in Equation ~\ref{eq:transition_type_restricted}, where $e_{i,j}$ is the edge weight between the two nodes $i$ and $j$. Given that we are removing the possibility of transitioning to any type other than the pre-defined one, the probabilities are normalized by the summation of the edge weight of the pre-defined type.
 \begin{equation}
 P_{ i,j }=\left\{ 
 \begin{matrix}
- \frac { f(e_{ i,j }) }{ \sum _{ k\in L,f(e_{ k })\in E_{ i } }^{  }{ f(e_{ k }) }  }  & if\quad j\in L \\
-0 & if\quad j\notin L
+ \frac { f(e_{ i,j }) }{ \sum _{ k\in L,f(e_{ k })\in E_{ i } }^{  }{ f(e_{ k }) }  }  & mathrm{if}\quad j\in L \\
+0 & \mathrm{if}\quad j\notin L
 \end{matrix} 
 \right. 
 \label{eq:transition_type_restricted}
@@ -321,15 +345,7 @@ An example of the type-restricted random walk for type location is illustrated i
 \caption{An example of type restricted random walk of length $2$ for node types location and starting node $A_1$.}
 \label{fig:facetteddeepwalk}
 \end{figure} 
-\noindent
-To summarize, faceted DeepWalk model consists of three steps: 
-
-\begin{enumerate}
-\item Generating type specific corpus based on type-restricted fixed length random walks starting from all the nodes in the graphs. 
-\item Applying the skip-gram model on the random walk corpora. 
-\item Concatenating the resulting embedding for each type to achieve the final faceted model.  
-\end{enumerate}
-
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Similarity Between Embeddings}
 In the previous chapter, we presented cosine similarity as the main similarity measure between word vectors. To take advantage of the separation in dimensions for faceted embedding, an additional vector multiplication for cosine similarity is defined, resulting into two types of similarity:  
 \begin{itemize}
@@ -338,7 +354,7 @@ In the previous chapter, we presented cosine similarity as the main similarity m
 \end{itemize}
 
 
-
-
-
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Summary}\label{sec:faceted_summary}
+In this chapter, we introduced three models for learning faceted embeddings with separable components, where each component defines the relation of a word to entities of a specific type. We modified the existing word embedding and graph embedding techniques to achieve a more flexible definition of context for a word, where for each component the context is limited to entities of a certain type. As input for all models, we used the co-occurrence graph extracted on annotated text, which contains the entity-entity relations and captures their co-occurrence with terms. From the word embedding methods, we modify GloVe and word2vec and from the graph-embedding models, we chose DeepWalk with type-restricted random walks. In Chapter~\ref{chap:eval}, we evaluate the faceted models against the well-established word embedding methods on various evaluation tasks and discuss their advantages and drawbacks.
 
