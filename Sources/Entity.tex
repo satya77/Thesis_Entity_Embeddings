@@ -120,7 +120,7 @@ P_{i,j}=\frac{f(e_{i,j})}{\sum _{ f(e_ k )\in E_{ i } }^{  }{ f(e_k) } }
 In a word co-occurrence graph, some words co-occur many times and some only a few times. Therefore, the weights can fluctuate between small numbers up to tens of thousands, resulting in highly unbalanced transition probabilities, causing some nodes to never be visited in a random walk. The weighted degree distribution for LOAD graph as an example is shown in Figure~\ref{fig:degrees}. To solve this issue and create a more balanced weight distribution, we use different normalization functions:
 \noindent
 \begin{enumerate}
-\item  $f=\mathrm{id}$, identity function, where the weights remain unchanged. We refer to these models as DW$_{id}$, where $id$ \replaced{refers to}{shows} the identity mapping.
+\item  $f=\mathrm{id}$, identity function, where the weights remain unchanged. We refer to these models as DW$_{id}$, where $id$ refers to the identity mapping.
 \item  $f=\log$, logarithmic normalization, where all edge weights are replaced by their logarithm and the transition probabilities are computed accordingly. These models are denoted by DW$_{log}$.
 % BR: I would state this non-result afterwards: 'Initially, we also
 % experimented with the square root, but we found that is produces
