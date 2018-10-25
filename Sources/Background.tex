@@ -32,10 +32,10 @@ Before any operation can be performed on text, each sentence has to be broken do
 \\
 % BR: I find the punctuation of the example sentence slightly confusing.
 % Maybe you should add quotes?
-Splitting only by white spaces can also split what should be regarded as a single token. In a later section, we discuss \emph{named entity recognition} that tries to eliminate such problems. \\
+Splitting only by white spaces can also separate what should be regarded as a single token. In a later section, we discuss \emph{named entity recognition} that tries to eliminate such problems. \\
 \noindent
-Text data has also many inconsistencies that can cause algorithms trouble. Some common initial preprocessing steps are to convert all of the letters to lowercase and to remove punctuation.
-This makes sure that \emph{``analytics"}, \emph{``AnALYticS"}, \emph{``Analytics!"}, and \emph{``\#analytics"} are all considered the same word. Removing punctuation should be applied with care, because in some cases, such as in case of Twitter \emph{``\#analytics"} is a message about analytics and should not be confused with \emph{``@analytics"}, which is a message to the analytics account. For these reasons, the removal of punctuation should be tailored to the specific problem.\\
+Text data has also many inconsistencies that can cause troubles for algorithms. Some common initial preprocessing steps are to convert all of the letters to lowercase and to remove punctuation.
+This makes sure that \emph{``analytics"}, \emph{``AnALYticS"}, \emph{``Analytics!"}, and \emph{``\#analytics"} are all considered the same word. Removing punctuation should be applied with care, because in some cases, such as in the case of Twitter \emph{``\#analytics"} is a message about analytics and should not be confused with \emph{``@analytics"}, which is a message to the analytics account. For these reasons, the removal of punctuation should be tailored to the specific problem.\\
 % BR: Very nice! For the last sentence: can you give resources that
 % describe how to tailor this to specific problems?
 %TODO find a citation ! 
@@ -44,7 +44,7 @@ Additionally, words such as \emph{``are"} and \emph{``to"} are frequent in all d
 % becomes a 'best practice'?
 
 \subsection{Stemming and  lemmatization}\label{subsec:steming}
-Another important preprocessing step is \emph{stemming} or \emph{lemmatization}. This step is motivated by the desire to represent verbs with different grammatical endings as the same word.
+Another important preprocessing step is \emph{stemming} or \emph{lemmatization}. This step is motivated by the desire to represent verbs with different grammatical conjugations as the same word.
 % BR: I would be more precise about the different endings here. Can you
 % specify that this pertains to 'grammatical endings' here?
 In many cases, there is no need for a distinction between \emph{argue}, \emph{argued}, \emph{argues}, and \emph{arguing}. They could all be represented by a common stem: \emph{argu}. This is called stemming as it chops off the ends of words and often includes the removal of derivational affixes. Another approach is the use of lemmatization, which uses the vocabulary and morphological analysis of words, normally aiming to remove inflectional endings only, to return the base or dictionary form of a word, which is known as the lemma. Lemmatization is a more complex task as it is necessary to have detailed dictionaries, which the algorithm has to look through, to link a specific form back to its lemma. This is particularly problematic for irregular verbs. For instance,
@@ -60,7 +60,7 @@ the lemmatization of \emph{``drank"} is \emph{``drink"}~\brackettext{\cite{SCHOL
 % also referred to as POS taggers'.
 
 \subsection{Named entity recognition and  entity linking}\label{subsec:entity_recog}
-\emph{Named Entity Recognition (NER)}  or \emph{entity extraction} is an information extraction method that locates and classifies the named entities in text. Named entities are words that can be classified into a set of pre-defined classes, such as the names of persons, organizations, locations, quantities and monetary values. In some cases, temporal expressions are classified separately as well. Generally, anything that is not an entity per se is considered to be a term.~\brackettext{\cite{SCHOL:journal/LI/nadeau}}. More formally, if we define $V$ as the set of all words in the vocabulary, $N\subseteq V$ is the set of all entities that fall into a pre-defined category.
+\emph{Named Entity Recognition (NER)}  or \emph{entity extraction} is an information extraction method that locates and classifies the named entities in text. Named entities are words that can be classified into a set of pre-defined classes, such as the names of persons, organizations, locations, quantities and monetary values. In some cases, temporal expressions are classified separately as well. Generally, anything that is not an entity per se is considered to be a term~\brackettext{\cite{SCHOL:journal/LI/nadeau}}. More formally, if we define $V$ as the set of all words in the vocabulary, $N\subseteq V$ is the set of all entities that fall into a pre-defined category.
 % BR: this seems mathematically inconsistent: if the entities are
 % a subset of the terms, you cannot say that anything else is a term,
 % because that would make it _not_ a subset again.
@@ -77,7 +77,7 @@ These entities form the graph nodes in later steps.
 Before the advancements in deep learning and neural networks, most NLP techniques were based on machine learning approaches with linear models such as support vector machines or logistic regression, trained on very high-dimensional and sparse feature vectors. Recently, the field has changed to use non-linear neural-network models over dense inputs. The most important advantage of such methods is that they can often be trained with a single end-to-end model and do not require traditional task-specific feature engineering~\brackettext{\cite{DBLP:journals/jair/Goldberg16}}. Methods for different NLP tasks differ in architectures of neural networks and feature representations. Since the focus of this thesis is on word embeddings, we will focus on the explanation of a simple neural network and the basic idea needed to generate word embeddings in the following. 
 
 \subsection{Neural networks}
-Despite neural networks being the new trend in machine learning, they are rather old algorithms, which were motivated by the goal of having a machine that mimics a brain. The sudden resurgence of neural networks is due to the fact that they are computationally expensive algorithms and require a huge amounts of data, which was neither available nor processable in the 80s and 90s. The biggest reason is that the models became suddenly trainable was the invention of \emph{``backpropagation"} algorithm for training and the advent of GPUs. 
+Despite neural networks being the new trend in machine learning, they are rather old algorithms, which were motivated by the goal of having a machine that mimics a brain. The sudden resurgence of neural networks is due to the fact that they are computationally expensive algorithms and require a huge amounts of data, which was neither available nor processable in the 80s and 90s. In addition \emph{``backpropagation"} algorithm and the advent of GPUs, sped up the training process and made it feasible.
 % BR: the biggest reason is that 'backpropagation' became suddenly
 % trainable and the advent of GPUs helped a lot there as well. Moreover,
 % different activation functions (ReLU) were numerically 'well-behaved'
@@ -88,13 +88,13 @@ Despite neural networks being the new trend in machine learning, they are rather
 \resizebox{0.55\textwidth}{0.3\textwidth}{      
 \input{images/preceptron.tex}
 }
-\caption{Single layer neural network. The input $x$ is multiplied by the matrix of weights$\Theta$ to be passed to the activation function (a typically non-linear function to transform the input) to generate the output $\hat { y }$. \protect \footnotemark}
+\caption{Single layer neural network. The input $x$ is multiplied by the matrix of weights $\Theta$ to be passed to the activation function (a typically non-linear function to transform the input) to generate the output $\hat { y }$. \protect \footnotemark}
 % BR: you should also mention the activation function here and give an
 % example.
 \label{fig:preceptron}
 \end{figure}
 \footnotetext{The figure is adapted from https://www.coursera.org/learn/machine-learning.}
-
+\noindent
 A single artificial neuron is shown in Figure~\ref{fig:preceptron}. The computational unit illustrated in red takes in the different features $x$ and multiplies each input with a given weight $\theta_i$.
 % BR: I would use weight indices here if you really want to talk about
 % a single weight. This is consistent with the notation above.
@@ -107,18 +107,7 @@ $b$ is called the \emph{bias unit} which always has an input value of $1$. $g(x)
 % product
 % BR: ...this is a linear operation that boils down to a matrix--vector
 % product
-Second, an activation function of choice is applied to $z$ to produce the final output. The output or activation ($a$) of the last unit is the predicted output. A neural network is a group of multiple neurons connected together, as shown in Figure~\ref{fig:nn}. In a neural network, the first layer is called the \emph{input layer} and the last layer is called the \emph{output layer}. All other layers are referred to as \emph{hidden layers}.
-% BR: alt.: all other layers are referred to as hidden layers
-Typically, the values of the input and the output layer are given in the training set. Activation of each computational unit is the output of that unit after applying a certain function on the inputs. We denote activation of the unit (neuron) $i$ in layer $j$ by $a_{i}^{[j]}$.
-% BR: split this sentence into two parts
-The $\theta^{(j)}_{nl}$ is the weight controlling the function mapping from layer $j$ to layer $j+1$ between unit $n$ in layer $j$ and $l$ in $j+1$. Learning weights is the final goal of any neural network. Deeper neural networks are obtained by stacking multiple layers of such unit, which gives rise to deep learning systems~\brackettext{\cite{SCHOL:Goodfellow-et-al-2016}}. 
-% BR: alt.: Learning the matrix of weights
-% You are technically only mentioning a single weight here, so the usage
-% of 'This matrix' might not be appropriate.
-%
-% BR: Slip a brief explanation of 'deep learning' in there: everything
-% that has more than a single layer :-)
-The weights indicate how different features of inputs should be combined and how much should each of them influence the final output. The values of intermediate activations can be interpreted as latent features discovered during training. Features are combined with new weights to either generate an intermediate or a final result~\brackettext{\cite{SCHOL:book/haykin2009}}. \\
+Second, an activation function of choice is applied to $z$ to produce the final output. The output or activation ($a$) of the last unit is the predicted output.\\
 \begin{figure}
 \begin{minipage}{\textwidth}
 \centering 
@@ -132,12 +121,24 @@ The weights indicate how different features of inputs should be combined and how
 
 \end{figure}
 \noindent
+A neural network is a group of multiple neurons connected together, as shown in Figure~\ref{fig:nn}. In a neural network, the first layer is called the \emph{input layer} and the last layer is called the \emph{output layer}. All other layers are referred to as \emph{hidden layers}.
+% BR: alt.: all other layers are referred to as hidden layers
+Typically, the values of the input and the output layer are given in the training set. Activation of each computational unit is the output of that unit after applying a certain function on the inputs. We denote activation of the unit (neuron) $i$ in layer $j$ by $a_{i}^{[j]}$.
+% BR: split this sentence into two parts
+$\theta^{(j)}_{nl}$ is the weight controlling the function mapping from layer $j$ to layer $j+1$ between unit $n$ in layer $j$ and $l$ in $j+1$. Learning weights is the final goal of any neural network. Deeper neural networks are obtained by stacking multiple layers of such unit, which gives rise to deep learning systems~\brackettext{\cite{SCHOL:Goodfellow-et-al-2016}}. 
+% BR: alt.: Learning the matrix of weights
+% You are technically only mentioning a single weight here, so the usage
+% of 'This matrix' might not be appropriate.
+%
+% BR: Slip a brief explanation of 'deep learning' in there: everything
+% that has more than a single layer :-)
+The weights indicate how different features of inputs should be combined and how much should each of them influence the final output. The values of intermediate activations can be interpreted as latent features discovered during training. Features are combined with new weights to either generate an intermediate or a final result~\brackettext{\cite{SCHOL:book/haykin2009}}. \\
 There are different classes of activation functions available but the most commonly used ones are \emph{Sigmoid} and \emph{Relu}, illustrated in Figure~\ref{fig:activation}. An example of forward computation of the network in Figure~\ref{fig:nn} is given in Equation~\ref{eq:nn_eq}. Although a single output is shown in both figures, the output layer can have different sizes. It can vary from one output for a single class classification to $10$ for a multi-class classification with $10$ classes and even in some cases $10,000$ pixels of a image. How different neurons connect, the choice of activation function, the shape of the output layer and the number of layers is what defines different architectures. In the following, we only consider the architecture needed to generate word embeddings. 
 \begin{equation}
 \begin{split}
 a_{ 1 }^{ [2] }=g(\theta _{ 10 }^{ [1] }x_{ 0 }+\theta _{ 11 }^{ [1]}x_{ 1 }+\theta _{ 12 }^{ [1] }x_{ 2 }+\theta _{ 13 }^{ [1] }x_{ 3 })\\ 
-a_{ 2 }^{ [2] }=g(\theta _{ 20 }^{ 1] }x_{ 0 }+\theta _{ 21 }^{ 1] }x_{ 1 }+\theta _{ 22 }^{ [1] }x_{ 2 }+\theta _{ 23 }^{ (1) }x_{ 3 })\\
- a_{ 3 }^{ [2] }=g(\theta _{ 30 }^{ [1] }x_{ 0 }+\theta _{ 31 }^{ 1] }x_{ 1 }+\theta _{ 32 }^{ [1] }x_{ 2 }+\theta _{ 33 }^{ 1] }x_{ 3 })\\
+a_{ 2 }^{ [2] }=g(\theta _{ 20 }^{ [1] }x_{ 0 }+\theta _{ 21 }^{ [1] }x_{ 1 }+\theta _{ 22 }^{ [1] }x_{ 2 }+\theta _{ 23 }^{ (1) }x_{ 3 })\\
+ a_{ 3 }^{ [2] }=g(\theta _{ 30 }^{ [1] }x_{ 0 }+\theta _{ 31 }^{ [1] }x_{ 1 }+\theta _{ 32 }^{ [1] }x_{ 2 }+\theta _{ 33 }^{ 1] }x_{ 3 })\\
   \hat { y } =a_{ 1 }^{ [3] }=g(\theta _{ 10 }^{ [2] }x_{ 0 }+\theta _{ 11 }^{ [2] }x_{ 1 }+\theta _{ 12 }^{ [2] }x_{ 2 }+\theta _{ 13 }^{ [2] }x_{ 3 })
 \end{split}
 \label{eq:nn_eq}
@@ -157,7 +158,7 @@ a_{ 2 }^{ [2] }=g(\theta _{ 20 }^{ 1] }x_{ 0 }+\theta _{ 21 }^{ 1] }x_{ 1 }+\the
 \centering
 \subcaptionbox{\label{sfig:relu}}{\includegraphics[width=0.45\linewidth , height=0.33\linewidth]{images/relu.png}}
 \subcaptionbox{\label{sfig:sigmoid}}{\includegraphics[width=0.45\linewidth , height=0.33\linewidth]{images/sigmoid.png}}
-\caption{Common choices of activation functions:~\subref{sfig:relu} Relu function $a=max(0,x)$ (simply cutting values below zero) and ~\subref{sfig:sigmoid} Sigmoid function $a=\frac{1}{1+e^{x}}$, which forces the values to be between zero and one.}
+\caption{Common choices of activation functions:~\subref{sfig:relu} Relu function $a=\mathrm{max}(0,x)$ (simply cutting values below zero) and ~\subref{sfig:sigmoid} Sigmoid function $a=\frac{1}{1+e^{x}}$, which forces the values to be between zero and one.}
 \label{fig:activation}
 \end{figure}
 
@@ -175,24 +176,24 @@ The loss for a single input is computed by the \emph{loss function} $L$ and the 
 \begin{equation}
 L=\frac { 1 }{ n } \sum _{ i=1 }^{ n }{ (\hat { y } ^{ (i) }- } y^{ (i) })^{ 2 }
 \end{equation}
-\item \emph{Kullback Leibler (KL) Divergence} also known as relative entropy, is a measure of how one probability distribution $y^{ (i) }$ diverges from a second probability distribution$\hat { y } ^{ (i) }$, the higher the KL divergence, the more different the distributions. KL divergence is not symmetric: The KL from $y^{ (i) }$ to $\hat { y } ^{ (i) }$ is generally not the same as the KL from $\hat { y } ^{ (i) }$ to $y^{ (i) }$~\brackettext{\cite{DBLP:books/daglib/0016881}}. The formula consists of two parts, where the first part is called \emph{entropy} and the second part \emph{cross-entropy}.
+\item \emph{Kullback Leibler (KL) Divergence} also known as relative entropy, is a measure of how one probability distribution $y^{ (i) }$ diverges from a second probability distribution $\hat { y } ^{ (i) }$, the higher the KL divergence, the more different the distributions. KL divergence is not symmetric: The KL from $y^{ (i) }$ to $\hat { y } ^{ (i) }$ is generally not the same as the KL from $\hat { y } ^{ (i) }$ to $y^{ (i) }$~\brackettext{\cite{DBLP:books/daglib/0016881}}. The formula consists of two parts, where the first part is called \emph{entropy} and the second part \emph{cross-entropy}.
 \begin{equation}
 \begin{split}
 L=\frac { 1 }{ n } \sum _{ i=1 }^{ n }{ D_{ kl }(y^{ (i) }||\hat { y } ^{ (i) }) } =\\
- \frac { 1 }{ n } \sum _{ i=1 }^{ n }{ (y^{ (i) }log(\frac { y^{ (i) } }{ \hat { y } ^{ (i) } } )) } =\\
- \underbrace { \frac { 1 }{ n } \sum _{ i=1 }^{ n }{ (y^{ (i) }log(y^{ (i) })) } - }_{ entropy } \underbrace { \frac { 1 }{ n } \sum _{ i=1 }^{ n }{ (y^{ (i) }log(\hat { y } ^{ (i) })) }  }_{ cross-entropy } 
+ \frac { 1 }{ n } \sum _{ i=1 }^{ n }{ (y^{ (i) }\log{(\frac { y^{ (i) } }{ \hat { y } ^{ (i) } } )) }} =\\
+ \underbrace { \frac { 1 }{ n } \sum _{ i=1 }^{ n }{ (y^{ (i) }\log{(y^{ (i) })) }} - }_{ entropy } \underbrace { \frac { 1 }{ n } \sum _{ i=1 }^{ n }{ (y^{ (i) }\log{(\hat { y } ^{ (i) })) }}  }_{ cross-entropy } 
  \end{split}
 \end{equation}
 \item \emph{Cross Entropy} is commonly-used where labels are assumed to take only two values and corresponds to the second part of KL divergence, where the second distribution $\hat { y } ^{ (i) }$ is fixed~\brackettext{\cite{DBLP:books/daglib/0016881}}. The cross entropy for a classification problem with two classes is defined as:  
 \begin{equation}
-L=-\frac { 1 }{ n } \sum _{ i=1 }^{ n }{ [y^{ (i) }log(\hat { y } ^{ (i) })+(1- } y^{ (i) })log(1-\hat { y } ^{ (i) })
+L=-\frac { 1 }{ n } \sum _{ i=1 }^{ n }{ [y^{ (i) }\log{(\hat { y } ^{ (i) })+(1-  y^{ (i) }}})\log{(1-\hat { y } ^{ (i) }})
 \end{equation}
 \end{inparaenum}
-The goal of the training phase is to learn a weight matrix $\Theta$ and a bias term $b$ such that the overall cost is minimized. This naturally leads to an optimization problem, which is  typically solved using gradient descent.\\
+The goal of the training phase is to learn a weight matrix $\Theta$ and a bias term $b$ such that the overall cost is minimized. This naturally leads to an optimization problem, which is  typically solved using \emph{Gradient Descent (GD)}~\brackettext{\cite{DBLP:journals/corr/Ruder16}}.\\
 \noindent
 % BR: ...this naturally leads to an optimization problem, which is
 % typically solved using gradient descent.
-One method to solve this optimization problem is called \emph{Gradient Descent} (GD)~\brackettext{\cite{DBLP:journals/corr/Ruder16}}. Considering the most simple case (a function with only one parameter) gradient descent is illustrated in Figure~\ref{fig:gradientD}. Gradient descent is a way to minimize an objective function parameterized by a model’s parameters by updating the parameters in the opposite direction of the gradient w.r.t. to the parameters.
+Considering the most simple case (a function with only one parameter) gradient descent is illustrated in Figure~\ref{fig:gradientD}. Gradient descent is a way to minimize an objective function parameterized by a model’s parameters by updating the parameters in the opposite direction of the gradient with respect to parameters.
 % BR: I slightly object to that description. I would drop the
 % 'parameterized ...' part and just leave it as 'a way to minimize an
 % objective function by finding local minima based on local gradients'
@@ -226,7 +227,7 @@ As shown in Figure~\ref{fig:gradientD} the derivative or the slope of the functi
 \caption{Gradient decent on a function with only one parameter.
 % BR: alt.: one-dimensional function?
 %
-In each iteration, we take a step in the direction of the gradient. The gradient will guide the algorithm to the functions minimum.
+In each iteration, we take a step in the direction of the gradient. The gradient will guide the algorithm to the functions local minimum.
 % BR: do you want to mention getting stuck in local optima?
 }
 \label{fig:gradientD}
@@ -238,7 +239,7 @@ In a dataset with $m$ training examples, for each training example, the gradient
 % always do individual updates by using partial derivatives, but it
 % is more appropriate to speak of 'gradients' when you consider dim
 % one. This is nitpicky, though.
-After iterating through all the training examples the weights and bias term will be updated according to Algorithm~\ref{algo:gd}. This process is repeated for some number of iterations. There exist three main type of~GD: 
+After iterating through all the training examples the weights and bias terms will be updated according to Algorithm~\ref{algo:gd}. This process is repeated for some number of iterations. There exist three main type of~GD: 
 \begin{itemize}
 \item \textbf{Mini-batch GD:} Instead of iterating over all training examples, a subset of a batch, i.e.,\ a subset of the input data, is considered, before making an update. This is a good choice for very large datasets.
 \item \textbf{Stochastic-GD:} In this case, only one example is looked at, before making an update. 
@@ -256,13 +257,13 @@ However, text is inherently high-dimensional, requiring a specific form of embed
 % BR: The sentence is a little bit too short and disrupts the flow.
 % Maybe: 'However, text is inherently high-dimensional, requiring
 % a specific form of embedding'.
-In most traditional NLP systems, each word is represented as a one-hot vector~\footnote{A binary vector in the size of the vocabulary that has the value of $1$ on the index of the word it refers to and zeroes in all other indexes.} of size equal to the size of the vocabulary, which is a high-dimensional, highly sparse vector.
+In most traditional NLP systems, each word is represented as a one-hot vector of size equal to the size of the vocabulary, which is a high-dimensional, highly sparse vector.
 % BR: I don't like the dichotomy here. Maybe 'which is
 % a high-dimensional, highly sparse vector'?
 By feeding these high-dimensional representations to a neural network with a smaller hidden layer, a new representation (usually in the order of $100$ dimensions) of each word can be learned. Although neural networks can be used in supervised and unsupervised learning, generally, the embedding is learned as a supervised learning problem. For this purpose, different models have been proposed, the most famous being word2vec~\brackettext{\cite{DBLP:journals/corr/abs-1805-04032}}, which will be discussed in Section~\ref{sec:wordembeddig} in detail. All the models follow the same principle, which is illustrated in Figure~\ref{fig:emb}. The size of the output layer depends on the particular architecture and the cost function. In addition, the network can be composed of multiple layers, but for our purposes, we focus on shallow networks with only one hidden layer. \\
 \noindent
 % BR: The change between these two sections is very abrupt.
-Learning low-dimensional representation is not only a challenge for text, but extends to many domains, such as image and graph analysis. Graph embeddings, in particular,  aim to convert a graph with many edges and nodes into a low dimensional latent space while preserving the graph information~\brackettext{\cite{DBLP:journals/kbs/GoyalF18}}.
+Learning low-dimensional representation is not only a challenge for NLP, but extends to many domains, such as image and graph analysis. Graph embeddings, in particular,  aim to convert a graph with many edges and nodes into a low dimensional latent space while preserving the graph information~\brackettext{\cite{DBLP:journals/kbs/GoyalF18}}.
 % BR: I do not agree with this. Why are graphs necessarily
 % high-dimensional? Technically, they only contain edges and nodes. You
 % should probably refer to their latent space here?
