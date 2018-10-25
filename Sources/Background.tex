@@ -357,7 +357,7 @@ Probability and Ratio &  $k=solid$& $k=gas$ & $k=water$ &$k= fashion$  \\ \midru
 \label{table:tab_1}
 \end{table}
 \noindent
-To capture these ratios, the authors of GloVe propose a log-bilinear model, where, if the dot product of two vectors corresponds to the log of their co-occurrence probability, their difference will show the meaning component, as seen in Equation~\ref{eq:log_prob}. Let the matrix of word-word co-occurrence counts be denoted by $X\in { R }^{ V\times V }$, where $V$ is the size of the vocabulary. Entries $X_{ij}$ tabulate the number of times word $j$ occurs in the context of word $i$. $w_{ i }\in { R }^{ 1\times M }$ and $\tilde{w_{ j }}\in { R }^{ 1\times M }$ are the focal (center word) and context embeddings, respectively, where $M$ is the embedding size. The model tries to learn embeddings that minimize the squared difference between the dot product of the center word embedding and context embedding to the logarithm of its co-occurrence.
+To capture these ratios, the authors of GloVe propose a log-bilinear model, where, if the dot product of two vectors corresponds to the log of their co-occurrence probability, their difference will show the meaning component, as seen in Equation~\ref{eq:log_prob}. Let the matrix of word-word co-occurrence counts be denoted by $X\in { R }^{ |V|\times |V| }$, where $|V|$ is the size of the vocabulary. Entries $X_{ij}$ tabulate the number of times word $j$ occurs in the context of word $i$. $w_{ i }\in { R }^{ 1\times M }$ and $\tilde{w_{ j }}\in { R }^{ 1\times M }$ are the focal (center word) and context embeddings, respectively, where $M$ is the embedding size. The model tries to learn embeddings that minimize the squared difference between the dot product of the center word embedding and context embedding to the logarithm of its co-occurrence.
 \begin{equation}
 \begin{split}
 \\ w_{ i }.w_{ j }=\log { P(i|j)\quad  } \\
@@ -367,7 +367,7 @@ w_{ x }(w_{ i }-w_{ j })=\log { \frac { P(x|j) }{ P(x|j) } }
 \end{equation}
 Considering $ \tilde{b_{ j }}$ and $b_{ i }$  as the biases for the focal and context embeddings, the cost function is defined in Equation~\ref{eq:glove_cost}. Since the log of co-occurrences does not directly result in a probability, in order for the meaning component to have a probabilistic interpretation, a normalization factor is needed. Bias $b_{ i }$ allows the model to learn this constant during training and $ \tilde{b_{ j }}$ is added to preserve symmetry. 
 \begin{equation}
-J=\sum _{ i,j=1 }^{ V }{ f({ X }_{ ij } } )(w_{ i }^{ T }\tilde{  w_{ j } } +b_{ i }+\tilde{  b_{ j } } -log{ X }_{ ij })^2
+J=\sum _{ i,j=1 }^{ |V| }{ f({ X }_{ ij } } )(w_{ i }^{ T }\tilde{  w_{ j } } +b_{ i }+\tilde{  b_{ j } } -log{ X }_{ ij })^2
 \label{eq:glove_cost}
 \end{equation}
 Optimizing for the co-occurrence counts alone might cause the model to overemphasize the most common words. Therefore, a weighing function $f$ is introduced that imposes an upper bound on the maximum number of occurrences of a word. Conceptually, $f$ scales the counts in order to avoid the influence of common words and boost the rare words. The choice of $f$ is not fixed but one class of functions that were used by the authors can be parametrized with $\alpha$ as the exponential weight and $x_{max}$ as the maximum number of allowed co-occurrences. $\alpha$ and $x_{max}$ are hyper-parameters that require tuning, but the values suggested by the authors are $\frac{3}{4}$ for $\alpha$ is  and $100$ for $x_{max}$. 
@@ -458,7 +458,7 @@ The \emph{Versatile Graph Embeddings from Similarity Measures (VERSE)}~\brackett
 \end{equation}
 The similarity of two nodes in the embedding space is related to their dot product in the embedding space. Therefore, the similarity distribution ( $sim_E$) between two nodes $i$ and $j$ in the embedded space is their dot product ($w_i . w_j$), normalized with softmax, as shown in Equation~\ref{eq:VERSE_simE}. We should minimize the KL-divergence between the $sim_{ E }$ and an arbitrary similarity measure for the nodes to produce node embeddings. 
 \begin{equation}
-sim_{ E }(v,.)=\frac{ w_{ v }.W^{ V } }{ \sum _{ i=1 }^{ n }{ exp(w_{ v }.w_{ i }) }  }\label{eq:VERSE_simE}
+sim_{ E }(v,.)=\frac{ w_{ v }.W^{ T } }{ \sum _{ i=1 }^{ n }{ exp(w_{ v }.w_{ i }) }  }\label{eq:VERSE_simE}
 \end{equation}
 Although VERSE is designed to accept any similarity measure, three measures are contained in the original implementation: \emph{Personalized PageRank (PPR)},  \emph{Adjacency Similarity}, and  \emph{SimRank}. PPR is based on the stationary distribution of a random walk with restart. Thus, this measure is closely related to DeepWalk and node2vec. SimRank is a measure of structural relatedness. If two nodes are connected to similar nodes they are themselves considered similar. Adjacency Similarity is based on the normalized adjacency matrix. More formally, given the out degree $Out(v_{i})$ of node $v_{i}$, $sim_{ G }$ for the Adjacency Similarity is shown in Equation~\ref{eq:VERSE_simG}~\brackettext{\cite{DBLP:conf/www/TsitsulinMKM18}}. 
 \begin{equation}
