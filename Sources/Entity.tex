@@ -11,7 +11,7 @@ In this chapter, we explore different ways to jointly train word embeddings for 
 \caption{Pipeline for generating entity-based embeddings. The first step is the annotation of the raw text with POS tagging, entity recognition, and disambiguation. Word embedding methods are applied to annotated corpus to create the textual models. A co-occurrence graph is extracted and nodes are embedded to achieve the graph-based models.}
 \label{fig:entity_emebddings_pipline}
 \end{figure}
-We introduce entity-based embeddings to address the issues that entity-centric downstream tasks would face when using word embeddings as features. Any downstream task that needs a vector presentation of entities in a text, has to either perform named entity recognition and linkage as post-processing step to normal word embeddings, or settles to using the ambiguous features that such models present. To address this problem we learn the embeddings for entity and terms directly from the text, without any post-processing steps. The general pipeline for generation of entity-based embeddings is shown in Figure~\ref{fig:entity_emebddings_pipline}. Word and graph-based models annotate the corpus in the first step, where the graph-based models have an additional step of co-occurrence graph extraction. The nodes of the graph are the named entities and terms in the text; thus, as an alternative method we embed the nodes of the graph to obtain embeddings for all the words in the vocabulary. \\
+We introduce entity-based embeddings to address the issues that entity-centric downstream tasks would face when using word embeddings as features. Any downstream task that needs a vector presentation of entities in a text has to either additionally perform named entity recognition and linkage on normal word embeddings, or settles to using the ambiguous features that such models present. To address this problem we learn the embeddings for entities and terms directly from the text, without any post-processing steps. The general pipeline for generation of entity-based embeddings is shown in Figure~\ref{fig:entity_emebddings_pipline}. Word and graph-based models annotate the corpus in the first step, where the graph-based models have an additional step of co-occurrence graph extraction. The nodes of the graph are the named entities and terms in the text; thus, as an alternative method we embed the nodes of the graph to obtain embeddings for all the words in the vocabulary. \\
 % BR: previous sentence is redundant: the embedding helps you get
 % embeddings for all words; reformulate
 Generating embeddings from annotated text is advantageous for the following reasons:
@@ -19,7 +19,7 @@ Generating embeddings from annotated text is advantageous for the following reas
 % advantageous for the following reasons:
 \begin{compactitem}
 \item \emph{Distinguishing homographs:} With annotation, we can distinguish between entity homographs. As a result, a vector representation of \emph{``Washington''} as a person is different from the same word as a location. 
-\item \emph{Embedding compound words:}  Unlike raw text, where the compound name is broken down into specific parts, names of entities are grouped into a unique identifier that helps the model to learn a distinct representation for them. In traditional methods, to derive a unique representation for an entity such as \emph{``Donald Trump"}, embeddings for two parts of the word have to be averaged, multiplied or transformed in a separate post-processing step, which is not only inefficient but also misleading; as the name \emph{``Donald"} could refer to many other \emph{``Donalds"} in a different contexts. 
+\item \emph{Embedding compound words:}  Unlike raw text, where the compound name is broken down into specific parts, names of entities are grouped into a unique identifier that helps the model to learn a distinct representation for them. In traditional methods, to derive a unique representation for an entity such as \emph{``Donald Trump''}, embeddings for two parts of the word have to be averaged, multiplied or transformed in a separate post-processing step, which is not only inefficient but also misleading; as the name \emph{``Donald''} could refer to many other \emph{``Donalds''} in a different contexts. 
 \item \emph{Unifying all surface form of an entity:} Mentions of the same entity with different surface forms are considered a unit identity, e.g., \emph{``Obama''} and \emph{``Mr. President''} in the time frame after $2009$, which creates a word context pair for each entity, which can increase performance. For example, all the words surrounding \emph{``Obama''} or any aliases are considered as context words for the entity \emph{``Barack Obama''}. 
 \item \emph{Unique representation of temporal information:} We identify expressions, which are dates or time, and normalise them into a single unique date. Hence, we can incorporate the temporal information as the context of a word, and at the same time learn a vector representation for the dates.
 \item \emph{Customizable search:} Since entities have pre-defined types, such as actor or location, we can perform a more effective search in the embedding space. The neighbourhood of a word can be filtered to contain only relevant types, which is beneficial for finding relationships between people or organizations. 
@@ -28,7 +28,7 @@ Generating embeddings from annotated text is advantageous for the following reas
 % definitions of a word, based on the type of entities that surround it.
 A word can be defined by the most relevant locations or actors. For example, when looking for the nearest neighbour of a word, the neighbourhood can be filtered to contain only entities of a specific type or remove the entities altogether and look only at surrounding terms. We take advantage of this property in Chapter~\ref{chap:eval} and introduce a new search criterion that succeeds in capturing entity-entity relations better than term-based models.\\
 \end{compactitem}
-In general, removing ambiguous mentions and annotating the corpus provides the models with more information and is likely to result to better input features for entity related tasks, such as information retrieval~\brackettext{\cite{DBLP:conf/acl/0001MC16,DBLP:conf/cikm/KuziSK16}}, and named entity recognition~\brackettext{\cite{DBLP:conf/nodalida/Siencnik15}}.
+In general, removing ambiguous mentions and annotating the corpus provides the models with more information and is likely to result in better input features for entity related tasks, such as information retrieval~\brackettext{\cite{DBLP:conf/acl/0001MC16,DBLP:conf/cikm/KuziSK16}}, and named entity recognition~\brackettext{\cite{DBLP:conf/nodalida/Siencnik15}}.
 % BR: I think 'stand' should be rather 'likely to result'?
 Since the concept of embedding named entities has not been studied until now, there is no framework available that uses such embeddings as an input. Consequently, the claim for better performance in any downstream task can only be validated if such frameworks are created. As a result, in this thesis, we only focus on creating entity embeddings that can perform similarly or even better than normal word embeddings on common term-based evaluation tasks.\\
 In the remainder of this chapter, we introduce methods for training entity and term embeddings jointly, on an annotated corpus. The main objective of entity-based models is to upgrade the traditional term embeddings, by incorporating the type of the word and also to learn a unique representation for named entities mentioned in the text. We focus on learning these embeddings by tweaking the existing word and graph embedding techniques and evaluating which one works best. For this purpose, we propose two approaches: 
@@ -36,10 +36,10 @@ In the remainder of this chapter, we introduce methods for training entity and t
 \item To naively include entities in the embeddings, we train the well-established word embedding models on a corpus, annotated with named entities. 
 \item Embedding the nodes of co-occurrence graphs extracted from the annotated text. 
 \end{compactenum}
-Both of the models are compared against word embedding models trained on raw text. To achieve better performance, we try a wide range of different techniques, starting from the well-established word embeddings methods on an annotated corpus to graph embedding techniques on word co-occurrence graphs. 
+Both of the models are compared against word embedding models trained on raw text. To achieve better performance, we try a wide range of different techniques, starting from the well-established word embedding methods on an annotated corpus to graph embedding techniques on word co-occurrence graphs. 
 
 \section{Word Embeddings on Raw Text}\label{sec:raw}
-State-of-the-art word embedding models are trained on raw text (without entity annotation). The word2vec and GloVe models, explained in Chapter~\ref{chap:background}, Sections~\ref{subsec:word2vec} and~\ref{subsec:GloVe} respectively, are chosen as representatives of classical word embeddings. From the word2vec model, the skip-gram architecture is chosen. We refer to the word2vec and GloVe model as $r$W2V and  $r$GLV, where \emph{``r"} denotes raw text input. The text is cleaned only by common pre-processing steps, such as tokenization and stop word removal. The complete pre-processing steps is explained in Chapter~\ref{chap:eval}, Section~\ref{sec:data}, where we discuss the training data. 
+State-of-the-art word embedding models are trained on raw text (without entity annotation). The word2vec and GloVe models, explained in Chapter~\ref{chap:background}, Sections~\ref{subsec:word2vec} and~\ref{subsec:GloVe} respectively, are chosen as representatives of classical word embeddings. From the word2vec model, the skip-gram architecture is chosen. We refer to the word2vec and GloVe model as $r$W2V and  $r$GLV, where \emph{``r''} denotes raw text input. The text is cleaned only by common pre-processing steps, such as tokenization and stop word removal. The complete pre-processing steps is explained in Chapter~\ref{chap:eval}, Section~\ref{sec:data}, where we discuss the training data. 
 % BR: can you briefly mention some of the pre-processing steps?
 % Otherwise, this is slightly vague. Or does it come afterwards? I shall
 % see!
@@ -51,7 +51,7 @@ Since no entities are annotated, all words are treated as terms. These models ar
 \resizebox{0.85\textwidth}{0.28\textwidth}{      
 \input{images/annotation.tex}
 }
-\caption{An example of the pre-processing for annotated text. All the entity mentions are replaced with their unique identifier and the unnecessary tags POS-tags are removed.}
+\caption{An example of the pre-processing for annotated text. All the entity mentions are replaced with their unique identifier and the unnecessary POS-tags are removed.}
 \label{fig:annotation}
 \end{figure}
 Named entities $N \subseteq V$ are a subset of all words in the vocabulary $N\subseteq V$ that fall into a pre-defined category.
@@ -59,35 +59,35 @@ Named entities $N \subseteq V$ are a subset of all words in the vocabulary $N\su
 In other words, terms that have a specific type are considered as named entities. Hence, the simplest way to obtain their embeddings would be to run the well-established word embedding models on the annotated text. Our contribution to these models is not the modification of the underlying method, but the input. The input of the model is no longer the raw text, but a corpus with annotated named entities. Annotation involves POS tagging, named entity recognition and disambiguation.
 % BR: Would rather use 'Task of annotating them (?)' here or just say
 % 'Annotation involves...'
-Since word embeddings learn the representation for each token in the text, our definition of the token is changed. A token is no longer a single word separated by space but named entity with a specific type. Any word that does not fit into any of the pre-defined types is considered as a term. Unlike the set of all words $V$, in which multiple entities share can share single ambiguous surface form, entities are presented with their unique identifiers. In our case, the identifier is the type of the word and numeric key, e.g., \emph{ACT\_17}, for an actor. As a result, compound words, such as names of people and organisations are considered as one word. All mentions of \emph{A\_17}, which corresponds to the actor \emph{``Barack Obama''} are represented with a single identifier.
+Since word embeddings learn the representation for each token in the text, our definition of the token is changed. A token is no longer a single word separated by a space but named entity with a specific type. Any word that does not fit into any of the pre-defined types is considered as a term. Unlike the set of all words $V$, in which multiple entities can share a single ambiguous surface form, entities are presented with their unique identifiers. In our case, the identifier is the type of the word and numeric key, e.g., \emph{ACT\_17}, for an actor. As a result, compound words, such as names of people and organisations, are considered as one word. All mentions of \emph{A\_17}, which corresponds to the actor \emph{``Barack Obama''} are represented with a single identifier.
 % BR: Do you mean 'identifier' rather than 'notation'?
 This makes the making the text less ambiguous.
 % BR: Fragment; change to 'This makes the...'
 In addition, depending on the performance of the named entity recognition tool all other indirect mentions, e.g., \emph{``Mr. President''}, \emph{``President of the United States''}, are also replaced with their corresponding entity identifier.
 % BR: No, the identifier is an element from that set rather than the
 % whole of the set, right?($V\setminus  N$)
-The same applies to different mentions of dates that result into date embeddings. Words that belong to more than one entity type, have an embedding for each type. For example, \emph{``Washington"} can either be a name of a person or a city and will have two separate embeddings for the actor and location context. The same strategy applies for terms, e.g., \emph{TER\_22}. Adding the type information in the name helps us identify and group named entities easier. It also allows us to search for a specific type. \\
-Since entity annotation requires POS tagging, we used the POS tags to remove stop-words and punctuation. An example of the text after annotation and pre-processing is shown in Figure~\ref{fig:annotation}. After annotation, we use word2vec and GloVe and refer to them as $a$W2V and $a$GLV, where \emph{``a"} denotes the use of annotated text. 
+The same applies to different mentions of dates that result into date embeddings. Words that belong to more than one entity type, have an embedding for each type. For example, \emph{``Washington''} can either be a name of a person or a city and will have two separate embeddings for the actor and location context. The same strategy applies for terms, e.g., \emph{TER\_22}. Adding the type information in the name helps us identify and group named entities easier. It also allows us to search for a specific type. \\
+Since entity annotation requires POS tagging, we used the POS tags to remove stop-words and punctuation. An example of the text after annotation and pre-processing is shown in Figure~\ref{fig:annotation}. After annotation, we use word2vec and GloVe and refer to them as $a$W2V and $a$GLV, where \emph{``a''} denotes the use of annotated text. 
 
 \section{Node Embeddings of Co-occurrence Graphs}\label{sec:graph_based}
 
-One motivation for incorporating the graph-based methods to enhance the performance was because of the additional information that such graphs contain. Most word embedding methods consider a fixed sized window of few words to determine if two terms are related to each other. Named entities, however, have more complex relational structures. An actor and an organization can be related even if they are mentioned several sentences apart. An example text is shown in Figure~\ref{fig:article_entities}, where possible relations between two actor entities, \emph{``Donald Trump"} and \emph{``Fred C. Trump"} are shown. If the context window is limited to a few words around the center word, then the relationship would not be detected, except for a window size of over $53$ tokens. As a result, word-based windows are unable to detect certain relationships that go beyond a sentence limit. 
+One motivation for incorporating the graph-based methods to enhance the performance was because of the additional information that such graphs contain. Most word embedding methods consider a fixed sized window of few words to determine if two terms are related to each other. Named entities, however, have more complex relational structures. An actor and an organization can be related even if they are mentioned several sentences apart. An example text is shown in Figure~\ref{fig:article_entities}, where possible relations between two actor entities, \emph{``Donald Trump''} and \emph{``Fred C. Trump''} are shown. If the context window is limited to a few words around the center word, then the relationship would not be detected, except for a window size of over $53$ tokens. As a result, word-based windows are unable to detect certain relationships that go beyond a sentence limit. 
 % BR: Rephrase: 'the relationship would not be detected, except for
 % a window size of over 53 tokens' or something like that. I believe
 % you are *unable* to detect the relationship using word-based windows,
 % right?
-On the other hand, if we look at the sentence distance of even one sentence away, \emph{``Donald Trump"} and \emph{``Fred C. Trump"} would be considered related. This is one of the reasons behind the choice of the LOAD~\brackettext{\cite{DBLP:conf/sigir/SpitzG16}} model as a co-occurrence network. The LOAD model applies a sentence-based window to find entity relations and a word-based window for relations among terms, and thus, captures entity-to-entity relations better than a fixed window.
+On the other hand, if we look at the sentence distance of even one sentence away, \emph{``Donald Trump''} and \emph{``Fred C. Trump''} would be considered related. This is one of the reasons behind the choice of the LOAD model as a co-occurrence network. The LOAD model applies a sentence-based window to find entity relations and a word-based window for relations among terms, and thus, captures entity-to-entity relations better than a word-based window.
 
 \begin{figure}
 \centering 
 \resizebox{0.90\textwidth}{0.2\textwidth}{      
 \input{images/article_entities.tex}
 }
-\caption{An example text to show the relation between two actor entities, \emph{``Donald Trump"} and \emph{``Fred C. Trump"}. If the word-based window size is applied then the relationship\deleted{s} between the two entities is not captured, even though they are only one sentence apart.}
+\caption{An example text to show the relation between two actor entities, \emph{``Donald Trump''} and \emph{``Fred C. Trump''}. If the word-based window size is applied then the relationship between the two entities is not captured, even though they are only one sentence apart.}
 \label{fig:article_entities}
 \end{figure}
-\noindent
-We defined a co-occurrence graph of words in Chapter~\ref{chap:background} as a graph $G=(V,E)$, where $V$ is the set of words in the vocabulary as nodes and $E$ set of edges. Furthermore, we assume that there are edge weights that encode some notion of distance between the words.
+
+We defined a co-occurrence graph of words in Chapter~\ref{chap:background} as a graph $G=(V,E)$, where $V$ is the set of words in the vocabulary (nodes) and $E$ is the set of edges. Furthermore, we assume that there are edge weights that encode some notion of distance between the words.
 % BR: Technically, your definition does not define edge weights. So you
 % could add 'Furthermore, we assume that there are edge weights that
 % encode some notion of distance...'
@@ -98,7 +98,7 @@ For entity annotations in particular, co-occurrence graphs, which are implicitly
 However, since we work on weighted graphs and weights display the strength of the relationships, weighted random walks are introduced to replace the uniform random walk in the DeepWalk model.
 % BR: Start the next sentence with something like 'In such a weighted
 % random walk...'
-In such a weighted random walk, the probability of a node visiting its neighbours is proportional to the edge weight. As a result, the probability of visiting node $j$ from vertex $i$ with edge weight $e_{i,j}$ is given in Equation~\ref{eq:edge_weight}, where $ E_{ i }$ denotes the set of all edges starting from node $t_{i}$. The stronger the relationship, the more likely a node is to be visited. So we obtain Equation~\ref{eq:edge_weight}, where $f$ is a normalization function, which we will subsequently introduce.
+In such a weighted random walk, the probability of a node visiting its neighbours is proportional to the edge weight. As a result, the probability of visiting node $j$ from vertex $i$ with edge weight $e_{i,j}$ is given in Equation~\ref{eq:edge_weight}, where $ E_{ i }$ denotes the set of all edges starting from node $v_{i}$. The stronger the relationship, the more likely a node is to be visited. So we obtain Equation~\ref{eq:edge_weight}, where $f$ is a normalization function, which we will subsequently introduce.
 % BR: ...the more likely a node is to be visited
 % BR: add: ...so we obtain <EQ>.
 % BR: How is $f$ defined? I know it comes later, but I would rather say
@@ -126,7 +126,7 @@ In a word co-occurrence graph, some words co-occur many times and some only a fe
 % experimented with the square root, but we found that is produces
 % similar results to the logarithmic normalization, so ...'
 \end{enumerate}
-Initially, we also experimented with the square root ($f=\mathrm{sqr}$), but we found that is produces similar results to the logarithmic normalization, so it is removed from the results.\\
+Initially, we also experimented with the square root ($f=\mathrm{sqr}$), but we found that is it produces similar results to the logarithmic normalization, so it is removed from the results.\\
 % BR: This drops out of nowhere. Can you briefly reference what you
 % refer to? Also, this belongs into a different paragraph because it
 % does not deal with the random walks anymore.
@@ -138,23 +138,23 @@ Initially, we also experimented with the square root ($f=\mathrm{sqr}$), but we 
 \resizebox{0.50\textwidth}{0.35\textwidth}{      
 \input{images/simrank.tex}
 }
-\caption{An example of SimRank similarity. In this graph, although the relationship between the president of Iran and the US is discovered by SimRank, the more important relationships, namely direct neighbours are disregarded. The similarity between \emph{``Barack Obama"} and the direct neighbours are zero.}
+\caption{An example of SimRank similarity. In this graph, although the relationship between the president of Iran and the US is discovered by SimRank, the more important relationships, namely direct neighbours are disregarded. The similarity between \emph{``Barack Obama''} and the direct neighbours are zero.}
 \label{fig:simrank}
 \end{figure}
 \noindent
 % BR: This requires some details or back-references if you already
 % talked about the model. How is the Adjacency Similarity defined, for
 % example?
-The VERSE model does not support the incorporation of the edge weights. From the three similarity measure that VERSE offers, we chose Adjacency Similarity, explained in Chapter~\ref{chap:background} in Section~\ref{subsec:VERSE}, to produce the entity embeddings. Our reason is two-fold: first, the PPR, explained in Chapter~\ref{chap:background} in Section~\ref{subsec:VERSE}, relates to the stationary distribution of a random walk with restart and we already represented the random walk-based models with DeepWalk.
+The VERSE model does not support the incorporation of the edge weights. From the three similarity measures that VERSE offers, we chose Adjacency Similarity, explained in Chapter~\ref{chap:background} in Section~\ref{subsec:VERSE}, to produce the entity embeddings. Our reason is two-fold: first, the PPR, explained in Chapter~\ref{chap:background} in Section~\ref{subsec:VERSE}, relates to the stationary distribution of a random walk with restart and we already represented the random walk-based models with DeepWalk.
 % BR: Where does the PPR drop from? Give a quick refresher here and
 % refer to the appropriate section in your document.
 Second, SimRank, explained in Chapter~\ref{chap:background} in Section~\ref{subsec:VERSE}, is a measure of structural relatedness, between two nodes, based on the assumption that two nodes are similar if they are connected to other similar nodes. Although words that co-occur often with the same words can themselves be considered similar, if we only look at nodes that have common neighbours we lose most of the adjacency relations in the graph. An example is illustrated in Figure~\ref{fig:simrank}. Since the SimRank of two nodes with no common neighbour is zero, the direct neighbours are disregarded. However, SimRank tends to discover interesting relationships, such as the one shown in Figure~\ref{fig:simrank} and possibly if a new similarity measure is introduced that creates a trade-off between SimRank and Adjacency Similarity, the results might improve. For this study, however, we choose only Adjacency Similarity to learn the embeddings and we leave the development of a new similarity measure as future work. 
 % BR: ...and we leave the development of a new similarity measure as
 % future work
-Since Adjacency Similarity is based on the is based on the normalized adjacency matrix, it captures the neighbourhood relations.
+Since Adjacency Similarity is based on the normalized adjacency matrix, it captures the neighbourhood relations.
 % BR: Rephrase: Since it [i.e. Adjacency Similarity] is based on the
 % normalized adjacency matrix, ...
-We could not use the LINE model for the following reasons : First, because of the unbalanced weight distribution, the optimization objective for the second-order proximity of the LINE model becomes ill-defined. Hence, one part of the embedding for this model cannot be trained properly. Moreover, the Adjacency Similarity of VERSE model correlates with the first-order proximity in LINE and can be used as representative of first-order proximity.  \\
+We could not use the LINE model for the following reasons : First, because of the unbalanced weight distribution, the optimization objective for the second-order proximity of the LINE model becomes ill-defined. Hence, one part of the embedding for this model cannot be trained properly. Second, the Adjacency Similarity of VERSE model correlates with the first-order proximity in LINE and can be used as representative of first-order proximity.  \\
 % BR: Same issue: SimRank appears to drop out of nowhere and needs to be
 % put into context.
 \section{Summary}\label{sec:entity_summary}
