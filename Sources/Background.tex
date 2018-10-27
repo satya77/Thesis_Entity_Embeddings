@@ -2,7 +2,7 @@
 
 \chapter{Background and Related Work}\label{chap:background}
 To generate a vector representation of named entities and terms in an annotated document, we use either a corpus of text with entity annotations or the co-occurrence graph extracted from it. Unlike traditional methods, where all tokens are treated as terms, entity embeddings take the type information into account. To provide a general background for all the methods used in this work the related work is organized as follows:\\
-In Section~\ref{sec:NLP} a brief overview of the text preprocessing steps for NLP tasks is given, in which methods used to extract information from text or common preprocessing steps are explained, containing text cleaning, stemming, lemmatization, Part-Of-Speech tagging, named entity recognition and linkage. In Section~\ref{sec:nn} neural network based approaches for learning embeddings are explained. The co-occurrence graphs are explained in Section~\ref{sec:graph} along with the LOAD model~\brackettext{\cite{DBLP:conf/sigir/SpitzG16}}, which is a specific co-occurrence graph used in this thesis. Since word2vec and GloVe are the building blocks of other models, they are described in Section~\ref{sec:wordembeddig}. In the same section, we also explain how the edge weights of a co-occurrence graph can be used to generate a weighted adjacency matrix, which is comparable to a co-occurrence matrix in the GloVe model.  Finally, an overview of the important graph embedding methods is given in Section~\ref{sec:graph}, containing DeepWalk, node2vec, LINE, and VERSE. These models are used  in Chapter~\ref{chap:entity} and~\ref{chap:faceted} to create the entity and faceted embeddings, respectively. 
+In Section~\ref{sec:NLP} a brief overview of the text preprocessing steps for NLP tasks is given, in which methods used to extract information from text or common preprocessing steps are explained, containing text cleaning, stemming, lemmatization, part-of-speech tagging, named entity recognition and linkage. In Section~\ref{sec:nn} neural network based approaches for learning embeddings are explained. The co-occurrence graphs are explained in Section~\ref{sec:graph} along with the LOAD model~\brackettext{\cite{DBLP:conf/sigir/SpitzG16}}, which is a specific co-occurrence graph used in this thesis. Since word2vec and GloVe are the building blocks of other models, they are described in Section~\ref{sec:wordembeddig}. In the same section, we also explain the generation of  weighted adjacency matrix from a weighted co-occurrence graph, which is comparable to a co-occurrence matrix in the GloVe model.  Finally, an overview of the important graph embedding methods is given in Section~\ref{sec:graph}, containing DeepWalk, node2vec, LINE, and VERSE. These models are used  in Chapter~\ref{chap:entity} and~\ref{chap:faceted} to create the entity and faceted embeddings, respectively. 
 
 % BR: I would prefer this section to be more active: Section X provides
 % Y. Other than that, no complaints. It is very nice that you are able
@@ -10,7 +10,7 @@ In Section~\ref{sec:NLP} a brief overview of the text preprocessing steps for NL
 
 \section{Basics of Natural Language Processing}\label{sec:NLP}
 The goal of NLP systems is to understand and derive meaning from human language, with textual data as their main source of information.
-Most of the World Wide Web is made of text, with websites, such as Twitter generating vast amounts every day. Analysing this content is, however, not a simple task. For example, text might contain ambiguity, as in the sentence \emph{``I put my \textbf{wallet} in the  \textbf{car}.  \textbf{It} is green.''} In this sentence, it is not obvious if \emph{``it''} refers to the \emph{``car''} or the  \emph{``wallet''}. Moreover, humans often use homographs (words having the same spelling but different meanings), metaphors and sarcasm, which further increases the complexity of text analysis.\\
+Most of the World Wide Web is made of text, with websites, such as Twitter generating vast amounts every day. Analysing this content is, however, not a simple task. For example, text might contain ambiguity, as in the sentence \emph{``I put my \textbf{wallet} in the  \textbf{car}.  \textbf{It} is green.''} In this sentence, it is not obvious if \emph{``it''} refers to the \emph{``car''} or the  \emph{``wallet''}. Moreover, humans often use homographs (words that have the same spelling but different meanings), metaphors and sarcasm, which further increases the complexity of text analysis.\\
 % BR: alt.: further increases the complexity of text analysis
 % BR: I consider 'even more challenging' to be a little bit too
 % informal.
@@ -47,13 +47,13 @@ Additionally, words such as \emph{``are''} and \emph{``to''} are frequent in all
 Another important preprocessing step is \emph{stemming} or \emph{lemmatization}. This step is motivated by the desire to represent verbs with different grammatical conjugations as the same word.
 % BR: I would be more precise about the different endings here. Can you
 % specify that this pertains to 'grammatical endings' here?
-In many cases, there is no need for a distinction between \emph{argue}, \emph{argued}, \emph{argues}, and \emph{arguing}. They could all be represented by a common stem: \emph{argu}. This is called stemming as it chops off the ends of words and often includes the removal of derivational affixes. Another approach is the use of lemmatization, which uses the vocabulary and morphological analysis of words, normally aiming to remove inflectional endings only, to return the base or dictionary form of a word, which is known as the lemma. Lemmatization is a more complex task as it is necessary to have detailed dictionaries, which the algorithm has to look through, to link a specific form back to its lemma. This is particularly problematic for irregular verbs. For instance,
-the lemmatization of \emph{``drank''} is \emph{``drink''}~\brackettext{\cite{SCHOL:book/larson2010},\cite{ACM:Jurafsky:2000:SLP:555733}}.
+In many cases, there is no need for a distinction between \emph{argue}, \emph{argued}, \emph{argues}, and \emph{arguing}. They could all be represented by a common stem: \emph{argu}. This is called stemming as it chops off the ends of words and often includes the removal of derivational affixes. Another approach is the use of lemmatization, which uses the vocabulary and morphological analysis of words, normally aiming to remove inflectional endings only, to return the base or dictionary form of a word, which is known as the lemma. Lemmatization is a more complex procedure as it is necessary to have detailed dictionaries, which the algorithm has to look through, to link a specific form back to its lemma. This is particularly problematic for irregular verbs, where the past and present tense of a verb do not share the same stem. For instance,
+the lemmatization of \emph{``drank''} is \emph{``drink''}~\brackettext{\cite{SCHOL:book/larson2010,ACM:Jurafsky:2000:SLP:555733}}.
 % BR: The last sentence should be rewritten: 
 % > This is particularly problematic for irregular verbs. For instance,
 % > the lemmatization of ``drank'' is ``drink''.
 
-\subsection{Part-Of-Speech tagging (POS tagging)}\label{subsec:pos}
+\subsection{Part-of-speech tagging (POS tagging)}\label{subsec:pos}
 \emph{POS tagging} is the process of marking up a word in a text corresponding to a particular part of speech. Parts of speech are also known as \emph{word classes} or \emph{lexical categories} (e.g., noun, verb, adjective,~\dots). POS tags are useful because they yield a large amount of information about a word and its neighbors, but also about the syntactic context around a word~\brackettext{\cite{ACM:Manning:1999:FSN:311445, ACM:Jurafsky:2000:SLP:555733}}. Parts of speech are useful features for finding named entities, such as people or organizations in text~\brackettext{\cite{SCHOL:book/jurafsky2016}}. Applications that provide POS tagging are also referred to as \emph{POS taggers}, which are used to assign tags to tokens using a finite predefined tagset. For English, the most commonly used tagset is the \textbf{Penn Treebank POS tagset} \footcite{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}. 
 % BR: I would change the sentence about the software. Maybe refer to it
 % in an active fashion, e.g. 'Applications that provide POS tagging are
@@ -67,7 +67,7 @@ the lemmatization of \emph{``drank''} is \emph{``drink''}~\brackettext{\cite{SCH
 Recognition of entities is difficult, partly because of ambiguities and mostly because of multiple surface forms (different names for the same entity).
 % BR: what kind of ambiguities are we talking about?
 % BR: what is a surface form?
-It is not always clear what is or is not an entity or what type it has. For example, the entity \emph{``Washington''} can be a name of a city, a person or even an organization. NER identifies the occurrence or mention of a named entity in the text, but it does not identify which specific entity it is. \emph{Named entity linking} (NEL) or \emph{named entity disambiguation} (NED) is the task of mapping the found entities to a repository of entities. For this purpose, \emph{knowledge bases} are used, which contain rich information about the entities and their mutual relationships~\brackettext{\cite{ACM:Manning:1999:FSN:311445,ACM:Jurafsky:2000:SLP:555733}}. NEL maps the found entities to their corresponding pair in the knowledge base~\brackettext{\cite{DBLP:journals/tkde/ShenWH15}}. 
+It is not always clear what is or is not an entity or what type it has. For example, the entity \emph{``Washington''} can be a name of a city, a person or even an organization. NER identifies the occurrence or mention of a named entity in the text, but it does not identify which specific entity it is. \emph{Named entity linking} (NEL) or \emph{named entity disambiguation} (NED) is the task of mapping the found entities to a repository of entities. For this purpose, \emph{knowledge bases} are used, which contain rich information about the entities and their mutual relationships~\brackettext{\cite{ACM:Manning:1999:FSN:311445,ACM:Jurafsky:2000:SLP:555733}}. NEL maps the found entities to their corresponding entry in the knowledge base~\brackettext{\cite{DBLP:journals/tkde/ShenWH15}}. 
 % BR: can you give a link to a section with more information about this?
 These entities form the graph nodes in later steps. 
 % BR: very nice; maybe you could add a brief description of 'entity' in
@@ -77,12 +77,7 @@ These entities form the graph nodes in later steps.
 Before the advancements in deep learning and neural networks, most NLP techniques were based on machine learning approaches with linear models such as support vector machines or logistic regression, trained on very high-dimensional and sparse feature vectors. Recently, the field has changed to use non-linear neural-network models over dense inputs. The most important advantage of such methods is that they can often be trained with a single end-to-end model and do not require traditional task-specific feature engineering~\brackettext{\cite{DBLP:journals/jair/Goldberg16}}. Methods for different NLP tasks differ in architectures of neural networks and feature representations. Since the focus of this thesis is on word embeddings, we will focus on the explanation of a simple neural network and the basic idea needed to generate word embeddings in the following. 
 
 \subsection{Neural networks}
-Despite neural networks being the new trend in machine learning, they are rather old algorithms, which were motivated by the goal of having a machine that mimics a brain. The sudden resurgence of neural networks is due to the fact that they are computationally expensive algorithms and require a huge amounts of data, which was neither available nor processable in the 80s and 90s. In addition \emph{``backpropagation''} algorithm and the advent of GPUs, sped up the training process and made it feasible.
-% BR: the biggest reason is that 'backpropagation' became suddenly
-% trainable and the advent of GPUs helped a lot there as well. Moreover,
-% different activation functions (ReLU) were numerically 'well-behaved'
-% in contrast to the older tanh.
-\\
+
 \begin{figure}
 \centering 
 \resizebox{0.55\textwidth}{0.3\textwidth}{      
@@ -95,6 +90,22 @@ Despite neural networks being the new trend in machine learning, they are rather
 \end{figure}
 \footnotetext{The figure is adapted from https://www.coursera.org/learn/machine-learning.}
 \noindent
+Despite neural networks being the new trend in machine learning, they are rather old algorithms, which are motivated by the goal of having a machine that mimics a brain. The sudden resurgence of neural networks is due to the fact that they are computationally expensive algorithms and require a huge amounts of data, which was neither available nor processable in the 80s and 90s. Also \emph{``backpropagation''} algorithm and the advent of GPUs, sped up the training process and made it feasible.\\
+% BR: the biggest reason is that 'backpropagation' became suddenly
+% trainable and the advent of GPUs helped a lot there as well. Moreover,
+% different activation functions (ReLU) were numerically 'well-behaved'
+% in contrast to the older tanh.
+\begin{figure}
+\centering 
+\resizebox{0.65\textwidth}{0.4\textwidth}{      
+\input{images/NN.tex}
+}
+\caption{Two layer neural network with one hidden layer. An input $x$ is multiplied by the weight matrix $\Theta$ to generate an intermediate activation value $a$. The output $\hat { y } $ is the combination of activations with their weights \protect \footnotemark .}
+
+\label{fig:nn}
+
+\end{figure}
+\noindent
 A single artificial neuron is shown in Figure~\ref{fig:preceptron}. The computational unit illustrated in red takes in the different features $x$ and multiplies each input with a given weight $\theta_i$.
 % BR: I would use weight indices here if you really want to talk about
 % a single weight. This is consistent with the notation above.
@@ -104,23 +115,8 @@ The weights indicate the importance of each feature for the computation. The neu
 % you want.  I would thus rather say that they are 'typically selected
 % to be non-linear' or something similar.
 $b$ is called the \emph{bias unit} which always has an input value of $1$. $g(x)$ is called the \emph{activation function} and represents the typically non-linear transformation that is applied on the input data. Essentially, each neuron consists of two steps of computation. First, $z$ is computed by the multiplication of weights and inputs, which is a linear operation that boils down to a matrix--vector product.
-% product
-% BR: ...this is a linear operation that boils down to a matrix--vector
-% product
 Second, an activation function of choice is applied to $z$ to produce the final output. The output or activation ($a$) of the last unit is the predicted output.\\
-\begin{figure}
-\begin{minipage}{\textwidth}
-\centering 
-\resizebox{0.65\textwidth}{0.4\textwidth}{      
-\input{images/NN.tex}
-}
-\caption{Two layer neural network with one hidden layer. An input $x$ is multiplied by the weight matrix $\Theta$ to generate an intermediate activation value $a$. The output $\hat { y } $ is the combination of activations with their weights \protect \footnotemark .}
 
-\label{fig:nn}
-  \end{minipage}
-
-\end{figure}
-\noindent
 A neural network is a group of multiple neurons connected together, as shown in Figure~\ref{fig:nn}. In a neural network, the first layer is called the \emph{input layer} and the last layer is called the \emph{output layer}. All other layers are referred to as \emph{hidden layers}.
 % BR: alt.: all other layers are referred to as hidden layers
 Typically, the values of the input and the output layer are given in the training set. Activation of each computational unit is the output of that unit after applying a certain function on the inputs. We denote activation of the unit (neuron) $i$ in layer $j$ by $a_{i}^{[j]}$.
@@ -189,35 +185,36 @@ L=\frac { 1 }{ n } \sum _{ i=1 }^{ n }{ D_{ kl }(y^{ (i) }||\hat { y } ^{ (i) })
 L=-\frac { 1 }{ n } \sum _{ i=1 }^{ n }{ [y^{ (i) }\log{(\hat { y } ^{ (i) })+(1-  y^{ (i) }}})\log{(1-\hat { y } ^{ (i) }})
 \end{equation}
 \end{inparaenum}
-The goal of the training phase is to learn a weight matrix $\Theta$ and a bias term $b$ such that the overall cost is minimized. This naturally leads to an optimization problem, which is  typically solved using \emph{Gradient Descent} (GD)~\brackettext{\cite{DBLP:journals/corr/Ruder16}}.\\
-\noindent
-% BR: ...this naturally leads to an optimization problem, which is
-% typically solved using gradient descent.
-Considering the most simple case (a function with only one parameter) gradient descent is illustrated in Figure~\ref{fig:gradientD}. Gradient descent is a way to minimize an objective function parameterized by a model’s parameters by updating the parameters in the opposite direction of the gradient with respect to parameters.
+The goal of the training phase is to learn a weight matrix $\Theta$ and a bias term $b$ such that the overall cost is minimized. This naturally leads to an optimization problem, which is  typically solved using \emph{Gradient Descent} (GD)~\brackettext{\cite{DBLP:journals/corr/Ruder16}}.
+Considering the most simple case (a function with only one parameter) gradient descent is illustrated in Figure~\ref{fig:gradientD}. Gradient descent is a way to minimize an objective function parameterized by finding local minima based on local gradients.
 % BR: I slightly object to that description. I would drop the
 % 'parameterized ...' part and just leave it as 'a way to minimize an
 % objective function by finding local minima based on local gradients'
 % or something like that.
-The algorithm for one parameter $\theta$ can be seen in Algorithm~\ref{algo:gd}. Here, $\alpha$ is the \emph{learning rate} or the step size and controls the magnitude of the update in each iteration.
+GD is an iterative algorithm, where in each step the parameter of the model is updated using the gradient of the function. A single step of GD  for one parameter $\theta$ can be seen in Equation~\ref{eq:gd}. Here, $\alpha$ is the \emph{learning rate} or the step size and controls the magnitude of the update in each iteration.
+\begin{equation}
+\theta=: \theta- \alpha\frac { \partial J(\theta) }{ \partial \theta }
+\label{eq:gd}
+\end{equation}
 % BR: I am not entirely happy with the replaced text, but the previous
 % formulation was slightly informal.
 As shown in Figure~\ref{fig:gradientD} the derivative or the slope of the function is positive on the right side of the minimum (the update rule will decrease $\theta$) and negative on the left size (the update rule will increase $\theta$). The same rule holds in higher dimensions as well. \\
 % BR: This is very nice. To be mathematically airtight, you could write
 % that this holds in higher dimensions as well. However, one may require
 % approximations of the gradient there, of course.
-
-\begin{algorithm}[htbp]
-  %
-  \begin{algorithmic}[1]
-    \newcommand{\UF}{\mathrm{U}}
-   \While{(not converged)}
- \State $\theta=: \theta- \alpha\frac { \partial J(\theta) }{ \partial \theta } $
-  \EndWhile
-  \end{algorithmic}
-  %
-\caption{: Gradient decent}
- \label{algo:gd}
-\end{algorithm}
+%
+%\begin{algorithm}[htbp]
+%  %
+%  \begin{algorithmic}[1]
+%    \newcommand{\UF}{\mathrm{U}}
+%   \While{(not converged)}
+% \State $\theta=: \theta- \alpha\frac { \partial J(\theta) }{ \partial \theta } $
+%  \EndWhile
+%  \end{algorithmic}
+%  %
+%\caption{: Gradient decent}
+% \label{algo:gd}
+%\end{algorithm}
 
 \begin{figure}
 \centering 
@@ -258,42 +255,35 @@ However, text is inherently high-dimensional, requiring a specific form of embed
 % Maybe: 'However, text is inherently high-dimensional, requiring
 % a specific form of embedding'.
 In most traditional NLP systems, each word is represented as a one-hot vector of size equal to the size of the vocabulary, which is a high-dimensional, highly sparse vector.
-% BR: I don't like the dichotomy here. Maybe 'which is
-% a high-dimensional, highly sparse vector'?
 By feeding these high-dimensional representations to a neural network with a smaller hidden layer, a new representation (usually in the order of $100$ dimensions) of each word can be learned. Although neural networks can be used in supervised and unsupervised learning, generally, the embedding is learned as a supervised learning problem. For this purpose, different models have been proposed, the most famous being word2vec~\brackettext{\cite{DBLP:journals/corr/abs-1805-04032}}, which will be discussed in Section~\ref{sec:wordembeddig} in detail. All the models follow the same principle, which is illustrated in Figure~\ref{fig:emb}. The size of the output layer depends on the particular architecture and the cost function. In addition, the network can be composed of multiple layers, but for our purposes, we focus on shallow networks with only one hidden layer. \\
 \noindent
 % BR: The change between these two sections is very abrupt.
-Learning low-dimensional representation is not only a challenge for NLP, but extends to many domains, such as image and graph analysis. Graph embeddings, in particular,  aim to convert a graph with many edges and nodes into a low dimensional latent space while preserving the graph information~\brackettext{\cite{DBLP:journals/kbs/GoyalF18}}.
-% BR: I do not agree with this. Why are graphs necessarily
-% high-dimensional? Technically, they only contain edges and nodes. You
-% should probably refer to their latent space here?
-Graphs are complex and contain many attributes. Therefore, transforming them into low-dimensional spaces is not a trivial task. There are various methods to embed nodes, edges or the whole graph. For the purpose of this thesis, we focus on \emph{node embeddings}, which represent each node as a vector in a low-dimensional space, where node proximity should be preserved in both spaces.
+Learning low-dimensional representation is not only a challenge for NLP, but extends to many domains, such as image and graph analysis. Graph embeddings, in particular,  aim to convert a graph with many edges and nodes into a low dimensional latent space while preserving the graph information~\brackettext{\cite{DBLP:journals/kbs/GoyalF18}}. One type of graph embedding is \emph{node embedding}, which represent each node of a graph as a vector in a low-dimensional space, where node proximity should be preserved in both spaces.
 % BR: I would rather say that 'proximity should be preserved in both
 % spaces'
-The difference between various techniques lies in how they define \emph{``closeness''}~\brackettext{\cite{DBLP:journals/tkde/CaiZC18}}. In the next section, we will give a brief introduction to co-occurrence graphs, and in Section~\ref{sec:graph} the well-known graph embedding methods are explained.  
+The difference between various techniques lies in how they define \emph{``closeness''}~\brackettext{\cite{DBLP:journals/tkde/CaiZC18}}. For example, two nodes are considered close if they share the same neighbours or have a direct edge between them. In the next section, we will give a brief introduction to co-occurrence graphs, and in Section~\ref{sec:graph} the well-known graph embedding methods are explained.  
 \begin{figure}
 \centering 
 \resizebox{0.8\textwidth}{0.48\textwidth}{      
 \input{images/emb.tex}
 }
-% BR: Nice graphic! There are some typos in the dictionary, though.
-% I will not correct them for now because figures will probably use
-% another pass.
 \caption{Underlying principle of word embeddings. The high-dimensional one-hot vectors are the input of the network. The hidden layer learns a dense representation to either predict the surrounding words or to optimize a different cost function in the output layer.}
 \label{fig:emb}
 \end{figure}
 
 \section{Co-occurrence Graphs}
 \label{sec:graph}
-Co-occurrence analysis, in terms of graphs, is not limited to text mining, but is a tool to find potential relationships between people, organizations, concepts, and biological organisms~\brackettext{\cite{SCHOL:journal/NAR/shiri}}. A word co-occurrence graph shows the word interactions in a corpus. A co-occurrence graph $G=(V,E)$ is defined by a set of all words $V$ as nodes and edges $E$ between them, where there is an edge based on their paired presence in a unit of text~\brackettext{\cite{DBLP:conf/cikm/RousseauV13,DBLP:journals/nle/NastaseMR15}}. If the entities in the text are annotated, the graph shows the positional relationship between entities and terms that occur in the text. There is an edge between two words, if they occur in the same sentence or paragraph~\brackettext{\cite{DBLP:conf/interspeech/YinBB18}}. If the graph is weighted, the edges indicate the strength of the connection between two words or entities, which related to the number of their co-occurrences or some kind of distance measure, e.g., number of tokens between them~\brackettext{\cite{SCHOL:book/mihalcea2011}}. Since these graphs encode all important words in the vocabulary, they can form a graph-based representation of the corpus, which we use instead of a textual corpus to generate embeddings, where relations between nearby words can be extracted based on edges and nearby nodes.
-The \emph{LOAD model}~\brackettext{\cite{DBLP:conf/sigir/SpitzG16}} is an entity co-occurrence graph representation of large document collections. For each document, named entities from sentences are extracted and connected based on their distance in a graph structure. The original LOAD model contains node types of pages and sentences as well, which we disregard for the creation of faceted embeddings. \\
-Equation~\ref{eq:load_dist} shows the weighting of a single edge in the LOAD model between two entities $v$ and $s$, where $\delta $ is a distance function. $\delta $ equals the number of sentences between the instances, or $0$ if they occur in the same sentence.
-If $i$ and $ j$ do not occur on the same document: $ \delta(i, j) := \inf$. $ I_{ v }$ and $I_{ s } $ are the set of all occurrences of $v$ and $s$ in the corpus. $\exp$ forces the weight to diminish exponentially with the distance. Eventually, the sum of all these exponential distances creates the final weight.
+Co-occurrence analysis, in terms of graphs, is not limited to text mining, but is a tool to find potential relationships between people, organizations, concepts, and biological organisms~\brackettext{\cite{SCHOL:journal/NAR/shiri}}. A word co-occurrence graph shows the word interactions in a corpus. A co-occurrence graph $G=(V,E)$ is defined by a set of all words $V$ as nodes and edges $E$ between them, where there is an edge based on their paired presence in a unit of text~\brackettext{\cite{DBLP:conf/cikm/RousseauV13,DBLP:journals/nle/NastaseMR15}}. If the entities in the text are annotated, the graph shows the positional relationship between entities and terms that occur in the text. There is an edge between two words, if they occur in the same sentence or paragraph~\brackettext{\cite{DBLP:conf/interspeech/YinBB18}}. If the graph is weighted, the edges indicate the strength of the connection between two words or entities, which related to the number of their co-occurrences or some kind of distance measure, e.g., number of tokens between them~\brackettext{\cite{SCHOL:book/mihalcea2011}}. Since these graphs encode all important words in the vocabulary, they can form a graph-based representation of the corpus, which we use instead of a textual corpus to generate embeddings, where relations between nearby words can be extracted based on edges and nearby nodes.\\
+
+The \emph{LOAD model}~\brackettext{\cite{DBLP:conf/sigir/SpitzG16}} is an entity co-occurrence graph representation of large document collections. For each document, named entities from sentences are extracted and connected based on their distance in a graph structure. The original LOAD model contains node types of pages and sentences as well, which we disregard for our models, the entity types considered by the LOAD graph are actors, locations, organisation, dates, and terms.\\
+The LOAD model encodes the strength of relationship between entities and terms in the edge weights. In most cases entities on the same page share some connection, regardless of their distance in the text. Therefore, a sentence-based weighting function for capturing the relation between two entities is introduced, where the long-distance connections have lower weights. Equation~\ref{eq:load_dist} shows the weighting of a single edge in the LOAD model between two entities $v$ and $s$, where $\delta $ is a distance function. For entities other than terms, $\delta $ equals the number of sentences between the instances, or $0$ if they occur in the same sentence.
+If $i$ and $ j$ do not occur on the same document: $ \delta(i, j) := \infty$. $ I_{ v }$ and $I_{ s } $ are the set of all occurrences of $v$ and $s$ in the document. $\exp$ forces the weight to diminish exponentially with the distance. Eventually, the sum of all these exponential distances creates the final weight.
 \begin{equation}
-e (v,s)\quad :=sum _{ i\in I_{ v } \\ j\in I_{ s } }^{  }{ \exp } (-\delta (i,j))
+e (v,s) :=\sum _{ i\in I_{ v } \\ j\in I_{ s } }^{  }{ \exp } (-\delta (i,j))
 \label{eq:load_dist}
 \end{equation}
-The weights generated in this way encode the importance of one entity to another. The distance decays as the number of sentences between two entities grows. In addition, long-distance connections are considered very weak and are cut-off. However, terms are less likely to be related to entities outside of their own sentence, so the edges between terms and entities are limited to those that appear in the same sentence~\brackettext{\cite{DBLP:conf/sigir/SpitzG16}}. 
+The weights generated in this way encode the importance of one entity to another. The distance decays as the number of sentences between two entities grows. In addition, long-distance connections are considered very weak and are cut-off based on a threshold parameter. 
+Despite the fact that related entities can be mentioned several sentences apart, terms are less likely to be related to entities outside of their own sentence, so the edges between terms and entities are limited to those that appear in the same sentence. ~\brackettext{\cite{DBLP:conf/sigir/SpitzG16}}. 
 
 \section{Word Embeddings}
 \label{sec:wordembeddig}
@@ -301,7 +291,7 @@ A word embedding is defined as a mapping $ V\rightarrow { R }^{ d }:v \rightarro
 Window-based models such as word2vec learn the embeddings in terms of a supervised learning task, where the objective is to predict a word's context given a center word in a fixed window. A noticeable disadvantage of these models is that they do not operate directly on the co-occurrence statistics of the corpus. Instead, they scan context windows across sentences, which fails to take advantage of the vast amount of repetition in the data. Regardless of the fact that many words co-occur multiple times, for multiple passes through the data, a window-based method has to parse the whole corpus several times. On the other hand, a co-occurrence matrix can capture this repetition in a compact way and hence, save time and computational power.  \\
 In contrast, matrix factorization methods operate directly on the co-occurrence matrix and capture the full statistics. Before word2vec, similar embeddings were generated using \emph{Singular Value Decomposition}(SVD) on co-occurrence matrices and keeping the top \emph{k} dimensions. These methods were also able to capture many semantic and syntactic analogies~\brackettext{\cite{SCHOL:journals/acm/Rohde}}. In $2014$ Levy and Goldberg showed that implicitly factorizing a word-context matrix, whose cells are the \emph{Point wise Mutual Information} (PMI) of the respective word and context pairs, can generate embeddings close to word2vec\brackettext{\cite{DBLP:conf/nips/LevyG14}}.
 The main disadvantage of count based methods is that they are computationally slow on large matrices. In addition, adding new words to the model is difficult, since it requires training a new model from the start.\\
-The GloVe~\brackettext{\cite{DBLP:conf/emnlp/PenningtonSM14}} model combines the matrix factorization for generating embeddings with window-based methods and uses the global statistics of the corpus or in another word the co-occurrence matrix to generate embeddings. In addition, unlike the word2vec model that scales with the size of the corpus, general statistics of the data has to be generated only once in terms of the co-occurrence matrix and then additional computations can be performed on the matrix alone.
+The GloVe model~\brackettext{\cite{DBLP:conf/emnlp/PenningtonSM14}}  combines the matrix factorization for generating embeddings with window-based methods and uses the global statistics of the corpus or in another word the co-occurrence matrix to generate embeddings. In addition, unlike the word2vec model that scales with the size of the corpus, general statistics of the data has to be generated only once in terms of the co-occurrence matrix and then additional computations can be performed on the matrix alone.
 \begin{figure}
 \centering 
 \resizebox{0.63\textwidth}{0.5\textwidth}{      
@@ -319,7 +309,7 @@ The word2vec method contains two models, \emph{continuous bag-of-words} (CBOW) a
 \resizebox{0.8\textwidth}{0.5\textwidth}{      
 \input{images/skip_w2v.tex}
 }
-\caption{Skip-gram architecture for the example sentence \emph{``The quick brown fox jumps over the lazy dog.''}. }
+\caption{Skip-gram architecture for the example sentence \emph{``The quick brown fox jumps over the lazy dog.''}. The input is the one-hot vector indicating the word \emph{``dog''} and the model tries to predict words that co-occur in the context window of the target word.  }
 \label{fig:skip_w2v}
 \end{figure}
 \noindent
@@ -327,19 +317,19 @@ The word2vec method contains two models, \emph{continuous bag-of-words} (CBOW) a
 More formally, given a corpus of words $f$ and their contexts $c$, to set the parameters $w$ of $p(c|f; w)$ so as to maximize the corpus probability, where $D$ is the set of all words and context pairs extracted from the text. Equation~\ref{eq:w2v_p} shows the probability formulation.
 \begin{equation}
 \label{eq:w2v_p}
-w^*=\underset { w  }{ { \text{argmax} } } \prod _{ (w,c)\in \quad D }^{  }{ p(c|f; } w )
+w^*=\underset { w  }{ { \text{argmax} } } \prod _{ (w,c)\in D }^{  }{ p(c|f;  w )}
 \end{equation}
 The literature on neural-network language models, defines this probability using softmax shown in Equation~\ref{eq:w2v_softmax}, where $w_c$ and $ w_f\in R^d$ are vector representations for $c$ (context words) and $f$ (focal or center word) respectively, and
 $C$ is the set of all available contexts. The goal is to find the parameters $w$ such that Equation~\ref{eq:w2v_p} is maximized~\brackettext{\cite{DBLP:journals/corr/GoldbergL14}}. 
 \begin{equation}
 \label{eq:w2v_softmax}
-p(c|f;w)=\frac { { e }^{ w_{ c }.w_{ f } } }{ \sum _{ \acute { f } \in C }^{  }{ { e }^{ w_{ c }.w_{ \acute { f }  } } }  } 
+p(c|f;w)=\frac { { e }^{ w_{ c }.w_{ f } } }{ \sum _{ \acute { f } \in C }^{  }{ { e }^{ w_{ c }.w_{ \overline { f }  } } }  } 
 \end{equation}
-Maximizing the log-likelihood of Equation~\ref{eq:w2v_softmax} on the training set is very expensive. Because we need to compute and normalize each probability using the score for all other words  $\acute { f }$ in the context of $c$. Therefore, the authors reformulate the problem using \emph{Negative Sampling}~\brackettext{\cite{DBLP:journals/jmlr/GutmannH12}}~\footnote{ In order to deal with the expensive computation of the softmax, the multinomial classification problem (predicting the next word) is converted into a binary classification problem. To estimate a true probability distribution of the output word, binary logistic regression is used, where the classifier learns to distinguish between a true pair (true context words) and randomly selected words from the vocabulary (corrupted pairs). The classifier simply predicts whether a pair of words is a true or a random sample.} to Equation~\ref{eq:w2v_negative}. $ \sigma$ shows the sigmoid function and $\acute{D}$ is the set of random $(f, c)$ pairs, assuming they are all incorrect. By maximizing this objective, the model assigns high probabilities to the real word pairs, and low probabilities to noise word pairs and it is more computationally appealing than the softmax function.
+Maximizing the log-likelihood of Equation~\ref{eq:w2v_softmax} on the training set is very expensive. Because we need to compute and normalize each probability using the score for all other words  $\overline { f }$ in the context of $c$. Therefore, the authors reformulate the problem using \emph{Negative Sampling}~\brackettext{\cite{DBLP:journals/jmlr/GutmannH12}}. Negative sampling was used in order to deal with the expensive computation of the softmax, in which the multinomial classification problem (predicting the next word) is converted into a binary classification problem. To estimate a true probability distribution of the output word, binary logistic regression is used, where the classifier learns to distinguish between a true pair (true context words) and randomly selected words from the vocabulary (corrupted pairs). The classifier simply predicts whether a pair of words is a true or a random sample. to Equation~\ref{eq:w2v_negative}. $ \sigma$ shows the sigmoid function and $\overline{D}$ is the set of random $(f, c)$ pairs, assuming they are all incorrect. By maximizing this objective, the model assigns high probabilities to the real word pairs, and low probabilities to noise word pairs and it is more computationally appealing than the softmax function.
 
 \begin{equation}
 \label{eq:w2v_negative}
-\underset { w }{ \mathrm{ argmax } } \quad \sum _{ (c,a)\in D }^{  }{ \log { \sigma ( } w_{ c }.w_{ a }) } +\sum _{ (c,f)\in \acute { D }  }^{  }{ \log { \sigma ( } -w_{ c }.w_{ f })\quad  } 
+\underset { w }{ \mathrm{ argmax } } \quad \sum _{ (c,a)\in D }^{  }{ \log { \sigma ( } w_{ c }.w_{ a }) } +\sum _{ (c,f)\in \overline { D }  }^{  }{ \log { \sigma ( } -w_{ c }.w_{ f })\quad  } 
 \end{equation}
 If the model is trained on enough data, word2vec groups the vectors of similar words together in vector space, finds word’s associations and detects similarities mathematically with cosine similarity. 
 \subsection{GloVe: Global vector embeddings}
@@ -393,7 +383,7 @@ cos\theta =\frac { \overrightarrow { w_i } .\overrightarrow { w_j }  }{ \paralle
 \label{eq:cosine}
 \end{equation}
 \subsection{Edge weights and co-occurrence probabilities}\label{subsec:weights_load}
-The cost function of the GloVe model is based on the assumption that the ratio of co-occurrence probabilities result in meaningful components, which can be investigated to find the relation between two words. Edge weights of the LOAD model have a correlation with the co-occurrence counts of terms and entities in text. However, the sentence distance is a more efficient way to define a distance metric between two entities rather than a window-based approach. As two entities appearing in the same document tend to have some connection, this relationship is disregarded if we only look at a small window of words. Additionally, weights decay based on how far an entity is from another gives us more information about the structure of the text. Based on these considerations, we argue that LOAD edge weights produce a better overall corpus statistics in case of named entities with respect to a simple co-occurrence matrix and that it can generate the same meaningful components like probability ratios. \\
+The cost function of the GloVe model is based on the assumption that the ratio of co-occurrence probabilities result in meaningful components, which can be investigated to find the relation between two words. Edge weights of the LOAD model have a correlation with the co-occurrence counts of terms and entities in text. However, the sentence distance is a more efficient way to define a distance metric between two entities rather than a window-based approach. As two entities appearing in the same document tend to have some connection, this relationship is disregarded if we only look at a small window of words. Additionally, since the weights decay based on how far an entity is from another gives us more information about the structure of the text. Based on these considerations, we argue that LOAD edge weights produce a better overall corpus statistics in case of named entities with respect to a simple co-occurrence matrix and that it can generate the same meaningful components like probability ratios. \\
 We demonstrate this with a simple example in Table~\ref{table:tab_2} that shows how certain aspects of meaning can be extracted from edge weights of LOAD. Suppose we are interested in the concept of US presidents, for which we take two actors \emph{``Donald Trump''} and \emph{``Barack Obama''}. The relationship between these entities can be examined by studying the ratio of their edge weights with various probe words. Similar to the GloVe model, where the ratio of co-occurrence probability distinguished the relevant words from irrelevant words, here the ratio of the edge weights works in the same way. In this case, looking at the raw edge weights does not give us much comparable information, but the ratio denotes \emph{``Donald Trump''} as a republican rather than a democratic politician. Since both of the entities share the presidential attribute the ratio is close to one. On the other hand, a random name like \emph{``BMW''} has a relatively small weight with both entities, but since the weak edges were cut off from the model we have the weight of zero. Considering the full graph without a cut-off threshold, the ratio of two small numbers will also converge to one, implying that same as co-occurrence matrix, edge weights of LOAD contain these meaning components. Consequently, the bilinearity assumption of GloVe can be extended to the weighted adjacency matrix of LOAD. 
 \begin{table}[]
 \centering
@@ -432,7 +422,7 @@ J=-\log { P( } v_{ { i−k } },...,v_{ i−1 },v_{ i+1 },...,v_{ i+k }|w )
 \label{eq:dw}
 \end{equation}
 Based on this approach, nodes that share similar neighbours in random walk sequences should be represented closely in the embedding space. Since the random walk in DeepWalk correspond to the \emph{Depth-first Sampling}(DFS) , it can preserve the second-order proximity. As a result, DeepWalk is good at keeping community structures. 
-\subsection{Node2vec}
+\subsection{Node2vec: Scalable feature learning for graphs }
 \label{subsec:node2vec}
 \emph{Node2vec}~\brackettext{\cite{DBLP:conf/kdd/GroverL16}} extends the random walk procedure of DeepWalk by defining a more flexible notion of a node’s neighborhood. There are mainly two node sampling strategies in random walk: \emph{Breadth-first Sampling} (BFS) and \emph{Depth-first Sampling} (DFS), where the BFS focuses on the immediate neighbors of the node and DFS consists of sampled nodes sequentially sampled at increasing distances from the source node~\brackettext{\cite{DBLP:conf/kdd/GroverL16}}.
 Therefore, BFS represents the first-order proximity and DFS the second and higher-order proximity. A demonstration of different sampling methods is provided in Figure~\ref{fig:dfs_bfs}. Node2vec provides a trade-off between BFS and DFS. Node2vec uses two hyperparameters to regulate the balance between the two methods. By choosing a right balance between the two sampling methods, we preserve community structure as well as structural equivalence between nodes~\brackettext{\cite{DBLP:journals/kbs/GoyalF18}}.
@@ -465,7 +455,7 @@ Although VERSE is designed to accept any similarity measure, three measures are 
 \begin{equation}
 sim^{ ADJ }_{ G }(v_{ i },v_{ j })=\left\{ \begin{matrix} \frac { 1 }{ Out(v_{ i }) } \quad if\quad (v_{ i },v_{ j })\in E\quad  \\ 0\quad \qquad \qquad \mathrm{otherwise} \end{matrix} \right.\label{eq:VERSE_simG}
 \end{equation}
-Since the optimization objective is expensive, the \emph{VERSE} samples positive and negative samples with \emph{Noise Contrastive Estimation} (NCE)~\footnote{This is same as Negative Sampling used in word2vec. The difference is that in word2vec words for the negative samples are drawn from a specially designed distribution, which favors less frequent words.}~\brackettext{\cite{DBLP:journals/jmlr/GutmannH12}} to converge to a solution. \\
+Since the optimization objective is expensive, the \emph{VERSE} samples positive and negative samples with \emph{Noise Contrastive Estimation} (NCE)~\brackettext{\cite{DBLP:journals/jmlr/GutmannH12}} to converge to a solution. NCE is same as Negative Sampling used in word2vec. The difference is that in word2vec words for the negative samples are drawn from a specially designed distribution, which favours less frequent words. \\
 \\
 
 In the next section, we use the background information presented in this chapter for the word embedding and graph embedding techniques to define our entity embedding and faceted embedding models. 

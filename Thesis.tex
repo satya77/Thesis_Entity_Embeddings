@@ -178,25 +178,20 @@
 \newacronym[description={Continuous bag of words}]   {CBOW}{CBOW}{Continuous bag of words}
 \newacronym[description={Global Vector embeddings}]   {GloVe}{GloVe}{Global Vector embeddings}
 \newacronym[description={Part of speech}]   {POS}{POS}{Part of speech}
-\newacronym[description={Named entity recognition}]   {NER}{NER}{Named entity recognition}
-\newacronym[description={Named entity linking}]   {NEL}{NEL}{Named Entity Recognition}
-\newacronym[description={Named entity disambiguation}]   {NED}{NED}{Named entity disambiguation}
+%\newacronym[description={Named entity recognition}]   {NER}{NER}{Named entity recognition}
+%\newacronym[description={Named entity linking}]   {NEL}{NEL}{Named Entity Recognition}
+%\newacronym[description={Named entity disambiguation}]   {NED}{NED}{Named entity disambiguation}
 \newacronym[description={Gradient Descent}]   {GD}{GD}{Gradient Descent}
 \newacronym[description={Locations,Organisations,Actors,Dates}]   {LOAD}{LOAD}{Locations,Organisations,Actors,Dates}
-\newacronym[description={Actor}]   {ACT}{ACT}{Actor}
-\newacronym[description={Location}]   {LOC}{LOC}{Location}
-\newacronym[description={Term}]   {TER}{TER}{Term}
-\newacronym[description={Date}]   {DAT}{DAT}{Date}
-\newacronym[description={Organisation}]   {ORG}{ORG}{Organisation}
 \newacronym[description={Singular value decomposition}]   {SVD}{SVD}{Singular value decomposition}
-\newacronym[description={Point-wise mutual information}]   {PMI}{PMI}{Point-wise mutual information}
-\newacronym[description={Named Entity}]  {NE}{NE}{Named Entity}
+%\newacronym[description={Point-wise mutual information}]   {PMI}{PMI}{Point-wise mutual information}
+%\newacronym[description={Named Entity}]  {NE}{NE}{Named Entity}
 \newacronym[description={Information Retrial}]  {IR}{IR}{Information Retrial}
 \newacronym[description={Depth-first Sampling}]  {DFS}{DFS}{Depth-first Sampling}
 \newacronym[description={Breadth-first Sampling}]  {BFS}{BFS}{Breadth-first Sampling}
 \newacronym[description={Large-scale Information Network Embedding}]  {LINE}{LINE}{Large-scale Information Network Embedding}
 \newacronym[description={Versatile Graph Embeddings from Similarity Measures}]  {VERSE}{VERSE}{Versatile Graph Embeddings from Similarity Measures}
-\newacronym[description={Noise Contrastive Estimation}]  {NCE}{NCE}{Noise Contrastive Estimation}
+%\newacronym[description={Noise Contrastive Estimation}]  {NCE}{NCE}{Noise Contrastive Estimation}
 \newacronym[description={Personalized PageRank}]  {PPR}{PPR}{Personalized PageRank}
 \newacronym[description={Kullback-Leibler divergence}]  {KL}{KL}{Kullback-Leibler divergence}
 \newacronym[description={Word2vec model on raw data }]  {$r$W2V}{$r$W2V}{Word2vec model on raw data}
@@ -284,7 +279,6 @@
   description = {Set of all terms },
   sort        = {terms},
 }
-
 \newglossaryentry{edges}{%
   name        = {$E$},
   description = {Set of all weighted edges of the word co-occurrence graph },
@@ -318,8 +312,8 @@
 }
 
 \newglossaryentry{not named entities }{%
-  name        = {$\acute{N}$},
-  description = {Set of all terms, which are not named entities  },
+  name        = {$\overline{N}$},
+  description = {Set of all words, which are not named entities  },
   sort        = {not named entities},
 }
 
@@ -341,7 +335,32 @@
   description = {Similarity measure between embeddings of the graph nodes },
   sort        = {similarity embeddings},
 }
- 
+\newglossaryentry{ACT}{%
+  name        = {ACT},
+  description = {Actor },
+  sort        = {ACT},
+}
+ \newglossaryentry{LOC}{%
+  name        = {LOC},
+  description = {location },
+  sort        = { LOC},
+}
+\newglossaryentry{ORG}{%
+  name        = {ORG},
+  description = {Organisation },
+  sort        = {ORG},
+}
+\newglossaryentry{DAT}{%
+  name        = {DAT},
+  description = {Date },
+  sort        = {DAT},
+}
+\newglossaryentry{TER}{%
+  name        = {TER},
+  description = {Term },
+  sort        = {TER},
+}
+
 %increase the line spacing 
 \renewcommand{\baselinestretch}{1.2}
 \makeindex
