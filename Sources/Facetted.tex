@@ -110,7 +110,7 @@ For each different adjacency matrix, different embeddings need to be learned. To
 \begin{compactitem}
 \item \emph{Asymmetry of context and focal embeddings:} Similar to GloVe embeddings for both context and focal are learned, but the focal embedding can no longer be naively summed up with the context. Instead, the focal embeddings can either be disregarded completely or added in a new way. For this purpose, we propose selectional addition, where the focal embedding of a certain type is only added to the corresponding embedding in the context. As an example, take the adjacency matrices in Section~\ref{sec:adj_matrix} as our input, then for the matrix ACT,  focal embedding will learn to encode each row, while the context will encode the columns. The rows of the matrix will represent embeddings of all the actors with respect to the whole vocabulary. We are interested in column embeddings that encode the actor part for all the words in our vocabulary, which is the purpose of this model. Focal embedding also contains information about the whole vocabulary, but only for the focal words (actors), adding back this information in terms of selectional addition is beneficial to the model. The selectional addition adds the focal embedding of a type only to the respective entities of that type in the context matrix. The rest of embeddings remain intact, because a corresponding embedding column for them in the focal matrix does not exist. A visualization of the focal addition for type actor can be seen in Figure~\ref{fig:focal_addition}.\\
 
-\item \emph{Final concatenation:} The output of the model is an embedding for each type. Therefore, these vectors can later be combined to generate the complete faceted embedding. As the embeddings are independent, the combination can be arbitrary with only the desired dimensions kept. \\
+\item \emph{Final concatenation:} The output of the model is an embedding for each type. These vectors can later be combined to generate the complete faceted embedding. As the embeddings are independent, the combination can be arbitrary with only the desired dimensions kept. \\
 
 \item \emph{Weighting function:} The weighting function ($f(X_{ij})$) is the weighting function for GloVe. The model is valid with or without the use of a weighting function, but since the weights of a co-occurrence graph are highly unbalanced, without a weighting function, very large weights will overpower the smaller ones and reduce performance. Therefore cutting off the weights at a certain threshold can to some extent balance out this effect. The hyperparameters of the weighting function should be tuned based on the dataset.\\
 
@@ -331,7 +331,7 @@ P_{ i,j }=\left\{
 \noindent
 Function $f$ is the edge normalization function. Like entity embeddings, we use two normalization functions: \\
 \begin{enumerate}
-\item  $f=\mathrm{id}$, identity function. We refer to these models as $f$DW$_{id}$, where $id$ shows the identity mapping. \\
+\item  $f=\mathrm{id}$, identity function. We denote these models by $f$DW$_{id}$, where $id$ shows the identity mapping. \\
 \item  $f=\log$, logarithmic normalization. These models are denoted by  $f$DW$_{log}$.\\
 \end{enumerate}
 \noindent

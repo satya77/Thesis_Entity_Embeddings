@@ -7,7 +7,7 @@ In Section~\ref{sec:NLP} a brief overview of the text preprocessing steps for NL
 % BR: I would prefer this section to be more active: Section X provides
 % Y. Other than that, no complaints. It is very nice that you are able
 % to 'mix' background and related work. I like this.
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Basics of Natural Language Processing}\label{sec:NLP}
 The goal of NLP systems is to understand and derive meaning from human language, with textual data as their main source of information.
 Most of the World Wide Web is made of text, with websites, such as Twitter generating vast amounts every day. Analysing this content is, however, not a simple task. For example, text might contain ambiguity, as in the sentence \emph{``I put my \textbf{wallet} in the  \textbf{car}.  \textbf{It} is green.''} In this sentence, it is not obvious if \emph{``it''} refers to the \emph{``car''} or the  \emph{``wallet''}. Moreover, humans often use homographs (words that have the same spelling but different meanings), metaphors and sarcasm, which further increases the complexity of text analysis.\\
@@ -24,7 +24,7 @@ However, all features require cleaning and preprocessing of the text.
 % with the sentence on 'features', though. Some representations in ML
 % are able to 'learn' the proper features on their own, right? Maybe
 % you could add 'typically' here?
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Text cleaning}\label{subsec:cleaning}
 Before any operation can be performed on text, each sentence has to be broken down to its atomic pieces. \emph{Tokenization} is the act of chopping sentences up into pieces, called \emph{tokens}. For example, the sentence: \emph{``Tokenization is widely used in natural language processing.''}, can be tokenized as follows:\\
 
@@ -42,7 +42,7 @@ This makes sure that \emph{``analytics''}, \emph{``AnALYticS''}, \emph{``Analyti
 Additionally, words such as \emph{``are''} and \emph{``to''} are frequent in all documents but are only meaningful in a sentence. These are called \emph{stop-words}. Despite the high frequency, these words are unlikely to result in a meaningful feature for a machine learning system and are often removed~\brackettext{\cite{ACM:Manning:1999:FSN:311445},\cite{ACM:Jurafsky:2000:SLP:555733}}. As with punctuation, removing stop words blindly may result in loss of valuable information. For example, \emph{``The Who''} is the name of a band, and naive stop word removal might delete those words even if they carry significant meaning. Hence, removing all stop-words is not always helpful, but it is generally considered to be a useful step. 
 % BR: Can you give a citation for this? Maybe rewrite it so that it
 % becomes a 'best practice'?
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Stemming and  lemmatization}\label{subsec:steming}
 Another important preprocessing step is \emph{stemming} or \emph{lemmatization}. This step is motivated by the desire to represent verbs with different grammatical conjugations as the same word.
 % BR: I would be more precise about the different endings here. Can you
@@ -52,13 +52,13 @@ the lemmatization of \emph{``drank''} is \emph{``drink''}~\brackettext{\cite{SCH
 % BR: The last sentence should be rewritten: 
 % > This is particularly problematic for irregular verbs. For instance,
 % > the lemmatization of ``drank'' is ``drink''.
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Part-of-speech tagging (POS tagging)}\label{subsec:pos}
 \emph{POS tagging} is the process of marking up a word in a text corresponding to a particular part of speech. Parts of speech are also known as \emph{word classes} or \emph{lexical categories} (e.g., noun, verb, adjective,~\dots). POS tags are useful because they yield a large amount of information about a word and its neighbors, but also about the syntactic context around a word~\brackettext{\cite{ACM:Manning:1999:FSN:311445, ACM:Jurafsky:2000:SLP:555733}}. Parts of speech are useful features for finding named entities, such as people or organizations in text~\brackettext{\cite{SCHOL:book/jurafsky2016}}. Applications that provide POS tagging are also referred to as \emph{POS taggers}, which are used to assign tags to tokens using a finite predefined tagset. For English, the most commonly used tagset is the \textbf{Penn Treebank POS tagset} \footcite{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}. 
 % BR: I would change the sentence about the software. Maybe refer to it
 % in an active fashion, e.g. 'Applications that provide POS tagging are
 % also referred to as POS taggers'.
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Named entity recognition and  entity linking}\label{subsec:entity_recog}
 \emph{Named Entity Recognition}(NER)  or \emph{entity extraction} is an information extraction method that locates and classifies the named entities in text. Named entities are words that can be classified into a set of pre-defined classes, such as the names of persons, organizations, locations, quantities and monetary values. In some cases, temporal expressions are classified separately as well. Generally, anything that is not an entity per se is considered to be a term~\brackettext{\cite{SCHOL:journal/LI/nadeau}}. More formally, if we define $V$ as the set of all words in the vocabulary, $N\subseteq V$ is the set of all entities that fall into a pre-defined category.
 % BR: this seems mathematically inconsistent: if the entities are
@@ -72,10 +72,10 @@ It is not always clear what is or is not an entity or what type it has. For exam
 These entities form the graph nodes in later steps. 
 % BR: very nice; maybe you could add a brief description of 'entity' in
 % parenthesis after first mentioning it.
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Neural Networks in Natural Language Processing}\label{sec:nn}
 Before the advancements in deep learning and neural networks, most NLP techniques were based on machine learning approaches with linear models such as support vector machines or logistic regression, trained on very high-dimensional and sparse feature vectors. Recently, the field has changed to use non-linear neural-network models over dense inputs. The most important advantage of such methods is that they can often be trained with a single end-to-end model and do not require traditional task-specific feature engineering~\brackettext{\cite{DBLP:journals/jair/Goldberg16}}. Methods for different NLP tasks differ in architectures of neural networks and feature representations. Since the focus of this thesis is on word embeddings, we will focus on the explanation of a simple neural network and the basic idea needed to generate word embeddings in the following. 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Neural networks}
 
 \begin{figure}
@@ -154,10 +154,10 @@ a_{ 2 }^{ [2] }=g(\theta _{ 20 }^{ [1] }x_{ 0 }+\theta _{ 21 }^{ [1] }x_{ 1 }+\t
 \centering
 \subcaptionbox{\label{sfig:relu}}{\includegraphics[width=0.45\linewidth , height=0.33\linewidth]{images/relu.png}}
 \subcaptionbox{\label{sfig:sigmoid}}{\includegraphics[width=0.45\linewidth , height=0.33\linewidth]{images/sigmoid.png}}
-\caption{Common choices of activation functions:~\subref{sfig:relu} Relu function $a=\mathrm{max}(0,x)$ (simply cutting values below zero) and ~\subref{sfig:sigmoid} Sigmoid function $a=\frac{1}{1+e^{x}}$, which forces the values to be between zero and one.}
+\caption{Common choices of activation functions are ~\subref{sfig:relu} Relu function $a=\mathrm{max}(0,x)$, which cuts values below zero and ~\subref{sfig:sigmoid} Sigmoid function $a=\frac{1}{1+e^{x}}$, which forces the values to be between zero and one.}
 \label{fig:activation}
 \end{figure}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Training neural networks}
 Consider the output $\hat { y } $ as the prediction of our network for some task. In a supervised learning problem, the aim is to reduce the error between the prediction ($\hat { y } $) and the true label $y$. As a result, a cost function can be defined as $J$ in Equation~\ref{eq:cost_nn}, where $L$ denotes the loss function on a single training example and $m$ is the size of the training set. The \emph{cost function} is simply the sum of all losses on the training set.
 % BR: you should briefly mention what types of loss functions exist, or
@@ -244,7 +244,7 @@ After iterating through all the training examples the weights and bias terms wil
 % BR: It's inconsistent to refer to it as a variation of the algorithm,
 % though, right?
 \end{itemize}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Embeddings}\label{subsec:embeddings}
 One of the challenges of machine learning is to come up with suitable features for algorithms. These features often have to be task-specific and reflect the needs of the downstream tasks (a task that uses embeddings as input features). \emph{Representation learning} attempts to learn good features and representations automatically~\brackettext{\cite{SCHOL:journals/FDS/ZhongWD16}}. \emph{Principle Component Analysis} (PCA)~\brackettext{\cite{DBLP:journals/corr/Shlens14}} is one example of a traditional method for learning low-dimensional representation from high dimensional data. In a deep learning architecture, the output of each intermediate layer can be viewed as a representation of the original input data. As illustrated in Figure~\ref{fig:preceptron} each unit of the network computes a non-linear combination of the inputs which is used by the next layer. If the dimension of the hidden layer is much smaller than the input layer, a low-dimensional representation of the data is learned in the hidden layer. Based on this principle almost any dataset can be transformed into an embedding with lower dimensions. In this work we focus on only two types, namely, \emph{word embeddings} and \emph{graph embeddings}. \\
 \noindent
@@ -270,13 +270,13 @@ The difference between various techniques lies in how they define \emph{``closen
 \caption{Underlying principle of word embeddings. The high-dimensional one-hot vectors are the input of the network. The hidden layer learns a dense representation to either predict the surrounding words or to optimize a different cost function in the output layer.}
 \label{fig:emb}
 \end{figure}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Co-occurrence Graphs}
 \label{sec:graph}
 Co-occurrence analysis, in terms of graphs, is not limited to text mining, but is a tool to find potential relationships between people, organizations, concepts, and biological organisms~\brackettext{\cite{SCHOL:journal/NAR/shiri}}. A word co-occurrence graph shows the word interactions in a corpus. A co-occurrence graph $G=(V,E)$ is defined by a set of all words $V$ as nodes and edges $E$ between them, where there is an edge based on their paired presence in a unit of text~\brackettext{\cite{DBLP:conf/cikm/RousseauV13,DBLP:journals/nle/NastaseMR15}}. If the entities in the text are annotated, the graph shows the positional relationship between entities and terms that occur in the text. There is an edge between two words, if they occur in the same sentence or paragraph~\brackettext{\cite{DBLP:conf/interspeech/YinBB18}}. If the graph is weighted, the edges indicate the strength of the connection between two words or entities, which related to the number of their co-occurrences or some kind of distance measure, e.g., number of tokens between them~\brackettext{\cite{SCHOL:book/mihalcea2011}}. Since these graphs encode all important words in the vocabulary, they can form a graph-based representation of the corpus, which we use instead of a textual corpus to generate embeddings, where relations between nearby words can be extracted based on edges and nearby nodes.\\
 
 The \emph{LOAD model}~\brackettext{\cite{DBLP:conf/sigir/SpitzG16}} is an entity co-occurrence graph representation of large document collections. For each document, named entities from sentences are extracted and connected based on their distance in a graph structure. The original LOAD model contains node types of pages and sentences as well, which we disregard for our models, the entity types considered by the LOAD graph are actors, locations, organisation, dates, and terms.\\
-The LOAD model encodes the strength of relationship between entities and terms in the edge weights. In most cases entities on the same page share some connection, regardless of their distance in the text. Therefore, a sentence-based weighting function for capturing the relation between two entities is introduced, where the long-distance connections have lower weights. Equation~\ref{eq:load_dist} shows the weighting of a single edge in the LOAD model between two entities $v$ and $s$, where $\delta $ is a distance function. For entities other than terms, $\delta $ equals the number of sentences between the instances, or $0$ if they occur in the same sentence.
+The LOAD model encodes the strength of relationship between entities and terms in the edge weights. In most cases entities on the same page share some connection, regardless of their distance in the text, which the models that only look for relation in a single sentence often miss. The LOAD model proposes a sentence-based weighting function for capturing the relation between two entities, where the long-distance connections have lower weights. Equation~\ref{eq:load_dist} shows the weighting of a single edge in the LOAD model between two entities $v$ and $s$, where $\delta $ is a distance function. For entities other than terms, $\delta $ equals the number of sentences between the instances, or $0$ if they occur in the same sentence.
 If $i$ and $ j$ do not occur on the same document: $ \delta(i, j) := \infty$. $ I_{ v }$ and $I_{ s } $ are the set of all occurrences of $v$ and $s$ in the document. $\exp$ forces the weight to diminish exponentially with the distance. Eventually, the sum of all these exponential distances creates the final weight.
 \begin{equation}
 e (v,s) :=\sum _{ i\in I_{ v } \\ j\in I_{ s } }^{  }{ \exp } (-\delta (i,j))
@@ -284,7 +284,7 @@ e (v,s) :=\sum _{ i\in I_{ v } \\ j\in I_{ s } }^{  }{ \exp } (-\delta (i,j))
 \end{equation}
 The weights generated in this way encode the importance of one entity to another. The distance decays as the number of sentences between two entities grows. In addition, long-distance connections are considered very weak and are cut-off based on a threshold parameter. 
 Despite the fact that related entities can be mentioned several sentences apart, terms are less likely to be related to entities outside of their own sentence, so the edges between terms and entities are limited to those that appear in the same sentence. ~\brackettext{\cite{DBLP:conf/sigir/SpitzG16}}. 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Word Embeddings}
 \label{sec:wordembeddig}
 A word embedding is defined as a mapping $ V\rightarrow { R }^{ d }:v \rightarrow w $ that maps a word $v$ from a vocabulary $V$ to a vector  $w$  in an embedding space of dimensionality $d$ ~\brackettext{\cite{DBLP:conf/emnlp/SchnabelLMJ15}}. The first model to learn word embeddings as dense vector was presented by Bengio et al., in which a feature vector, much smaller than the size of the vocabulary, was used to express words using a probabilistic model~\brackettext{\cite{DBLP:conf/nips/BengioDV00}}. The work of Collobert et al. in $2011$ proved that the word representation could not only be achieved through probabilistic models, but that neural network architectures can also learn these internal representations from vast amounts of mostly unlabeled training data~\brackettext{\cite{DBLP:journals/jmlr/CollobertWBKKK11}}. However, it was not until the word2vec method~\brackettext{\cite{DBLP:journals/corr/abs-1301-3781}} that word embeddings became applicable to large corpora. 
@@ -300,6 +300,7 @@ The GloVe model~\brackettext{\cite{DBLP:conf/emnlp/PenningtonSM14}}  combines th
 \caption{Predict a word, given the preceding and following words (Continuous Bag of Words, CBOW) and predict the preceding and following words, given a word (Skip-Gram). Image inspired by~\brackettext{\cite{DBLP:journals/corr/abs-1301-3781}}.}
 \label{fig:w2v}
 \end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Word2vec: Distributed representations of words}
 \label{subsec:word2vec}
 The goal of word2vec is, given a center word, to predict the words that occur in its surroundings. If sufficient data is used for training, word2vec can predict with high accuracy the word's meaning based on its surrounding words in the corpus and also successfully capture semantic relations, such as country and capital relations, as well as syntactic relations. For example, the vector representation of  \emph{``man''} has approximately the same distance to \emph{``brother''} as \emph{``women''} to \emph{``sister''}. \\
@@ -332,6 +333,7 @@ Maximizing the log-likelihood of Equation~\ref{eq:w2v_softmax} on the training s
 \underset { w }{ \mathrm{ argmax } } \quad \sum _{ (c,a)\in D }^{  }{ \log { \sigma ( } w_{ c }.w_{ a }) } +\sum _{ (c,f)\in \overline { D }  }^{  }{ \log { \sigma ( } -w_{ c }.w_{ f })\quad  } 
 \end{equation}
 If the model is trained on enough data, word2vec groups the vectors of similar words together in vector space, finds word’s associations and detects similarities mathematically with cosine similarity. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{GloVe: Global vector embeddings}
 \label{subsec:GloVe}
 The \emph{Global Vector Model} (GloVe) suggests that the ratio of co-occurrence probabilities can encode meaning components. An example can be seen in Table~\ref{table:tab_1}, in terms of studying a thermodynamic phase. A meaning component that sets the word \emph{``ice''} apart from \emph{``steam''} can be represented as a ratio of their occurrence probability with all other words \big($\frac { P(ice|k) }{ P(steam|k) } $, where $k$ can be any word in the vocabulary\big). This ratio is proven to better distinguish relevant words in comparison from irrelevant ones by giving the irrelevant ones a probability close to one. Also compared to the raw probabilities, it is better able to discriminate between the relevant words by giving a high probability to a word like \emph{``solid''} and low probability to \emph{``gas''}, making the word \emph{``ice''} stand out as a solid object. A word such as \emph{``water''} or \emph{``fashion''} will, therefore, have a probability close to one as it is either a shared property or not related to the concept.\\
@@ -372,6 +374,7 @@ f=\left\{
 \end{equation}
 \noindent
 The model learns two embeddings for each word, one as a focal or center word and the other as a context word. As the co-occurrence matrix is symmetric both of which can be considered as learning the same representation. Ultimately, the two embeddings can be added to obtain the final embedding.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Similarity between embeddings}\label{sec:similarity}
 The dense word vector is learned to capture the semantics of the words and hence similar words are close in the induced space. \emph{Cosine similarity} helps to capture this semantic closeness and is the most common similarity measure for the word vector. The cosine similarity is a measure that calculates the cosine of the angle between two vectors. This metric is a measurement of orientation and not magnitude and it is derived from the equation of a dot product between two vectors (Equation~\ref{eq:cosine}). The vectors are normalized by their length, which removes the influence of their magnitude on the similarity. The norm of the vector is somewhat related to the overall frequency of which words occur in the training corpus, but the direction is unaffected by this. So in order for a common word like \emph{``frog''} to still be similar to a less frequent word like \emph{``Anura''} (a type of frog), cosine distance which only looks at the direction works better than simple Euclidean distance. Moreover, cosine similarity is symmetric and therefore, changing the order of vectors in the dot product does not affect the final result.
 \begin{equation}
@@ -382,6 +385,7 @@ cos\theta =\frac { \overrightarrow { w_i } .\overrightarrow { w_j }  }{ \paralle
 \end{split}
 \label{eq:cosine}
 \end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Edge weights and co-occurrence probabilities}\label{subsec:weights_load}
 The cost function of the GloVe model is based on the assumption that the ratio of co-occurrence probabilities result in meaningful components, which can be investigated to find the relation between two words. Edge weights of the LOAD model have a correlation with the co-occurrence counts of terms and entities in text. However, the sentence distance is a more efficient way to define a distance metric between two entities rather than a window-based approach. As two entities appearing in the same document tend to have some connection, this relationship is disregarded if we only look at a small window of words. Additionally, since the weights decay based on how far an entity is from another gives us more information about the structure of the text. Based on these considerations, we argue that LOAD edge weights produce a better overall corpus statistics in case of named entities with respect to a simple co-occurrence matrix and that it can generate the same meaningful components like probability ratios. \\
 We demonstrate this with a simple example in Table~\ref{table:tab_2} that shows how certain aspects of meaning can be extracted from edge weights of LOAD. Suppose we are interested in the concept of US presidents, for which we take two actors \emph{``Donald Trump''} and \emph{``Barack Obama''}. The relationship between these entities can be examined by studying the ratio of their edge weights with various probe words. Similar to the GloVe model, where the ratio of co-occurrence probability distinguished the relevant words from irrelevant words, here the ratio of the edge weights works in the same way. In this case, looking at the raw edge weights does not give us much comparable information, but the ratio denotes \emph{``Donald Trump''} as a republican rather than a democratic politician. Since both of the entities share the presidential attribute the ratio is close to one. On the other hand, a random name like \emph{``BMW''} has a relatively small weight with both entities, but since the weak edges were cut off from the model we have the weight of zero. Considering the full graph without a cut-off threshold, the ratio of two small numbers will also converge to one, implying that same as co-occurrence matrix, edge weights of LOAD contain these meaning components. Consequently, the bilinearity assumption of GloVe can be extended to the weighted adjacency matrix of LOAD. 
@@ -400,13 +404,12 @@ Probability and Ratio&  $k=republican$& $k=democratic$ & $k=president$ &$k= BMW$
 \label{table:tab_2}
 \end{table}
 \label{sec:components_load}
-\section{Entity Embeddings}
-\label{sec:enity_embed}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Graph-based Embeddings}
 \label{sec:graph}
 Graph embeddings convert a graph into a low dimensional space in which the graph information is preserved. Therefore, it is an effective and efficient way to compute features from a graph for machine learning algorithms. Based on the embedding output, graph embeddings are categorized into four types: \emph{node embedding}, \emph{edge embedding}, \emph{hybrid embedding} (combination of different types of graph components, e.g., node $+$ edge), and  \emph{whole-graph embedding} (a graph is represented as one vector)~\brackettext{\cite{DBLP:journals/tkde/CaiZC18}}. Different node embedding models vary in their definition of similarity between nodes and the graph property they preserve. Two of the most important properties are \emph{first-order proximity} and \emph{second-order proximity}. First-order proximity captures the direct neighbourhood relationship (edges) in a graph. Second-order proximity captures the $2$-end step relations (number of common neighbors shared). The second-order proximity can also be extended to take higher orders into account as well~\brackettext{\cite{DBLP:journals/jmlr/GutmannH12}}.\\
 Since the nodes of the co-occurrence graph correspond to words in the vocabulary, in this study we only look at node embedding techniques. Embedding the edges or whole graph does not provide any information about the words of the corpus. In the following we give a brief introduction into popular node embedding methods. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{DeepWalk, a random walk-based embedding}
 \label{subsec:DeepWalk}
 \begin{figure}
@@ -424,6 +427,7 @@ J=-\log { P( } v_{ { i−k } },...,v_{ i−1 },v_{ i+1 },...,v_{ i+k }|w )
 \label{eq:dw}
 \end{equation}
 Based on this approach, nodes that share similar neighbours in random walk sequences should be represented closely in the embedding space. Since the random walk in DeepWalk correspond to the \emph{Depth-first Sampling}(DFS) , it can preserve the second-order proximity. As a result, DeepWalk is good at keeping community structures. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Node2vec: Scalable feature learning for graphs }
 \label{subsec:node2vec}
 \emph{Node2vec}~\brackettext{\cite{DBLP:conf/kdd/GroverL16}} extends the random walk procedure of DeepWalk by defining a more flexible notion of a node’s neighborhood. There are mainly two node sampling strategies in random walk: \emph{Breadth-first Sampling} (BFS) and \emph{Depth-first Sampling} (DFS), where the BFS focuses on the immediate neighbors of the node and DFS consists of sampled nodes sequentially sampled at increasing distances from the source node~\brackettext{\cite{DBLP:conf/kdd/GroverL16}}.
@@ -437,11 +441,11 @@ However, the node2vec method tends to be quite inefficient for large graphs and 
 \caption{DFS and BFS sampling for a random walk with length $3$ from the start node \emph{``s''}. The figure is adapted from ~\brackettext{\cite{DBLP:conf/kdd/GroverL16} }.}
 \label{fig:dfs_bfs}
 \end{figure}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{LINE: Large-scale information network embedding}
 \label{subsec:LINE}
 The \emph{Large-scale Information Network Embedding} (LINE) model~\brackettext{\cite{DBLP:conf/www/TangQWZYM15}} does not use random walks, instead it optimizes two objective functions, one each for first- and second-order proximities, and minimizes the combination of the two to achieve two embeddings. The first objective function aims to keep the adjacency matrix and dot product of embeddings close. The LINE model defines two joint probability distributions for each pair of nodes, one using an adjacency matrix and the other using the embedding and minimizes the KL-divergence between the distributions. The first objective results into the first half of the embedding. The authors define probability distributions and objective function for the second half based on the the second-order proximity~\brackettext{\cite{DBLP:journals/kbs/GoyalF18}}. Nevertheless, the model fails to learn meaningful representation of graphs with unbalanced edge weights. The objective function for the second-order proximity is ill-defined when the weight of edges have a high variance~\brackettext{\cite{DBLP:conf/www/TangQWZYM15}}.
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{VERSE: Versatile graph embeddings from similarity measures}
 \label{subsec:VERSE}
 The \emph{Versatile Graph Embeddings from Similarity Measures} (VERSE)~\brackettext{\cite{DBLP:conf/www/TsitsulinMKM18}} model learns embeddings by training a single-layer neural network, which can be instantiated with diverse similarity measures. Given a graph $G=(V,E)$, where $V$ is the set of nodes and $E$ the set of all edges, the aim is to learn the node embedding $w \in R^{d}$, where $d$ is a small number of latent dimensions, by optimizing the objective function in Equation~\ref{eq:VERSE}. In optimization objective, the KL-divergence from the given similarity distribution $sim_G$ to that of $sim_E$ in the embedded space is minimized, for any node $v$. 
@@ -457,7 +461,11 @@ Although VERSE is designed to accept any similarity measure, three measures are 
 \begin{equation}
 sim^{ ADJ }_{ G }(v_{ i },v_{ j })=\left\{ \begin{matrix} \frac { 1 }{ Out(v_{ i }) } \quad if\quad (v_{ i },v_{ j })\in E\quad  \\ 0\quad \qquad \qquad \mathrm{otherwise} \end{matrix} \right.\label{eq:VERSE_simG}
 \end{equation}
-Since the optimization objective is expensive, the \emph{VERSE} samples positive and negative samples with \emph{Noise Contrastive Estimation} (NCE)~\brackettext{\cite{DBLP:journals/jmlr/GutmannH12}} to converge to a solution. NCE is same as Negative Sampling used in word2vec. The difference is that in word2vec words for the negative samples are drawn from a specially designed distribution, which favours less frequent words. \\
-\\
+Since the optimization objective is expensive, the \emph{VERSE} samples positive and negative samples with \emph{Noise Contrastive Estimation} (NCE)~\brackettext{\cite{DBLP:journals/jmlr/GutmannH12}} to converge to a solution. NCE is same as Negative Sampling used in word2vec. The difference is that in word2vec words for the negative samples are drawn from a specially designed distribution, which favours less frequent words. 
 
-In the next section, we use the background information presented in this chapter for the word embedding and graph embedding techniques to define our entity embedding and faceted embedding models. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Entity Embeddings}
+\label{sec:enity_embed}
+Although a dedicated model for learning entity embeddings is rarely studied, embedding entities as part of a downstream task, mostly in the context of entity disambiguation. These model often focus on combining the word embeddings with embeddings from knowledge bases. In a paper by Yamada et al., the skip-gram model is combined with knowledge base embeddings, where the vectors are aligned, such that similar words and entities occur close to one another in the vector space. The learned embeddings are then used as a feature for named entity disambiguation~\brackettext{\cite{DBLP:conf/conll/YamadaS0T16}}. Fang et al. also take a similar approach and learn word embeddings from text and entity embeddings from a knowledge base. They later use an alignment model that guarantees the vectors of entities and words are in the same space and utilize them to design feature for their disambiguation framework~\brackettext{\cite{DBLP:conf/conll/FangZWCL16}}. These methods, although successful at representing entity and words are dependent on the knowledge bases as an extra source of information. They often optimize different objective functions for learning the entity embeddings and word embeddings, or train them separately and combine in a later step. In this thesis, we avoid using separate training objectives for entities and word and treat them equally to learn embeddings directly from annotated text.\\
+
+In Chapters~\ref{chap:entity} and \ref{chap:faceted}, we use the background information presented in this chapter about the word embedding and graph embedding techniques to define our entity embedding and faceted embedding models from entity annotated text.
