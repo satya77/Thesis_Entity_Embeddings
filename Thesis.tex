@@ -216,16 +216,16 @@
 \makeatother
 
 
-\newglossaryentry{Real numbers}{%
-  name        = {$\real$},
-  description = {The set of real numbers},
-  sort        = {Real numbers},
-}
-\newglossaryentry{Real coordinate space}{%
-  name        = {$\real^{n \times m}$},
-  description = { Real coordinate space of $n \times m$ dimensions},
-  sort        = {Real coordinate space},
-}
+%\newglossaryentry{Real numbers}{%
+%  name        = {$\real$},
+%  description = {The set of real numbers},
+%  sort        = {Real numbers},
+%}
+%\newglossaryentry{Real coordinate space}{%
+%  name        = {$\real^{n \times m}$},
+%  description = { Real coordinate space of $n \times m$ dimensions},
+%  sort        = {Real coordinate space},
+%}
 \newglossaryentry{ complete vocabulary}{%
   name        = {$V$},
   description = {The complete vocabulary, set of all the words },
@@ -234,12 +234,12 @@
 \newglossaryentry{Focal vocabulary }{%
   name        = {$V_e$},
   description = { The focal vocabulary},
-  sort        = {focal vocabulary size},
+  sort        = {vocabulary focal size},
 }
 \newglossaryentry{LOAD distance function}{%
   name        = {$\delta$},
   description = {LOAD distance function},
-  sort        = {LOAD distance function},
+  sort        = {distance LOAD },
 }
 
 \newglossaryentry{Activation of a neuron}{%
@@ -255,7 +255,7 @@
 \newglossaryentry{set of focal (center) and context pairs}{%
   name        = {$ Q$},
   description = { The set of all focal and context pairs extracted from the text},
-  sort        = {set of focal (center) and context pairs},
+  sort        = {q set of focal (center) and context pairs},
 }
 
 \newglossaryentry{graph}{%
@@ -271,7 +271,7 @@
 \newglossaryentry{center word}{%
   name        = {$f$},
   description = {Center (focal) word },
-  sort        = {center word},
+  sort        = {focal word},
 }
 
 \newglossaryentry{terms}{%
@@ -360,7 +360,29 @@
   description = {Term },
   sort        = {TER},
 }
+\newglossaryentry{cost function}{%
+  name        = {$J$},
+  description = {cost function },
+  sort        = {J},
+}
 
+\newglossaryentry{loss function}{%
+  name        = {$L$},
+  description = {loss function },
+  sort        = {L},
+}
+
+\newglossaryentry{predicted output}{%
+  name        = {$\hat { y } ^{ (i) }$},
+  description = {predicted output },
+  sort        = {y hat },
+}
+
+\newglossaryentry{true label }{%
+  name        = {$ y  ^{ (i) }$},
+  description = {true label},
+  sort        = {y  },
+}
 %increase the line spacing 
 \renewcommand{\baselinestretch}{1.2}
 \makeindex
@@ -386,7 +408,9 @@
 
 \frontmatter
   \include{Sources/Title}
+  \include{Sources/Statment}
   \include{Sources/Abstract}
+
  %  \include{Sources/Zusammenfassung}
   \include{Sources/Acknowledgements}
 

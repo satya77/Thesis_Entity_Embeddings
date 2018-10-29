@@ -1,4 +1,4 @@
-\chapter{Entity Embeddings}\label{chap:entity}
+\chapter{Joint Entity and Word Embeddings}\label{chap:entity}
 
 In this chapter, we explore different ways to jointly train word embeddings for entities and terms. We use the word and graph embedding on annotated data to generate such embeddings. In Section~\ref{sec:entity_overview}, an overview of all models is given and the objectives are explained. Section~\ref{sec:raw} is dedicated to models trained on unannotated (raw) text, that are used as the baseline against which we compare our models. The remaining two sections describe the two entity-based models proposed in this thesis. In Section~\ref{sec:annotated}, word embeddings that are trained on annotated text are explained, followed by graph-based models in Section~\ref{sec:graph_based}.
 
@@ -153,7 +153,7 @@ Second, SimRank, explained in Chapter~\ref{chap:background} in Section~\ref{subs
 Since Adjacency Similarity is based on the normalized adjacency matrix, it captures the neighbourhood relations.
 % BR: Rephrase: Since it [i.e. Adjacency Similarity] is based on the
 % normalized adjacency matrix, ...
-We could not use the LINE model for the following reasons : First, because of the unbalanced weight distribution, the optimization objective for the second-order proximity of the LINE model becomes ill-defined. Hence, one part of the embedding for this model cannot be trained properly. Second, the Adjacency Similarity of VERSE model correlates with the first-order proximity in LINE and can be used as representative of first-order proximity.  \\
+We could not use the LINE model for the following reasons : First, because of the unbalanced weight distribution, the optimisation objective for the second-order proximity of the LINE model becomes ill-defined. Hence, one part of the embedding for this model cannot be trained properly. Second, the Adjacency Similarity of VERSE model correlates with the first-order proximity in LINE and can be used as representative of first-order proximity.  \\
 % BR: Same issue: SimRank appears to drop out of nowhere and needs to be
 % put into context.
 \section{Summary}\label{sec:entity_summary}
