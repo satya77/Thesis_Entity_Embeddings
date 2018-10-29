@@ -75,7 +75,7 @@ Before the advancements in deep learning and neural networks, most NLP technique
 
 \begin{figure}
 \centering 
-\resizebox{0.55\textwidth}{0.3\textwidth}{      
+\resizebox{0.65\textwidth}{0.35\textwidth}{      
 \input{images/preceptron.tex}
 }
 \caption{Single layer neural network. The input $x$ is multiplied by the matrix of weights $\Theta$ to be passed to the activation function (a typically non-linear function to transform the input) to generate the output $\hat { y }$. \protect \footnotemark}
@@ -86,30 +86,29 @@ Before the advancements in deep learning and neural networks, most NLP technique
 \footnotetext{The figure is adapted from https://www.coursera.org/learn/machine-learning.}
 \noindent
 Despite neural networks being the new trend in machine learning, they are rather old algorithms, which are motivated by the goal of having a machine that mimics a brain. The sudden resurgence of neural networks is due to the fact that they are computationally expensive and require a huge amounts of data, which was neither available nor processable in the 80s and 90s. Also \emph{``backpropagation''} algorithm~\brackettext{\cite{SCHOL:journals/nature/rumelhart1986learning}} and the advent of GPUs, sped up the training process and made it feasible to train models with thousands of parameters.\\
-A single artificial neuron, consisting of a single computational unit, is shown in Figure~\ref{fig:preceptron}. The computational unit illustrated in red takes in the different features of the input $x_i$ and multiplies each with a given weight $\theta_i$.
-The weights indicate the importance of each feature for the computation and are learnable parameters of the model. The neuron then performs a transformation to the input through the \emph{activation function} ($g(x)$) and generates the output ($\hat { y } $). The activation function is typically non-linear transformation that is applied on the input data.
+A single artificial neuron, consisting of a single computational unit, is shown in Figure~\ref{fig:preceptron}. The computational unit illustrated in red takes in the different features of the input $x_i$ and multiplies each with a given weight $\theta_i$. The result of the multiplication is added to the \emph{bias unit} $b$ that always has an input value of $1$.
+The weights indicate the importance of each feature for the computation and are learnable parameters of the model. The neuron then performs a transformation to the input through the \emph{activation function} ($g(x)$) and generates the output ($\hat { y } $). The activation function is typically non-linear transformation that is applied on the input data.\\
 % BR: the non-linearity arises from the activation function; you should
 % mention this. Moreover, you can select a linear activation function if
 % you want.  I would thus rather say that they are 'typically selected
 % to be non-linear' or something similar.
-$b$ is called the \emph{bias unit} that always has an input value of $1$.  Essentially, each neuron consists of two steps of computation. First, intermediate output $z$ is computed by the multiplication of weights with input features, which is a linear operation that boils down to a matrix--vector product.
+Essentially, each neuron consists of two steps of computation. First, intermediate output $z$ is computed by the multiplication of weights with input features, which is a linear operation that boils down to a matrix--vector product.
 Second, an activation function of choice is applied to $z$ to produce the final output or activation ($a$) of the last unit. \\
 \begin{figure}
 \centering 
-\resizebox{0.65\textwidth}{0.4\textwidth}{      
+\resizebox{0.75\textwidth}{0.45\textwidth}{      
 \input{images/NN.tex}
 }
-\caption{Two layer neural network with one hidden layer. An input $x$ is multiplied by the weight matrix $\Theta$ to generate an intermediate activation value $a$. The output $\hat { y } $ is the combination of activations with their weights \protect \footnotemark .}
+\caption{Two layer neural network with one hidden layer. An input $x$ with three features is multiplied by the weight matrix $\Theta$ to generate an intermediate activation value $a$. The predicted output $\hat { y } $ is generated using the activations of the hidden layer.  \protect \footnotemark .}
 
 \label{fig:nn}
 
 \end{figure}
 \noindent
-A neural network is a group of multiple neurons connected together, as shown in Figure~\ref{fig:nn}. In a neural network, the first layer is called the \emph{input layer} and the last layer is called the \emph{output layer} and all other layers are referred to as \emph{hidden layers}.
-Typically, the values of the input and the output layer are given in the training set. Activation of each computational unit is the output of that unit. We denote activation of the unit (neuron) $i$ in layer $j$ by $a_{i}^{[j]}$.
-$\theta^{(j)}_{nl}$ is the weight controlling the function mapping from layer $j$ to layer $j+1$ between unit $n$ in layer $j$ and $l$ in $j+1$. Learning weights is the final goal of any neural network. Deeper neural networks are obtained by stacking multiple layers of such units that gives rise to deep learning systems~\brackettext{\cite{SCHOL:Goodfellow-et-al-2016}}. 
-The weights indicate how different features of inputs should be combined and how much should each of them influence the final output. The values of intermediate activations can be interpreted as latent features discovered during training. Features are combined with new weights to either generate an intermediate or a final result~\brackettext{\cite{SCHOL:book/haykin2009}}. \\
-There are different classes of activation functions available but the most commonly used ones are \emph{Sigmoid} and \emph{Relu}, illustrated in Figure~\ref{fig:activation}. An example of forward computation of the network in Figure~\ref{fig:nn} is given in Equation~\ref{eq:nn_eq}. Although a single output is shown in both figures, the output layer can have different sizes. It can vary from one output for a single class classification to $10$ for a multi-class classification with $10$ classes and even in some cases $10,000$ pixels of a image. How different neurons connect, the choice of activation function, the shape of the output layer and the number of layers is what defines different architectures. In the following, we only consider the architecture needed to generate word embeddings. 
+A neural network is a group of multiple neurons connected together, as shown in Figure~\ref{fig:nn}. In a neural network, the first layer is called the \emph{input layer}, the last layer is called the \emph{output layer} and all other layers are referred to as \emph{hidden layers}.
+Typically, the values of the input and the output layer (labels) are given in the training set. The output of each computational unit in the network is the activation of that unit. We denote activation of the unit (neuron) $i$ in layer $j$ by $a_{i}^{[j]}$. The weights of the network are the parameters of the model and learning them is goal of any neural network. We denote the weight controlling the function mapping from unit $n$ in layer $j$ to unit $l$ in layer $j+1$ by
+$\theta^{(j)}_{nl}$. The weights indicate how different features of inputs should be combined and how much should each of them influence the final output. The values of intermediate activations can be interpreted as latent features discovered during training~\brackettext{\cite{SCHOL:book/haykin2009}}. As the network gets deeper, more complex combinations of input features can be learned. \\
+An example of forward computation, which is called \emph{forward propagation}, for the network in Figure~\ref{fig:nn} is given in Equation~\ref{eq:nn_eq}. Although a single output is shown the figure, the output layer can have different sizes. It can vary from one output for a single class classification even $10,000$ pixels of a image. The number of hidden layers can also vary, where the next hidden layer would use the activation of the pervious layer as input. How different neurons connect, the choice of activation function, the shape of the output layer and the number of layers is what defines different architectures~\brackettext{\cite{SCHOL:Goodfellow-et-al-2016}}. Since most of literature on word embeddings focus on shallow neural networks, in this thesis, we focus only on networks with a few hidden layers. 
 \begin{equation}
 \begin{split}
 a_{ 1 }^{ [2] }=g(\theta _{ 10 }^{ [1] }x_{ 0 }+\theta _{ 11 }^{ [1]}x_{ 1 }+\theta _{ 12 }^{ [1] }x_{ 2 }+\theta _{ 13 }^{ [1] }x_{ 3 })\\ 
@@ -120,6 +119,7 @@ a_{ 2 }^{ [2] }=g(\theta _{ 20 }^{ [1] }x_{ 0 }+\theta _{ 21 }^{ [1] }x_{ 1 }+\t
 \label{eq:nn_eq}
 \end{equation}
 \footnotetext{The figure is adapted from https://www.coursera.org/learn/neural-networks-deep-learning.}
+Activation functions are an important part of neural networks, without them the networks are just weighted sum of their inputs, plus a bias term that are unable to learn any complex and non-linear function. Activation functions are means to introduce non-linearity to the model. There are different classes of activation functions available but the most commonly used ones are \emph{Sigmoid} and \emph{Relu}, illustrated in Figure~\ref{fig:activation}. 
 % BR: This is a good introduction to DL. At times, the 'flow' of the
 % section is not optimal, though. This is partially caused by terms,
 % i.e. concepts, that are mentioned but not explained. It is perfect
@@ -148,11 +148,11 @@ J(\theta,b)=\sum _{ j=1 }^{ m }{ L( } \hat { y }^{ (i) } ,y^{ (i) })
 \end{equation}
 The loss for a single input is computed by the \emph{loss function} $L$ and the sum of loses for all inputs is computed by the cost function $J$. There exists various loss functions, which are chosen based on the problem at hand. We introduce three of the most commonly used functions, which are used by the models in this thesis: \\
 \begin{inparaenum}
-\item \emph{Mean Squared Error} (MSE) or \emph{quadratic cost} minimizes the sum of distance true label of each data point $y^{ (i) }$ to it's prediction $\hat { y } ^{ (i) }$~\brackettext{\cite{DBLP:reference/ml/2017}}, i.e., minimizes the quadratic sum: 
+\item \emph{Mean Squared Error} (MSE) or \emph{quadratic cost} minimizes the quadratic sum of distances between true label of each data point $y^{ (i) }$ and it's prediction $\hat { y } ^{ (i) }$~\brackettext{\cite{DBLP:reference/ml/2017}}: 
 \begin{equation}
 L=\frac { 1 }{ n } \sum _{ i=1 }^{ n }{ (\hat { y } ^{ (i) }- } y^{ (i) })^{ 2 }
 \end{equation}
-\item \emph{Kullback Leibler (KL) Divergence} also known as relative entropy, is a measure of how one probability distribution $y^{ (i) }$ diverges from a second probability distribution $\hat { y } ^{ (i) }$, the higher the KL divergence, the more different the distributions. KL divergence is not symmetric: The KL from $y^{ (i) }$ to $\hat { y } ^{ (i) }$ is generally not the same as the KL from $\hat { y } ^{ (i) }$ to $y^{ (i) }$~\brackettext{\cite{DBLP:books/daglib/0016881}}. The formula consists of two parts, where the first part is called \emph{entropy} and the second part \emph{cross-entropy}.
+\item \emph{Kullback Leibler (KL) Divergence} also known as relative entropy, is a measure of how one probability distribution $y^{ (i) }$ (predicted distribution) diverges from a second probability distribution $\hat { y } ^{ (i) }$ (true distribution), the higher is the KL divergence, the more different the are distributions. KL divergence is not symmetric: The KL from $y^{ (i) }$ to $\hat { y } ^{ (i) }$ is generally not the same as the KL from $\hat { y } ^{ (i) }$ to $y^{ (i) }$~\brackettext{\cite{DBLP:books/daglib/0016881}}. The formula consists of two parts, where the first part is called \emph{entropy} and the second part \emph{cross-entropy}.
 \begin{equation}
 \begin{split}
 L=\frac { 1 }{ n } \sum _{ i=1 }^{ n }{ D_{ kl }(y^{ (i) }||\hat { y } ^{ (i) }) } =\\
@@ -160,25 +160,32 @@ L=\frac { 1 }{ n } \sum _{ i=1 }^{ n }{ D_{ kl }(y^{ (i) }||\hat { y } ^{ (i) })
  \underbrace { \frac { 1 }{ n } \sum _{ i=1 }^{ n }{ (y^{ (i) }\log{(y^{ (i) })) }} - }_{ entropy } \underbrace { \frac { 1 }{ n } \sum _{ i=1 }^{ n }{ (y^{ (i) }\log{(\hat { y } ^{ (i) })) }}  }_{ cross-entropy } 
  \end{split}
 \end{equation}
-\item \emph{Cross Entropy} is commonly-used where labels are assumed to take only two values and corresponds to the second part of KL divergence, where the second distribution $\hat { y } ^{ (i) }$ is fixed~\brackettext{\cite{DBLP:books/daglib/0016881}}. The cross entropy for a classification problem with two classes is defined as:  
+\item \emph{Cross Entropy} is commonly-used where labels are assumed to take only two values and corresponds to the second part of KL divergence formula, where the second distribution $\hat { y } ^{ (i) }$ is fixed~\brackettext{\cite{DBLP:books/daglib/0016881}}. The cross entropy for a classification problem with two classes is defined as:  
 \begin{equation}
 L=-\frac { 1 }{ n } \sum _{ i=1 }^{ n }{ [y^{ (i) }\log{(\hat { y } ^{ (i) })+(1-  y^{ (i) }}})\log{(1-\hat { y } ^{ (i) }})
 \end{equation}
 \end{inparaenum}
 The goal of the training phase is to learn a weight matrix $\Theta$ and a bias term $b$ such that the overall cost is minimized. This naturally leads to an optimization problem, which is  typically solved using \emph{Gradient Descent} (GD)~\brackettext{\cite{DBLP:journals/corr/Ruder16}}.
-Considering the most simple case (a function with only one parameter) gradient descent is illustrated in Figure~\ref{fig:gradientD}. Gradient descent is a way to minimize an objective function parameterized by finding local minima based on local gradients.
+Gradient descent is a way to minimize an objective function by finding local minima based on local gradients.
 % BR: I slightly object to that description. I would drop the
 % 'parameterized ...' part and just leave it as 'a way to minimize an
 % objective function by finding local minima based on local gradients'
 % or something like that.
-GD is an iterative algorithm, where in each step the parameter of the model is updated using the gradient of the function. A single step of GD  for one parameter $\theta$ can be seen in Equation~\ref{eq:gd}. Here, $\alpha$ is the \emph{learning rate} or the step size and controls the magnitude of the update in each iteration.
+It is an iterative algorithm, where in each step parameters of the model are updated using the gradient of the function. A single step of GD  for one parameter $\theta$ can be seen in Equation~\ref{eq:gd}, where the previous value of the parameter is updated based on the gradient of the cost function in respect with $\theta$. Here, $\alpha$ is the \emph{learning rate} or the step size and controls the magnitude of the update in each iteration. 
 \begin{equation}
 \theta=: \theta- \alpha\frac { \partial J(\theta) }{ \partial \theta }
 \label{eq:gd}
 \end{equation}
-% BR: I am not entirely happy with the replaced text, but the previous
-% formulation was slightly informal.
-As shown in Figure~\ref{fig:gradientD} the derivative or the slope of the function is positive on the right side of the minimum (the update rule will decrease $\theta$) and negative on the left size (the update rule will increase $\theta$). The same rule holds in higher dimensions as well. \\
+In a dataset with $m$ training examples, for each training example, the gradient of the cost function with respect to every weight and bias has to be calculated and accumulated.
+After iterating through all the training examples the weights and bias terms will be updated by the accumulate sum. This process is repeated for some number of iterations, where each iteration is one pass through the training set. Because the number of training examples for deep learning models are usually large, variations of GD have been introduce to speed up the process, three main type of GD are as follows: 
+\begin{itemize}
+\item \textbf{Mini-batch GD:} Instead of iterating over all training examples, a subset of a batch, i.e.,\ a subset of the input data, is considered, before making an update. This is a good choice for very large datasets.
+\item \textbf{Stochastic-GD:} In this case, only one example is looked at, before making an update. 
+\item \textbf{Batch-GD:} The original algorithm with iteration over all examples. 
+% BR: It's inconsistent to refer to it as a variation of the algorithm,
+% though, right?
+\end{itemize} 
+Considering the most simple case (a function with only one parameter) gradient descent is illustrated in Figure~\ref{fig:gradientD}. As shown in the figure, the derivative or the slope of the function is positive on the right side of the minimum (the update rule will decrease $\theta$) and negative on the left size (the update rule will increase $\theta$). The same rule holds in higher dimensions as well. Although the figure illustrates a function with global minimum, it is worth noting that GD is not guaranteed to find the global minimum and is often stuck in local minima.\\
 % BR: This is very nice. To be mathematically airtight, you could write
 % that this holds in higher dimensions as well. However, one may require
 % approximations of the gradient there, of course.
@@ -201,47 +208,22 @@ As shown in Figure~\ref{fig:gradientD} the derivative or the slope of the functi
 \resizebox{0.65\textwidth}{0.4\textwidth}{      
 \input{images/gd.tex}
 }
-\caption{Gradient decent on a function with only one parameter.
-% BR: alt.: one-dimensional function?
-%
+\caption{Gradient decent on a one-dimensional function with only one parameter.
 In each iteration, we take a step in the direction of the gradient. The gradient will guide the algorithm to the functions local minimum.
 % BR: do you want to mention getting stuck in local optima?
 }
 \label{fig:gradientD}
 \end{figure}
 \noindent
-In a dataset with $m$ training examples, for each training example, the gradient of the cost function with respect to every weight and bias has to be calculated and accumulated.
-%
-% BR: I would talk more about the gradient here; of course, you can
-% always do individual updates by using partial derivatives, but it
-% is more appropriate to speak of 'gradients' when you consider dim
-% one. This is nitpicky, though.
-After iterating through all the training examples the weights and bias terms will be updated according to Algorithm~\ref{algo:gd}. This process is repeated for some number of iterations. There exist three main type of~GD: 
-\begin{itemize}
-\item \textbf{Mini-batch GD:} Instead of iterating over all training examples, a subset of a batch, i.e.,\ a subset of the input data, is considered, before making an update. This is a good choice for very large datasets.
-\item \textbf{Stochastic-GD:} In this case, only one example is looked at, before making an update. 
-\item \textbf{Batch-GD:} The original algorithm with iteration over all examples. 
-% BR: It's inconsistent to refer to it as a variation of the algorithm,
-% though, right?
-\end{itemize}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Embeddings}\label{subsec:embeddings}
-One of the challenges of machine learning is to come up with suitable features for algorithms. These features often have to be task-specific and reflect the needs of the downstream tasks (a task that uses embeddings as input features). \emph{Representation learning} attempts to learn good features and representations automatically~\brackettext{\cite{SCHOL:journals/FDS/ZhongWD16}}. \emph{Principle Component Analysis} (PCA)~\brackettext{\cite{DBLP:journals/corr/Shlens14}} is one example of a traditional method for learning low-dimensional representation from high dimensional data. In a deep learning architecture, the output of each intermediate layer can be viewed as a representation of the original input data. As illustrated in Figure~\ref{fig:preceptron} each unit of the network computes a non-linear combination of the inputs which is used by the next layer. If the dimension of the hidden layer is much smaller than the input layer, a low-dimensional representation of the data is learned in the hidden layer. Based on this principle almost any dataset can be transformed into an embedding with lower dimensions. In this work we focus on only two types, namely, \emph{word embeddings} and \emph{graph embeddings}. \\
-\noindent
-Word embeddings try to learn a dense vector representation (unlike the sparse one-hot vectors with many zeros) for each word in the text.
-% BR: Do you mean 'dense' in the sense of 'not having many zeroes?
-However, text is inherently high-dimensional, requiring a specific form of embedding.
+One of the challenges of machine learning is to come up with suitable features for algorithms. These features often have to be task-specific and reflect the needs of the downstream tasks, for example, a task that uses embeddings as input features. \emph{Representation learning} attempts to learn good features and representations automatically~\brackettext{\cite{SCHOL:journals/FDS/ZhongWD16}}. \emph{Principle Component Analysis} (PCA)~\brackettext{\cite{DBLP:journals/corr/Shlens14}} is one example of a traditional method for representation learning from high dimensional data. More recently, neural networks are used to obtain these low-dimensional representations. In a deep learning architecture, the output of each intermediate layer can be viewed as a representation of the original input data. Each unit inn the hidden layer of the network computes a non-linear combination of the inputs that is used by the next layer.  If the dimension of the hidden layer is much smaller than the input layer, a low-dimensional representation of the data is learned in the hidden layer. Based on this principle almost any type of data (e.g., images, sounds and text) can be transformed into embeddings with lower dimensions. In this work, we focus on learning low-dimensional representation for two types of data structures, namely, for words (\emph{word embeddings}) and for graphs (\emph{graph embeddings}). \\
+Text is inherently high-dimensional, requiring a specific form of embedding.
 % BR: The sentence is a little bit too short and disrupts the flow.
 % Maybe: 'However, text is inherently high-dimensional, requiring
 % a specific form of embedding'.
-In most traditional NLP systems, each word is represented as a one-hot vector of size equal to the size of the vocabulary, which is a high-dimensional, highly sparse vector.
-By feeding these high-dimensional representations to a neural network with a smaller hidden layer, a new representation (usually in the order of $100$ dimensions) of each word can be learned. Although neural networks can be used in supervised and unsupervised learning, generally, the embedding is learned as a supervised learning problem. For this purpose, different models have been proposed, the most famous being word2vec~\brackettext{\cite{DBLP:journals/corr/abs-1805-04032}}, which will be discussed in Section~\ref{sec:wordembeddig} in detail. All the models follow the same principle, which is illustrated in Figure~\ref{fig:emb}. The size of the output layer depends on the particular architecture and the cost function. In addition, the network can be composed of multiple layers, but for our purposes, we focus on shallow networks with only one hidden layer. \\
-\noindent
-% BR: The change between these two sections is very abrupt.
-Learning low-dimensional representation is not only a challenge for NLP, but extends to many domains, such as image and graph analysis. Graph embeddings, in particular,  aim to convert a graph with many edges and nodes into a low dimensional latent space while preserving the graph information~\brackettext{\cite{DBLP:journals/kbs/GoyalF18}}. One type of graph embedding is \emph{node embedding}, which represent each node of a graph as a vector in a low-dimensional space, where node proximity should be preserved in both spaces.
-% BR: I would rather say that 'proximity should be preserved in both
-% spaces'
-The difference between various techniques lies in how they define \emph{``closeness''}~\brackettext{\cite{DBLP:journals/tkde/CaiZC18}}. For example, two nodes are considered close if they share the same neighbours or have a direct edge between them. In the next section, we will give a brief introduction to co-occurrence graphs, and in Section~\ref{sec:graph} the well-known graph embedding methods are explained.  
+In most traditional NLP systems, each word is represented as a one-hot vector of the size of the vocabulary, which is a high-dimensional, highly sparse vector. 
+By feeding these high-dimensional representations to a neural network with a smaller hidden layer, a new representation (usually in the order of $100$ dimensions) for each word is learned, which is a more dense vector representation for each word. For this purpose, different models have been proposed, the most famous being word2vec~\brackettext{\cite{DBLP:journals/corr/abs-1301-3781}}, which will be discussed in Section~\ref{sec:wordembeddig} in detail. All the models follow the same principle, which is illustrated in Figure~\ref{fig:emb}, where the one-hot vectors of words in the vocabulary are the input of the network and a low-dimensional hidden layer is responsible for encoding the representation of input words.  The size of the output layer depends on the particular architecture and the cost function. In addition, the network can be composed of multiple layers, but for our purposes, we focus on shallow networks with only one hidden layer. \\
 \begin{figure}
 \centering 
 \resizebox{0.8\textwidth}{0.48\textwidth}{      
@@ -250,6 +232,13 @@ The difference between various techniques lies in how they define \emph{``closen
 \caption{Underlying principle of word embeddings. The high-dimensional one-hot vectors are the input of the network. The hidden layer learns a dense representation to either predict the surrounding words or to optimize a different cost function in the output layer.}
 \label{fig:emb}
 \end{figure}
+\noindent
+% BR: The change between these two sections is very abrupt.
+Learning low-dimensional representation is not only a challenge for NLP, but extends to many domains, such as image and graph analysis. Graph embeddings, in particular,  aim to convert a graph with many edges and nodes into a low dimensional latent space while preserving the graph information~\brackettext{\cite{DBLP:journals/kbs/GoyalF18}}. One type of graph embedding is \emph{node embedding}, which represent each node of a graph as a vector in a low-dimensional space, where node proximity should be preserved in both spaces.
+% BR: I would rather say that 'proximity should be preserved in both
+% spaces'
+The difference between various techniques lies in how they define \emph{``closeness''}~\brackettext{\cite{DBLP:journals/tkde/CaiZC18}}. For example, two nodes are considered close if they share the same neighbours or have a direct edge between them. In the next section, we will give a brief introduction to co-occurrence graphs, and in Section~\ref{sec:graph} the well-known graph embedding methods are explained.  
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Co-occurrence Graphs}
 \label{sec:graph}
