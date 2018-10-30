@@ -1,23 +1,19 @@
-\begin{center}
-  \textsc{Zusammenfassung}
-\end{center}
-\noindent
 
-Aufgrund der technologischen Fortschritte der letzten Jahre verbunden mit der enormen Menge an Textinhalten, die jede Minute veröffentlicht werden, hat sich die  Erforschung der automatisierten Verarbeitung natürlicher Sprache zu einem spannenden Bereich wissenschaftlicher Forschung entwickelt.
+Aufgrund der technologischen Fortschritte der letzten Jahre, verbunden mit einer enormen Menge an Textinhalten, die jede Minute veröffentlicht werden, hat sich die  Erforschung der automatisierten Verarbeitung natürlicher Sprache zu einem wichtigen Bereich in der wissenschaftlichen Forschung entwickelt.
 % Mit dem Ziel, menschliche Sprachinhalte zu lernen und zu verstehen, hat die Bedeutung zugenommen.
 
-Da ein Wort ein einzelnes bedeutungsvolles Element innerhalb einer Sprache oder eines Satzes sein kann, spielt die Erfassung seiner Semantik eine wichtige Rolle für das Verständnis der menschlichen Sprache.
-Worteinbettungen sind eine Vektordarstellung von Wörtern, die die Wörter eines hochdimensionalen Vokabulars Vektoren von reellen Zahlen in einem niedrigdimensionalen Raum zuordnen, so dass Wörter mit ähnlicher Bedeutung auf nahegelegene Punkte abgebildet werden, zum Beispiel gemessen anhand der euklidischen Distanz.
+Da ein Wort ein einzelnes bedeutungsvolles Element innerhalb einer Sprache oder eines Satzes sein kann, spielt die Erfassung seiner Semantik eine wichtige Rolle für das Verständnis  von Sprache.
+Worteinbettungen (engl. word embeddings) sind eine Vektordarstellung von Wörtern, die Wörter eines hochdimensionalen Vokabulars auf Vektoren mit reellen Zahlen in einem niedrigdimensionalen Raum zuordnen, so dass Wörter mit ähnlicher Bedeutung auf beieinander liegende Punkte abgebildet werden, zum Beispiel gemessen anhand der euklidischen Distanz.
 
-Worteinbettungen werden als Features in vielen Informationsabruf- und Natural Language-Verarbeitungsaufgaben verwendet. Während viele solcher Aufgaben benannte Entitäten beinhalten oder sich sogar darauf verlassen, werden sie bei populären Worteinbettungsmodellen bisher nicht als eigenständiges Konzept erkannt und behandeln stattdessen alle Wörter gleichermaßen.
+Worteinbettungen werden als Features in vielen Informationsabruf- und Natural Language-Processing (NLP) Aufgaben verwendet. Während viele solcher Aufgaben benannte Entitäten (engl. named entities) beinhalten, werden sie bei bekannten Worteinbettungsmodellen bisher nicht als eigenständiges Konzept erkannt und behandeln stattdessen alle Wörter gleichermaßen.
 
-Obwohl es intuitiv scheint, dass die Anwendung von Worteinbettungstechniken auf ein mit benannten Entitäten versehenes Korpus zu intelligenteren Wortmerkmalen führen sollte, führt diese naive Herangehensweise zu einer verschlechterten Leistung im Vergleich zu Einbettungen, die auf rohen, unannotierten Text trainiert werden.
+Obwohl es intuitiv scheint, dass die Anwendung von Worteinbettungstechniken auf ein mit benannten Entitäten versehenen Korpus zu intelligenteren Wortmerkmalen führen sollte, führt diese naive Herangehensweise zu einer verschlechterten Leistung im Vergleich zu Einbettungen, die auf rohen, unannotierten Text trainiert werden.
 
 Darüber hinaus erhöht das Kommentieren des Korpus die Komplexität der Beziehung zwischen Wörtern. Verschiedene benannte Entitätstypen haben unterschiedliche Auswirkungen auf die Wortsemantik, die normale Worteinbettungen nicht erfassen können.
 
-In dieser Arbeit schlagen wir neue Ansätze vor, um gemeinsam Wort- und Entitäteneinbettungen in einem großen Korpus mit automatisch annotierten und verknüpften Entitäten zu trainieren.
-Darüber hinaus erweitern wir unsere Ansätze, um die Beziehung eines Wortes zu bestimmten Arten von Entitäten in separaten Komponenten zu erfassen, was eine interpretierbare Repräsentation erzeugt und die Bedeutung von Entitätstypen für eine Wortsemantik beleuchtet.
+In dieser Arbeit stellen wir neue Ansätze vor, um gemeinsam Wort- und Entitäteneinbettungen in einem großen Korpus mit automatisch annotierten und verknüpften Entitäten zu trainieren.
+Darüber hinaus erweitern wir unsere Ansätze, um Beziehungen eines Wortes zu bestimmten Arten von anderen Entitäten in separaten Komponenten zu erfassen, was eine interpretierbare Darstellung erzeugt und die Bedeutung von Entitätstypen für eine Wortsemantik erläutert.
 
-Weiter diskutieren wir zwei Ansätze für das Einbetten von Trainingseinheiten, nämlich das Trainieren von modernen Worteinbettungstechniken für annotierten Text sowie das Einbetten der Knoten einer Co-Auftritt-Graphendarstellung eines annotierten Korpus. Wir nutzen diese Graphenstruktur, um die Einbettungen mit trennbaren Komponenten einzuführen, wobei jede Komponente die Beziehung des Wortes zu benannten Entitäten eines bestimmten Typs erfasst. Um diese separierbaren Komponenten zu erhalten, modifizieren wir gängige Einbettungen für Graphen und Wörter, um den Einbettungsraum in Typen der benannten Entitäten zu unterteilen, die im Text vorhanden sind.
+Weiter diskutieren wir zwei Ansätze für das Einbetten von Trainingseinheiten, nämlich das Trainieren von modernen Worteinbettungstechniken für annotierten Text sowie das Einbetten der Knoten einer Co-Auftritt-Graphendarstellung (engl. co-occurrence graph) eines annotierten Korpuses. Wir nutzen die Vorteile dieser Graphenstruktur, um die Einbettungen mit trennbaren Komponenten vorzustellen, wobei jede Komponente die Beziehung des Wortes zu benannten Entitäten eines bestimmten Typs erfasst. Um diese separierbaren Komponenten zu erhalten, modifizieren wir gängige Einbettungen für Graphen und Wörter, um den Einbettungsraum in Typen der benannten Entitäten zu unterteilen, die im Text vorhanden sind.
 
-Abschließend vergleichen wir die Leistung unserer Ansätze mit klassischen Worteinbettungen, die mit dem Rohtext einer Vielzahl von Wortähnlichkeits-, Analogie- und Clustering-Evaluierungsaufgaben trainiert wurden. Wir untersuchen außerdem die möglichen Vorteile und Anwendungsfälle solcher Modelle mit einer unternehmensspezifischen experimentellen Analyse.
+Abschließend vergleichen wir unserere Ansätze mit denen klassischer Worteinbettungen, die mit dem Rohtext und einer Vielzahl von Wortähnlichkeits-, Analogie- und Clustering-Evaluierungsaufgaben trainiert wurden. Wir untersuchen außerdem die möglichen Vorteile und Anwendungsfälle solcher Modelle mit einer unternehmensspezifischen experimentellen Analyse.
