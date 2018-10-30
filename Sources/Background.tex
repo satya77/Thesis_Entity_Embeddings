@@ -119,7 +119,7 @@ a_{ 2 }^{ [2] }=g(\theta _{ 20 }^{ [1] }x_{ 0 }+\theta _{ 21 }^{ [1] }x_{ 1 }+\t
 \label{eq:nn_eq}
 \end{equation}
 \footnotetext{The figure is adapted from https://www.coursera.org/learn/neural-networks-deep-learning.}
-Activation functions are an important part of neural networks, without them the networks are just weighted sum of their inputs, plus a bias term that are unable to learn any complex and non-linear function. Activation functions are means to introduce non-linearity to the model. There are different classes of activation functions available but the most commonly used ones are \emph{Sigmoid} and \emph{Relu}, illustrated in Figure~\ref{fig:activation}. 
+Activation functions are an important part of neural networks, without them the networks are just weighted sum of their inputs, plus a bias term that are unable to learn any complex and non-linear function. Activation functions are means to introduce non-linearity to the model. There are different classes of activation functions available but the most commonly used ones are \emph{Sigmoid} and \emph{Relu}, both them are illustrated in Figure~\ref{fig:activation}. 
 % BR: This is a good introduction to DL. At times, the 'flow' of the
 % section is not optimal, though. This is partially caused by terms,
 % i.e. concepts, that are mentioned but not explained. It is perfect
@@ -139,14 +139,14 @@ Activation functions are an important part of neural networks, without them the 
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Training neural networks}
-Consider the output $\hat { y } $ as the prediction of our network for some task. In a supervised learning problem, the aim is to reduce the error between the prediction ($\hat { y } $) and the true label $y$. As a result, a cost function can be defined as $J$ in Equation~\ref{eq:cost_nn}, where $L$ denotes the loss function on a single training example and $m$ is the size of the training set. The \emph{cost function} is simply the sum of all losses on the training set.
+Consider the output $\hat { y } $ as the prediction of our network for some task. In a supervised learning problem, the aim is to reduce the error between the prediction ($\hat { y } $) and the true label $y$. As a result, a cost function on parameters $\theta$ and $b$ is defined as $J$ in Equation~\ref{eq:cost_nn}, where $L$ denotes the loss function on a single training example and $m$ is the size of the training set. The \emph{cost function} is simply the sum of all losses on the training set.
 % BR: you should briefly mention what types of loss functions exist, or
 % use a simple one (MSE or something?)
 \begin{equation}
 J(\theta,b)=\sum _{ j=1 }^{ m }{ L( } \hat { y }^{ (i) } ,y^{ (i) })
 \label{eq:cost_nn}
 \end{equation}
-The loss for a single input is computed by the \emph{loss function} $L$ and the sum of loses for all inputs is computed by the cost function $J$. There exists various loss functions, which are chosen based on the problem at hand. We introduce three of the most commonly used functions, which are used by the models in this thesis: \\
+The loss for a single input is computed by the \emph{loss function} $L$ and the sum of loses for all inputs is computed by the cost function $J$. There exists various loss functions, which are chosen based on the problem at hand. We introduce three of the most commonly used loss functions, which are used by the models in this thesis: \\
 \begin{inparaenum}
 \item \emph{Mean Squared Error} (MSE) or \emph{quadratic cost} minimizes the quadratic sum of distances between true label of each data point $y^{ (i) }$ and it's prediction $\hat { y } ^{ (i) }$~\brackettext{\cite{DBLP:reference/ml/2017}}: 
 \begin{equation}
@@ -179,7 +179,7 @@ It is an iterative algorithm, where in each step parameters of the model are upd
 In a dataset with $m$ training examples, for each training example, the gradient of the cost function with respect to every weight and bias has to be calculated and accumulated.
 After iterating through all the training examples the weights and bias terms will be updated by the accumulate sum. This process is repeated for some number of iterations, where each iteration is one pass through the training set. Because the number of training examples for deep learning models are usually large, variations of GD have been introduce to speed up the process, three main type of GD are as follows: 
 \begin{itemize}
-\item \textbf{Mini-batch GD:} Instead of iterating over all training examples, a subset of a batch, i.e.,\ a subset of the input data, is considered, before making an update. This is a good choice for very large datasets.
+\item \textbf{Mini-batch GD:} Instead of iterating over all training examples, a subset of a batch, i.e.,\ a subset of the input data, is considered, before making an update, making it a good choice very large datasets.
 \item \textbf{Stochastic-GD:} In this case, only one example is looked at, before making an update. 
 \item \textbf{Batch-GD:} The original algorithm with iteration over all examples. 
 % BR: It's inconsistent to refer to it as a variation of the algorithm,
@@ -304,7 +304,7 @@ If the model is trained on enough data, word2vec groups the vectors of similar w
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{GloVe: Global vector embeddings}
 \label{subsec:GloVe}
-The \emph{Global Vector Model} (GloVe) suggests that the ratio of co-occurrence probabilities can encode meaning components. An example can be seen in Table~\ref{table:tab_1}, in terms of studying a thermodynamic phase. A meaning component that sets the word \emph{``ice''} apart from \emph{``steam''} is represented as a ratio of their occurrence probability with all other words \big($\frac { P(ice|k) }{ P(steam|k) } $, where $k$ can be any word in the vocabulary\big). This ratio can distinguish relevant words in comparison from irrelevant ones by giving the irrelevant ones a probability close to one. Also compared to the raw probabilities, it is better able to discriminate between the relevant words by giving a high probability to a word like \emph{``solid''} and low probability to \emph{``gas''}, making the word \emph{``ice''} stand out as a solid object. A word, such as \emph{``water''} or \emph{``fashion''}, therefore, has a probability close to one as it is either a shared property or not related to the concept.\\
+The \emph{Global Vector Model} (GloVe) suggests that the ratio of co-occurrence probabilities can encode meaning components. An example can be seen in Table~\ref{table:tab_1}, in terms of studying a thermodynamic phase. A meaning component that sets the word \emph{``ice''} apart from \emph{``steam''} is represented as a ratio of their occurrence probability with all other words \big($\frac { P(ice|k) }{ P(steam|k) } $, where $k$ can be any word in the vocabulary\big). This ratio can distinguish relevant words in comparison from irrelevant ones by giving the irrelevant ones a probability close to one. Also compared to the raw probabilities, it is better able to discriminate between the relevant words by giving the relevant ones a high ratio, such as words like \emph{``solid''}, and low ratio to irrelevant ones, such as \emph{``gas''}. As a result, the word \emph{``ice''} stand out as a solid object. Moreover, words, such as \emph{``water''} or \emph{``fashion''}, therefore, has a probability close to one as it is either a shared property or not related to the concept.\\
 \begin{table}[]
 \centering
 
@@ -419,7 +419,7 @@ Despite the flexiblity of node2vec, the method tends to be quite inefficient for
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{LINE: Large-scale information network embedding}
 \label{subsec:LINE}
-The \emph{Large-scale Information Network Embedding} (LINE) model~\brackettext{\cite{DBLP:conf/www/TangQWZYM15}} does not use random walks, instead it optimises two objective functions, one each for first- and second-order proximities, and minimizes the combination of the two to obtain two embeddings. The first objective function aims to keep the adjacency matrix and dot product of embeddings close. For the first objecitve function, the LINE model defines two joint probability distributions for each pair of nodes, one using an adjacency matrix and the other using the embedding and minimizes the KL-divergence between two distributions, resulting in the first half of the embedding. The authors define another probability distributions and objective function for the second half of the embdding, which is based on the the second-order proximity~\brackettext{\cite{DBLP:journals/kbs/GoyalF18}}. Nevertheless, the model fails to learn meaningful representation of graphs with unbalanced edge weights, as the objective function for the second-order proximity is ill-defined when the weight of edges have a high variance~\brackettext{\cite{DBLP:conf/www/TangQWZYM15}}.
+The \emph{Large-scale Information Network Embedding} (LINE) model~\brackettext{\cite{DBLP:conf/www/TangQWZYM15}} does not use random walks, instead it optimises two objective functions, one each for first- and second-order proximities, and minimizes the combination of the two to obtain two embeddings. The first objective function aims to keep the adjacency matrix and dot product of embeddings close. For the first objecitve function, the LINE model defines two joint probability distributions for each pair of nodes, one using an adjacency matrix and the other using the embedding and minimizes the KL-divergence between two distributions, resulting in the first half of the embedding. The authors define another probability distributions and objective function for the second half of the embdding, which is based on the the second-order proximity~\brackettext{\cite{DBLP:journals/kbs/GoyalF18}}. Nevertheless, the model fails to learn meaningful representation of graphs with unbalanced edge weights, as the objective function for the second-order proximity is ill-defined when the edge weights have a high variance~\brackettext{\cite{DBLP:conf/www/TangQWZYM15}}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{VERSE: Versatile graph embeddings from similarity measures}
 \label{subsec:VERSE}

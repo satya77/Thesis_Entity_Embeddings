@@ -7,7 +7,7 @@ A long-standing challenge for research in computer science is the understanding 
 \resizebox{0.3\textwidth}{0.25\textwidth}{      
 \input{images/vector_space_models.tex}
 }
-\caption{An example of dense vector presentation of words in a 2-dimensional space, that maps words with similar meaning to nearby points.}
+\caption{An example of dense vector representation of words in a 3-dimensional space, that maps words with similar meaning to nearby points.}
 \label{fig:vsmodels}
 \end{figure}
 Traditional \emph{Natural Language Processing} (NLP) systems treat words as atomic units, represented as vectors, where each word is treated as a one-hot vector (with $1$ in a single position and zero for the rest) to the size of the vocabulary. These vectors are sparse and orthogonal, and therefore, contain no notion of similarity among themselves. For example, if a user is searching for \emph{``Heidelberg Hotel''}, documents containing \emph{``Heidelberg Motel''} are to be disregarded since the dot product of the one-hot vectors of \emph{``Hotel''} and \emph{``Motel''} is zero. On the other hand, distributed vector space models represent words in a continuous vector space, where a word is represented by its relation to the surrounding words. These models are based on the idea that similar words tend to occur in a similar context or as the British linguist J.R. Firth said:\\ \\
