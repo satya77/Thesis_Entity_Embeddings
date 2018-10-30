@@ -217,7 +217,7 @@ In each iteration, we take a step in the direction of the gradient. The gradient
 \noindent
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Embeddings}\label{subsec:embeddings}
-One of the challenges of machine learning is to come up with suitable features for algorithms. These features often have to be task-specific and reflect the needs of the downstream tasks, for example, a task that uses embeddings as input features. \emph{Representation learning} attempts to learn good features and representations automatically~\brackettext{\cite{SCHOL:journals/FDS/ZhongWD16}}. \emph{Principle Component Analysis} (PCA)~\brackettext{\cite{DBLP:journals/corr/Shlens14}} is one example of a traditional method for representation learning from high dimensional data. More recently, neural networks are used to obtain these low-dimensional representations. In a deep learning architecture, the output of each intermediate layer can be viewed as a representation of the original input data. Each unit inn the hidden layer of the network computes a non-linear combination of the inputs that is used by the next layer.  If the dimensions of the hidden layer is smaller than the input layer, a low-dimensional representation of the data is learned in the hidden layer. Based on this principle almost any type of data (e.g., images, sounds and text) can be transformed into embeddings with lower dimensions. In this work, we focus on learning low-dimensional representation for two types of data structures, namely, for words (\emph{word embeddings}) and for graphs (\emph{graph embeddings}). \\
+One of the challenges of machine learning is to come up with suitable features for algorithms. These features often have to be task-specific and reflect the needs of the downstream tasks, for example, a task that uses embeddings as input features. \emph{Representation learning} attempts to learn good features and representations automatically~\brackettext{\cite{SCHOL:journals/FDS/ZhongWD16}}. \emph{Principle Component Analysis} (PCA)~\brackettext{\cite{DBLP:journals/corr/Shlens14}} is one example of a traditional method for representation learning from high dimensional data. More recently, neural networks are used to obtain these low-dimensional representations. In a deep learning architecture, the output of each intermediate layer can be viewed as a representation of the original input data. Each unit inn the hidden layer of the network computes a non-linear combination of the inputs that is used by the next layer.  If the dimensions of the hidden layer is smaller than the input layer, a low-dimensional representation of the data is learned in the hidden layer. Based on this principle almost any type of data (e.g., images, sounds and textual content) can be transformed into embeddings with lower dimensions. In this work, we focus on learning low-dimensional representation for two types of data structures that are used by our models, namely, for words (\emph{word embeddings}) and for graphs (\emph{graph embeddings}). \\
 Text is inherently high-dimensional, requiring a specific form of embedding.
 % BR: The sentence is a little bit too short and disrupts the flow.
 % Maybe: 'However, text is inherently high-dimensional, requiring
@@ -305,17 +305,17 @@ If the model is trained on enough data, word2vec groups the vectors of similar w
 \subsection{GloVe: Global vector embeddings}
 \label{subsec:GloVe}
 The \emph{Global Vector Model} (GloVe) suggests that the ratio of co-occurrence probabilities can encode meaning components. An example can be seen in Table~\ref{table:tab_1}, in terms of studying a thermodynamic phase. A meaning component that sets the word \emph{``ice''} apart from \emph{``steam''} is represented as a ratio of their occurrence probabilities with all other words \big($\frac { P(ice|k) }{ P(steam|k) } $, where $k$ can be any word in the vocabulary\big). This ratio can distinguish relevant words in comparison to irrelevant ones by giving the irrelevant ones a probability close to one. Also compared to the raw probabilities, it is better able to discriminate between the relevant words by giving the relevant ones a high ratio, such as words like \emph{``solid''}, and low ratio to irrelevant ones, such as \emph{``gas''}. As a result, the word \emph{``ice''} stand out as a solid object. Moreover, words, such as \emph{``water''} or \emph{``fashion''}, therefore, has a probability close to one as it is either a shared property or not related to the concept.\\
+\label{table:tab_1}
 \begin{table}[]
 \centering
-
+\caption{Co-occurrence probabilities for target words \emph{``ice''}and \emph{``steam''} with selected context words. Example taken from~\brackettext{\cite{DBLP:conf/emnlp/PenningtonSM14}}.}
+\label{eq:log_prob}
 \begin{tabular}{@{}l|l|l|l|l@{}}
 \toprule
 Probability and Ratio &  $k=solid$& $k=gas$ & $k=water$ &$k= fashion$  \\ \midrule $P(k|ice)$& {\color[HTML]{CB0000}large} &  {\color[HTML]{329A9D}small} & {\color[HTML]{CB0000}large} & {\color[HTML]{329A9D}small} \\\midrule
   $P(k|steam)$&{\color[HTML]{329A9D}small}  & {\color[HTML]{CB0000}large} &  {\color[HTML]{CB0000}large}&{\color[HTML]{329A9D}small}  \\\midrule
  $\frac { P(ice|k) }{ P(steam|k) } $& {\color[HTML]{CB0000}large} &  {\color[HTML]{329A9D}small}&  1 &    1  \\\midrule
 \end{tabular}%
-\caption{Co-occurrence probabilities for target words \emph{``ice''}and \emph{``steam''} with selected context words. Example taken from~\brackettext{\cite{DBLP:conf/emnlp/PenningtonSM14}}.}
-\label{table:tab_1}
 \end{table}
 \noindent
 To capture these ratios, the authors of GloVe propose a log-bilinear model, where, if the dot product of two vectors corresponds to the log of their co-occurrence probability, their difference will show the meaning component. The relation of the dot product of the word embeddings with the co-occurrence probability, for two word $i$ and $j$, based on assumptions of the GloVe model is shown in Equation~\ref{eq:log_prob}, where $w_i$ is the word embedding for the word $i$. 
@@ -324,7 +324,6 @@ To capture these ratios, the authors of GloVe propose a log-bilinear model, wher
 \\ w_{ i }.w_{ j }=\log { P(i|j)\quad  } \\
 w_{ x }(w_{ i }-w_{ j })=\log { \frac { P(x|j) }{ P(x|j) } } 
 \end{split}
-\label{eq:log_prob}
 \end{equation}
 Let the matrix of word-word co-occurrence counts be denoted by $X\in { R }^{ |V|\times |V| }$, where $|V|$ is the size of the vocabulary.  Entries $X_{fc}$ tabulate the number of times word $c$ occurs in the context of word $f$. $w_{ f }\in { R }^{ 1\times M }$ and $\tilde{w_{ c }}\in { R }^{ 1\times M }$ are the focal (center word) and context embeddings, respectively, where $M$ is the embedding size. The model tries to learn embeddings that minimize the squared difference between the dot product of the center and context word embedding and the logarithm of their co-occurrence count.
 Considering $ \tilde{b_{ f }}$ and $b_{ c }$  as the biases for the focal and context embeddings, the cost function is defined in Equation~\ref{eq:glove_cost}. Since the log of co-occurrences does not directly result in a probability, in order for the meaning component to have a probabilistic interpretation, a normalization factor is needed. Bias $b_{ f }$ allows the model to learn this constant during training and $ \tilde{b_{ c }}$ is added to preserve symmetry. 
@@ -359,8 +358,10 @@ cos\theta =\frac { \overrightarrow { w_i } .\overrightarrow { w_j }  }{ \paralle
 The cost function of the GloVe model is based on the assumption that the ratio of co-occurrence probabilities results in meaningful components, which can be investigated to find the relation between two words. Edge weights of the LOAD model have a correlation with the co-occurrence counts of terms and entities in text. However, the sentence distance is a more efficient way to define a distance metric between two entities rather than a window-based approach. Two entities appearing in the same document tend to have some connection, this relationship is disregarded if we only look at a small window of words. Additionally, since the weights decay based on how far an entity is from another, we gain more information about the structure of the text. Based on these considerations, we argue that LOAD edge weights produce a better overall corpus statistics in case of named entities in comparison to a simple co-occurrence matrix and that it can generate the same meaningful components like probability ratios. \\
 \begin{table}[]
 \centering
-
+\caption{LOAD weights for target words \emph{``Donald Trump''} and \emph{``Barack Obama''} with selected context words, where low values are denoted by blue and high values by red. }
+\label{table:tab_2}
 \begin{tabular}{@{}l|l|l|l|l@{}}
+
 \toprule
 Probability and Ratio&  $k=republican$& $k=democratic$ & $k=president$ &$k= BMW$  \\ \midrule
  $P(k|Trump)$& {\color[HTML]{CB0000}10.51} &  {\color[HTML]{329A9D}5.30} & {\color[HTML]{CB0000}52} & {\color[HTML]{329A9D}0} \\\midrule
@@ -368,8 +369,7 @@ Probability and Ratio&  $k=republican$& $k=democratic$ & $k=president$ &$k= BMW$
  $\frac { P(Trump|k) }{ P(Obama|k) } $& {\color[HTML]{CB0000}29.2} &  {\color[HTML]{329A9D}4.10}&  0.78 &    0  \\\midrule
 \end{tabular}%
 
-\caption{LOAD weights for target words \emph{``Donald Trump''} and \emph{``Barack Obama''} with selected context words, where low values are denoted by blue and high values by red. }
-\label{table:tab_2}
+
 \end{table}
 \label{sec:components_load}
 We demonstrate this claim with a simple example in Table~\ref{table:tab_2} that shows how certain aspects of meaning can be extracted from edge weights of LOAD. Suppose we are interested in the concept of US presidents, for which we take two actors \emph{``Donald Trump''} and \emph{``Barack Obama''}. The relationship between these entities is examined by studying the ratio of their edge weights with various probe words. Similar to the GloVe model, where the ratio of co-occurrence probability distinguished the relevant words from irrelevant words, here the ratio of the edge weights works in the same way. In this case, looking at the raw edge weights does not give us much comparable information, but the ratio denotes \emph{``Donald Trump''} as a republican rather than a democratic politician. Since both of the entities share the presidential attribute the ratio is close to one. On the other hand, a random name like \emph{``BMW''} has a relatively small weight with both entities, but since the weak edges were cut off from the model we have the weight of zero. If  the full graph without a cut-off threshold is considered instead, the ratio of two small numbers will also converge to one, implying that similar to a co-occurrence matrix, edge weights of LOAD produce meaning components. As a result, the bilinearity assumption of GloVe can be extended to the weighted adjacency matrix of LOAD. 
