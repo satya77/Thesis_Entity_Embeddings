@@ -1,2 +1,2 @@
-# Master Thesis 
-Repository of my written work for my master thesis, which does not have a title yet. 
+# Master's Thesis 
+This repository contains my master thesis about Learning Joint Vector Representations of Words and Named Entities.
